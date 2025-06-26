@@ -83,7 +83,7 @@ public class GameController {
 
         playerNameField.textProperty().addListener((observable, oldValue, newValue) -> {
             if(!newValue.equals(oldValue)) {
-                startButton.setText("Start");
+                startButton.setText("Start my nigger");
             }
         });
     }
