@@ -9,6 +9,9 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
 
+import java.io.*;
+import java.util.*;
+
 public class GameController {
 
     @FXML
@@ -35,16 +38,31 @@ public class GameController {
     @FXML
     private Label timeLabel;
 
+    private List<String> inputStrings = new ArrayList<>();
     private String paragraphText;
     private ObservableList<String> leaderboard = FXCollections.observableArrayList();
     private String name;
     private long startTime;
     private Timeline timer;
 
+    private static void random() {
+
+    }
     @FXML
     public void initialize() {
-        paragraphText = "The quick brown fox jumps over the lazy dog.";
-        paragraphLabel.setText(paragraphText);
+        try{
+            File file = new File("src/main/resources/com/example/real/input.txt");
+            Scanner takeIn = new Scanner(file);
+
+            while(takeIn.hasNextLine()){
+                inputStrings.add(takeIn.nextLine());
+            }
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+        /*paragraphText = inputStrings.get(new Random().nextInt(inputStrings.size()));
+        paragraphLabel.setText(paragraphText);*/
         paragraphLabel.setWrapText(true);
         typingArea.setDisable(true);
         progressBar.setProgress(0.0);
@@ -95,6 +113,8 @@ public class GameController {
             showAlert();
             return;
         }
+        paragraphText = inputStrings.get(new Random().nextInt(inputStrings.size()));
+        paragraphLabel.setText(paragraphText);
 
         typingArea.clear();
         typingArea.setDisable(false);
