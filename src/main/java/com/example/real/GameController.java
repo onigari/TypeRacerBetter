@@ -52,6 +52,7 @@ public class GameController {
     private int totalTyped;
 
     private double calculateAccuracy() {
+        System.out.println(correctCount + " " + totalTyped + " " + paragraphText.length());
         return totalTyped == 0 ? 0.0 : (correctCount * 100.0 / totalTyped);
     }
 
@@ -164,7 +165,6 @@ public class GameController {
 
         char typedChar = character.charAt(0);
 
-
         if(typedChar == '\r' || typedChar == '\n') {
             typingFinished();
             return;
@@ -172,15 +172,14 @@ public class GameController {
 
         if (typedChar == '\b') {
             if (currentIndex > 0) {
-                currentIndex--;
+                textNodes.get(--currentIndex).setUnderline(false); //Cursor-esque shit
                 Text previous = textNodes.get(currentIndex);
-                previous.setStyle("-fx-fill: gray; -fx-font-size: 16px;");
-                totalTyped = Math.max(0, totalTyped - 1);
 
-                // If it was a correct letter, subtract from correctCount
-                if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
-                    correctCount = Math.max(0, correctCount - 1);
+                if (previous.getStyle().contains("black")) {
+                    correctCount--;
                 }
+                previous.setStyle("-fx-fill: gray; -fx-font-size: 16px;");
+                totalTyped--;
             }
             return;
         }
@@ -194,6 +193,7 @@ public class GameController {
 
         char expectedChar = paragraphText.charAt(currentIndex);
         Text current = textNodes.get(currentIndex);
+        textNodes.get(currentIndex).setUnderline(true); // Cursor-esque shit
 
         if (typedChar == expectedChar) {
             current.setStyle("-fx-fill: black; -fx-font-size: 16px;");
@@ -204,6 +204,8 @@ public class GameController {
 
         currentIndex++;
         totalTyped++;
+
+        progressBar.setProgress((double) currentIndex / paragraphText.length());
 
         if (currentIndex >= paragraphText.length()){
             typingFinished();
