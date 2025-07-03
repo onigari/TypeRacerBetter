@@ -52,7 +52,6 @@ public class GameController {
     private int totalTyped;
 
     private double calculateAccuracy() {
-        System.out.println(correctCount + " " + totalTyped + " " + paragraphText.length());
         return totalTyped == 0 ? 0.0 : (correctCount * 100.0 / totalTyped);
     }
 
