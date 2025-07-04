@@ -1,4 +1,4 @@
-package com.example.real;
+package Controllers;
 
 import javafx.collections.*;
 import javafx.fxml.FXML;
@@ -44,7 +44,7 @@ public class GameController {
     private String name;
     private long startTime;
     private Timeline timer;
-    private boolean typingDone = false;
+
     private String paragraphText; //User's input
     private List<Text> textNodes = new ArrayList<>();
     private int currentIndex;
@@ -68,37 +68,9 @@ public class GameController {
         paragraphFlow.getChildren().addAll(textNodes);
     }
 
-    private void handleCtrlBackspace() {
-        if (currentIndex == 0) return;
-
-        // Go backward from current index to find start of word
-        int wordEnd = currentIndex;
-        int wordStart = wordEnd - 1;
-
-        while (wordStart >= 0 && paragraphText.charAt(wordStart) != ' ') {
-            wordStart--;
-        }
-        wordStart++; // move to start of actual word
-
-        for (int i = wordStart; i < wordEnd; i++) {
-            Text t = textNodes.get(i);
-            t.setStyle("-fx-fill: gray; -fx-font-size: 16px;");
-            totalTyped = Math.max(0, totalTyped - 1);
-
-            if (t.getText().charAt(0) == paragraphText.charAt(i)) {
-                correctCount = Math.max(0, correctCount - 1);
-            }
-        }
-
-        currentIndex = wordStart;
-    }
-
-
     private void typingFinished() {
-        if(typingDone) return;
-        typingDone = true;
         if (timer != null) timer.stop();
-        playerNameField.setEditable(true);
+
         titleLabel.setText("Type Racer");
         startButton.setText("Restart");
         timer.stop();
@@ -129,7 +101,7 @@ public class GameController {
     @FXML
     public void initialize() {
         try{
-            File file = new File("src/main/resources/com/example/real/input.txt");
+            File file = new File("src/main/resources/txtFiles/input.txt");
             Scanner takeIn = new Scanner(file);
 
             while(takeIn.hasNextLine()){
@@ -147,36 +119,15 @@ public class GameController {
                 startButton.setText("Start");
             }
         });
-        playerNameField.setOnAction(e -> {
-            if(paragraphText == null || paragraphText.isEmpty()) {
-                if(!playerNameField.getText().isEmpty()) {
-                    onStartButtonClick();
-                    playerNameField.setEditable(false);
-                    Platform.runLater(() -> rootPane.requestFocus());
-                }
-                else showAlert();
-            }
-        });
-        rootPane.setOnKeyPressed(event -> {
-            if (event.getCode().toString().equals("BACK_SPACE") && event.isControlDown()) {
-                System.out.println("Ctrl + Backspace detected!");
-
-                // Optional: Clear last word logic here
-                handleCtrlBackspace();
-                event.consume(); // stop it from bubbling
-            }
-        });
-
     }
 
     @FXML
     public void onStartButtonClick() {
-        typingDone = false;
         name = playerNameField.getText();
         if (name.isEmpty()) {
             showAlert();
             return;
-        } else playerNameField.setEditable(false);
+        }
         paragraphText = inputStrings.get(new Random().nextInt(inputStrings.size()));
         displayParagraph(paragraphText);
         currentIndex = 0;
@@ -206,31 +157,28 @@ public class GameController {
 
     @FXML
     public void onKeyTyped(KeyEvent event) {
-        if (playerNameField.isFocused()) return;
-
         if (paragraphText == null || paragraphText.isEmpty()) return;
+
         String character = event.getCharacter();
         if(character.isEmpty()) return;
 
         char typedChar = character.charAt(0);
 
-
-        if((typedChar == '\r' || typedChar == '\n') && currentIndex > 0) {
+        if(typedChar == '\r' || typedChar == '\n') {
             typingFinished();
             return;
         }
 
         if (typedChar == '\b') {
             if (currentIndex > 0) {
-                currentIndex--;
+                textNodes.get(--currentIndex).setUnderline(false); //Cursor-esque shit
                 Text previous = textNodes.get(currentIndex);
-                previous.setStyle("-fx-fill: gray; -fx-font-size: 16px;");
-                totalTyped = Math.max(0, totalTyped - 1);
 
-                // If it was a correct letter, subtract from correctCount
-                if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
-                    correctCount = Math.max(0, correctCount - 1);
+                if (previous.getStyle().contains("black")) {
+                    correctCount--;
                 }
+                previous.setStyle("-fx-fill: gray; -fx-font-size: 16px;");
+                totalTyped--;
             }
             return;
         }
@@ -244,6 +192,7 @@ public class GameController {
 
         char expectedChar = paragraphText.charAt(currentIndex);
         Text current = textNodes.get(currentIndex);
+        textNodes.get(currentIndex).setUnderline(true); // Cursor-esque shit
 
         if (typedChar == expectedChar) {
             current.setStyle("-fx-fill: black; -fx-font-size: 16px;");
@@ -254,6 +203,8 @@ public class GameController {
 
         currentIndex++;
         totalTyped++;
+
+        progressBar.setProgress((double) currentIndex / paragraphText.length());
 
         if (currentIndex >= paragraphText.length()){
             typingFinished();
