@@ -1,4 +1,4 @@
-module com.example.real {
+module Controllers {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
