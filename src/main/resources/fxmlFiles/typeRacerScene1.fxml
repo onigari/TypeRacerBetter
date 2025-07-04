@@ -31,7 +31,7 @@
    <!-- Leaderboard -->
    <Label layoutX="580" layoutY="20" style="-fx-font-size: 16px;" text="Leaderboard:" />
    <ListView fx:id="leaderboardList" layoutX="580" layoutY="50" prefHeight="100" prefWidth="170" />
-   <Label fx:id="timeLabel" layoutX="53.0" layoutY="483.0" prefHeight="19.0" prefWidth="87.0">
+   <Label fx:id="timeLabel" layoutX="53.0" layoutY="483.0" prefHeight="20.0" prefWidth="150.0">
       <font>
          <Font name="Arial Bold" size="16.0" />
       </font>
