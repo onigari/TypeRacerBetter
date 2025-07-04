@@ -11,6 +11,6 @@ module com.example.real {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
 
-    opens com.example.real to javafx.fxml;
-    exports com.example.real;
+    exports Controllers;
+    opens Controllers to javafx.fxml;
 }

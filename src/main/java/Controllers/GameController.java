@@ -1,4 +1,4 @@
-package com.example.real;
+package Controllers;
 
 import javafx.collections.*;
 import javafx.fxml.FXML;
@@ -101,7 +101,7 @@ public class GameController {
     @FXML
     public void initialize() {
         try{
-            File file = new File("src/main/resources/com/example/real/input.txt");
+            File file = new File("src/main/resources/txtFiles/input.txt");
             Scanner takeIn = new Scanner(file);
 
             while(takeIn.hasNextLine()){
