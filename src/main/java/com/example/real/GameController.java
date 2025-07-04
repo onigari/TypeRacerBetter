@@ -1,12 +1,13 @@
 package com.example.real;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.application.Platform;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import javafx.animation.*;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.*;
 import javafx.util.Duration;
 
 import java.io.*;
@@ -15,16 +16,16 @@ import java.util.*;
 public class GameController {
 
     @FXML
+    private AnchorPane rootPane;
+
+    @FXML
     private Label titleLabel;
 
     @FXML
     private TextField playerNameField;
 
     @FXML
-    private TextArea paragraphLabel;
-
-    @FXML
-    private TextArea typingArea;
+    private TextFlow paragraphFlow;
 
     @FXML
     private ProgressBar progressBar;
@@ -39,15 +40,92 @@ public class GameController {
     private Label timeLabel;
 
     private List<String> inputStrings = new ArrayList<>();
-    private String paragraphText;
     private ObservableList<String> leaderboard = FXCollections.observableArrayList();
     private String name;
     private long startTime;
     private Timeline timer;
+    private boolean typingDone = false;
+    private String paragraphText; //User's input
+    private List<Text> textNodes = new ArrayList<>();
+    private int currentIndex;
+    private int correctCount;
+    private int totalTyped;
 
-    private static void random() {
-
+    private double calculateAccuracy() {
+        return totalTyped == 0 ? 0.0 : (correctCount * 100.0 / totalTyped);
     }
+
+    private void displayParagraph(String text) {
+        paragraphFlow.getChildren().clear();
+        textNodes.clear();
+
+        for (char c : text.toCharArray()) {
+            Text t = new Text(String.valueOf(c));
+            t.setStyle("-fx-fill: gray; -fx-font-size: 16px;");
+            textNodes.add(t);
+        }
+
+        paragraphFlow.getChildren().addAll(textNodes);
+    }
+
+    private void handleCtrlBackspace() {
+        if (currentIndex == 0) return;
+
+        // Go backward from current index to find start of word
+        int wordEnd = currentIndex;
+        int wordStart = wordEnd - 1;
+
+        while (wordStart >= 0 && paragraphText.charAt(wordStart) != ' ') {
+            wordStart--;
+        }
+        wordStart++; // move to start of actual word
+
+        for (int i = wordStart; i < wordEnd; i++) {
+            Text t = textNodes.get(i);
+            t.setStyle("-fx-fill: gray; -fx-font-size: 16px;");
+            totalTyped = Math.max(0, totalTyped - 1);
+
+            if (t.getText().charAt(0) == paragraphText.charAt(i)) {
+                correctCount = Math.max(0, correctCount - 1);
+            }
+        }
+
+        currentIndex = wordStart;
+    }
+
+
+    private void typingFinished() {
+        if(typingDone) return;
+        typingDone = true;
+        if (timer != null) timer.stop();
+        playerNameField.setEditable(true);
+        titleLabel.setText("Type Racer");
+        startButton.setText("Restart");
+        timer.stop();
+
+        long finishTime = System.currentTimeMillis() - startTime;
+        double timeInSeconds = finishTime / 1000.0;
+        String entry = String.format("%s - %.2f s - Accuracy: %.2f%%", name, timeInSeconds, calculateAccuracy());
+        leaderboard.add(entry);
+
+        leaderboard.sort((a,b) -> {
+            double t1 = Double.parseDouble(a.split(" - ")[1].replace(" s", ""));
+            double t2 = Double.parseDouble(b.split(" - ")[1].replace(" s", ""));
+            return Double.compare(t1, t2);
+        });
+        leaderboardList.setItems(leaderboard);
+    }
+
+    private void showAlert() {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("TypeRacer");
+            alert.setHeaderText(null);
+            alert.setContentText("Please enter your name before starting the race.");
+            alert.showAndWait();
+        });
+    }
+
     @FXML
     public void initialize() {
         try{
@@ -61,64 +139,50 @@ public class GameController {
         catch(IOException e){
             e.printStackTrace();
         }
-        /*paragraphText = inputStrings.get(new Random().nextInt(inputStrings.size()));
-        paragraphLabel.setText(paragraphText);*/
-        paragraphLabel.setWrapText(true);
-        typingArea.setDisable(true);
+
         progressBar.setProgress(0.0);
-
-        typingArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            int typedLength = Math.min(newValue.length(), paragraphText.length());
-            double progress = (double) typedLength / paragraphText.length();
-            progressBar.setProgress(progress);
-
-            // Optional: live feedback
-            if (!paragraphText.startsWith(newValue)) {
-                typingArea.setStyle("-fx-text-fill: red;");
-            } else {
-                typingArea.setStyle("-fx-text-fill: black;");
-            }
-
-            if (newValue.equals(paragraphText)) {
-                typingArea.setDisable(true);
-                titleLabel.setText("Type Racer");
-                startButton.setText("Restart");
-                timer.stop();
-
-                long finishTime = System.currentTimeMillis() - startTime;
-                double timeInSeconds = finishTime / 1000.0;
-                String entry = String.format("%s - %.2f s", name, timeInSeconds);
-                leaderboard.add(entry);
-
-                leaderboard.sort((a,b) -> {
-                    double t1 = Double.parseDouble(a.split(" - ")[1].replace(" s", ""));
-                    double t2 = Double.parseDouble(b.split(" - ")[1].replace(" s", ""));
-                    return Double.compare(t1, t2);
-                });
-                leaderboardList.setItems(leaderboard);
-            }
-        });
 
         playerNameField.textProperty().addListener((observable, oldValue, newValue) -> {
             if(!newValue.equals(oldValue)) {
                 startButton.setText("Start");
             }
         });
+        playerNameField.setOnAction(e -> {
+            if(paragraphText == null || paragraphText.isEmpty()) {
+                if(!playerNameField.getText().isEmpty()) {
+                    onStartButtonClick();
+                    playerNameField.setEditable(false);
+                    Platform.runLater(() -> rootPane.requestFocus());
+                }
+                else showAlert();
+            }
+        });
+        rootPane.setOnKeyPressed(event -> {
+            if (event.getCode().toString().equals("BACK_SPACE") && event.isControlDown()) {
+                System.out.println("Ctrl + Backspace detected!");
+
+                // Optional: Clear last word logic here
+                handleCtrlBackspace();
+                event.consume(); // stop it from bubbling
+            }
+        });
+
     }
 
     @FXML
     public void onStartButtonClick() {
+        typingDone = false;
         name = playerNameField.getText();
         if (name.isEmpty()) {
             showAlert();
             return;
-        }
+        } else playerNameField.setEditable(false);
         paragraphText = inputStrings.get(new Random().nextInt(inputStrings.size()));
-        paragraphLabel.setText(paragraphText);
+        displayParagraph(paragraphText);
+        currentIndex = 0;
+        correctCount = 0;
+        totalTyped = 0;
 
-        typingArea.clear();
-        typingArea.setDisable(false);
-        typingArea.requestFocus();
         progressBar.setProgress(0.0);
         titleLabel.setText("Get Typing!");
 
@@ -135,15 +199,65 @@ public class GameController {
         );
         timer.setCycleCount(Timeline.INDEFINITE);
         timer.play();
+
+        startButton.setFocusTraversable(false);
+        rootPane.requestFocus();
     }
 
-    private void showAlert() {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("TypeRacer");
-            alert.setHeaderText(null);
-            alert.setContentText("Please enter your name before starting the race.");
-            alert.showAndWait();
-        });
+    @FXML
+    public void onKeyTyped(KeyEvent event) {
+        if (playerNameField.isFocused()) return;
+
+        if (paragraphText == null || paragraphText.isEmpty()) return;
+        String character = event.getCharacter();
+        if(character.isEmpty()) return;
+
+        char typedChar = character.charAt(0);
+
+
+        if((typedChar == '\r' || typedChar == '\n') && currentIndex > 0) {
+            typingFinished();
+            return;
+        }
+
+        if (typedChar == '\b') {
+            if (currentIndex > 0) {
+                currentIndex--;
+                Text previous = textNodes.get(currentIndex);
+                previous.setStyle("-fx-fill: gray; -fx-font-size: 16px;");
+                totalTyped = Math.max(0, totalTyped - 1);
+
+                // If it was a correct letter, subtract from correctCount
+                if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
+                    correctCount = Math.max(0, correctCount - 1);
+                }
+            }
+            return;
+        }
+
+        if (typedChar <= 32 && typedChar != ' ') return;
+
+        if (currentIndex >= paragraphText.length()){
+            typingFinished();
+            return;
+        }
+
+        char expectedChar = paragraphText.charAt(currentIndex);
+        Text current = textNodes.get(currentIndex);
+
+        if (typedChar == expectedChar) {
+            current.setStyle("-fx-fill: black; -fx-font-size: 16px;");
+            correctCount++;
+        } else {
+            current.setStyle("-fx-fill: red; -fx-font-size: 16px;");
+        }
+
+        currentIndex++;
+        totalTyped++;
+
+        if (currentIndex >= paragraphText.length()){
+            typingFinished();
+        }
+        // Optionally move cursor effect here
     }
 }

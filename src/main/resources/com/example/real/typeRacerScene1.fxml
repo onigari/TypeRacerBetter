@@ -4,12 +4,12 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.TextFlow?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.real.GameController">
+<AnchorPane fx:id="rootPane" onKeyTyped="#onKeyTyped" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.real.GameController">
 
    <!-- Game Title -->
    <Label fx:id="titleLabel" layoutX="320" layoutY="20" style="-fx-font-size: 28px; -fx-font-weight: bold;" text="TypeRacer" />
@@ -19,12 +19,7 @@
    <TextField fx:id="playerNameField" layoutX="130.0" layoutY="78.0" prefWidth="200" />
 
    <!-- Paragraph to Type -->
-   <Label layoutX="53.0" layoutY="140.0" style="-fx-font-size: 14px;" text="Paragraph:" />
-   <TextArea fx:id="paragraphLabel" editable="false" layoutX="50.0" layoutY="167.0" prefHeight="100" prefWidth="700" wrapText="true" />
-
-   <!-- Typing Area -->
-   <Label layoutX="53.0" layoutY="280.0" style="-fx-font-size: 14px;" text="Start Typing:" />
-   <TextArea fx:id="typingArea" layoutX="50.0" layoutY="309.0" prefHeight="100" prefWidth="700" wrapText="true" />
+   <Label layoutX="53.0" layoutY="150.0" style="-fx-font-size: 14px;" text="Paragraph:" />
 
    <!-- Progress Bar -->
    <Label layoutX="50.0" layoutY="440.0" style="-fx-font-size: 14px;" text="Progress:" />
@@ -36,10 +31,11 @@
    <!-- Leaderboard -->
    <Label layoutX="580" layoutY="20" style="-fx-font-size: 16px;" text="Leaderboard:" />
    <ListView fx:id="leaderboardList" layoutX="580" layoutY="50" prefHeight="100" prefWidth="170" />
-   <Label fx:id="timeLabel" layoutX="53.0" layoutY="483.0" prefHeight="19.0" prefWidth="87.0">
+   <Label fx:id="timeLabel" layoutX="53.0" layoutY="483.0" prefHeight="20.0" prefWidth="150.0">
       <font>
          <Font name="Arial Bold" size="16.0" />
       </font>
    </Label>
+   <TextFlow fx:id="paragraphFlow" layoutX="53.0" layoutY="188.0" prefHeight="200.0" prefWidth="696.0" />
 
 </AnchorPane>
