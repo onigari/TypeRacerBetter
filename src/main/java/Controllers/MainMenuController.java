@@ -6,11 +6,22 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.ProtocolException;
 
 public class MainMenuController {
+
+    @FXML
+    private Button singlePlayerButton;
+
+    @FXML
+    private Button multiPlayerButton;
+
+    @FXML
+    private Button exitButton;
 
     @FXML
     private void onSinglePlayerClick(ActionEvent event) throws IOException {
@@ -25,7 +36,17 @@ public class MainMenuController {
         stage.setTitle("TypeRacer - SinglePlayer");
         stage.show();
     }
+
+    @FXML
+    private void onMultiPlayerClick(ActionEvent event) throws IOException {}
+
+    @FXML
+    private void onExitClick(ActionEvent event) {
+
+        System.exit(0);
+    }
 }
+
 /*@FXML
 private void handleSceneSwitch(ActionEvent event) throws IOException {
     // Load the FXML layout for the new scene

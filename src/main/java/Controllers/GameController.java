@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.application.Platform;
 import javafx.animation.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.*;
@@ -98,6 +99,7 @@ public class GameController {
         typingDone = true;
         if (timer != null) timer.stop();
         playerNameField.setEditable(true);
+        playerNameField.requestFocus();
         titleLabel.setText("Type Racer");
         startButton.setText("Restart");
         timer.stop();
@@ -154,6 +156,11 @@ public class GameController {
                     Platform.runLater(() -> rootPane.requestFocus());
                 }
                 else showAlert();
+            }
+        });
+        playerNameField.setOnKeyPressed(e -> {
+            if(e.getCode() == KeyCode.ENTER) {
+                onStartButtonClick();
             }
         });
         rootPane.setOnKeyPressed(event -> {
