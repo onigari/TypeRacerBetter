@@ -5,7 +5,6 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MainMenuController">
    <children>
       <Text layoutX="1.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Type Racer" textAlignment="CENTER" wrappingWidth="600.0">
@@ -15,6 +14,6 @@
       </Text>
       <Button fx:id="singlePlayerButton" layoutX="260.0" layoutY="130.0" mnemonicParsing="false" onAction="#onSinglePlayerClick" text="Singleplayer" />
       <Button layoutX="263.0" layoutY="175.0" mnemonicParsing="false" text="Multiplayer" />
-      <Button layoutX="283.0" layoutY="217.0" mnemonicParsing="false" text="Exit" />
+      <Button fx:id="exitButton" layoutX="283.0" layoutY="217.0" mnemonicParsing="false" onAction="#onExitClick" text="Exit" />
    </children>
 </AnchorPane>
