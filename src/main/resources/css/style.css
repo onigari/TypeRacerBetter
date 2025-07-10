@@ -1,0 +1,43 @@
+/* style.css */
+
+.root {
+    -fx-background-color: #333436;
+    -fx-font-family: "JetBrains Mono Medium", "monospace";
+}
+AnchorPane, VBox {
+    -fx-font-family: "JetBrains Mono Medium", monospace;
+    -fx-background-color: #333436;
+}
+.menu-button {
+    -fx-font-family: "JetBrains Mono Medium", monospace;
+    /* existing styles */
+}
+
+/* Title text */
+.title-text {
+    -fx-fill: white;
+}
+
+/* Button styles */
+.menu-button {
+    -fx-background-color: #1f1f1f;
+    -fx-text-fill: white;
+    -fx-padding: 10px 20px;
+    -fx-font-size: 14px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.25), 2, 0, 0, 1);
+    -fx-transition: all 0.2s ease-in-out;
+}
+
+/* Hover effect */
+.menu-button:hover {
+    -fx-background-color: #3a3a3a;
+}
+
+/* Press effect */
+.menu-button:pressed {
+    -fx-background-color: #555;
+}

@@ -40,14 +40,14 @@ public class GameController {
     @FXML
     private Label timeLabel;
 
-    private List<String> inputStrings = new ArrayList<>();
-    private ObservableList<String> leaderboard = FXCollections.observableArrayList();
+    private final List<String> inputStrings = new ArrayList<>();
+    private final ObservableList<String> leaderboard = FXCollections.observableArrayList();
     private String name;
     private long startTime;
     private Timeline timer;
     private boolean typingDone = false;
     private String paragraphText; //User's input
-    private List<Text> textNodes = new ArrayList<>();
+    private final List<Text> textNodes = new ArrayList<>();
     private int currentIndex;
     private int correctCharCount;
     private int correctWordCount;
