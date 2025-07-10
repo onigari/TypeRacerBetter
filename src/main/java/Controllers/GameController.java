@@ -48,11 +48,19 @@ public class GameController {
     private String paragraphText; //User's input
     private List<Text> textNodes = new ArrayList<>();
     private int currentIndex;
-    private int correctCount;
+    private int correctCharCount;
+    private int correctWordCount;
     private int totalTyped;
+    private boolean currentWordCorrect;
 
     private double calculateAccuracy() {
-        return totalTyped == 0 ? 0.0 : (correctCount * 100.0 / totalTyped);
+        return totalTyped == 0 ? 0.0 : (correctCharCount * 100.0 / totalTyped);
+    }
+
+    private double calculateWPM() {
+        long elapsedMillis = System.currentTimeMillis() - startTime;
+        double elapsedMinutes = elapsedMillis / 60000.0;
+        return elapsedMinutes == 0 ? 0 : (correctWordCount / elapsedMinutes);
     }
 
     private void displayParagraph(String text) {
@@ -86,7 +94,7 @@ public class GameController {
             totalTyped = Math.max(0, totalTyped - 1);
 
             if (t.getText().charAt(0) == paragraphText.charAt(i)) {
-                correctCount = Math.max(0, correctCount - 1);
+                correctCharCount = Math.max(0, correctCharCount - 1);
             }
         }
 
@@ -104,7 +112,8 @@ public class GameController {
 
         long finishTime = System.currentTimeMillis() - startTime;
         double timeInSeconds = finishTime / 1000.0;
-        String entry = String.format("%s - %.2f s - Accuracy: %.2f%%", name, timeInSeconds, calculateAccuracy());
+        double timeInMinutes = finishTime / 60.0;
+        String entry = String.format("%s - %.2f s - Accuracy: %.2f%% - WPM - %.2f", name, timeInSeconds, calculateAccuracy(), calculateWPM());
         leaderboard.add(entry);
 
         leaderboard.sort((a,b) -> {
@@ -157,7 +166,7 @@ public class GameController {
             }
         });
         rootPane.setOnKeyPressed(event -> {
-            if (event.getCode().toString().equals("BACK_SPACE") && event.isControlDown()) {
+            if (event.isControlDown() && event.getCode().toString().equals("BACK_SPACE")) {
                 System.out.println("Ctrl + Backspace detected!");
 
                 // Optional: Clear last word logic here
@@ -170,6 +179,8 @@ public class GameController {
     @FXML
     public void onStartButtonClick() {
         typingDone = false;
+        correctWordCount = 0;
+        currentWordCorrect = true;
         name = playerNameField.getText();
         if (name.isEmpty()) {
             showAlert();
@@ -178,7 +189,7 @@ public class GameController {
         paragraphText = inputStrings.get(new Random().nextInt(inputStrings.size()));
         displayParagraph(paragraphText);
         currentIndex = 0;
-        correctCount = 0;
+        correctCharCount = 0;
         totalTyped = 0;
 
         progressBar.setProgress(0.0);
@@ -211,6 +222,7 @@ public class GameController {
         if(character.isEmpty()) return;
 
         char typedChar = character.charAt(0);
+        System.out.println(typedChar);
 
         if((typedChar == '\r' || typedChar == '\n') && currentIndex > 0) {
             typingFinished();
@@ -223,7 +235,7 @@ public class GameController {
                 Text previous = textNodes.get(currentIndex);
 
                 if (previous.getStyle().contains("black")) {
-                    correctCount--;
+                    correctCharCount--;
                 }
                 previous.setStyle("-fx-fill: gray; -fx-font-size: 16px;");
                 totalTyped--;
@@ -231,9 +243,13 @@ public class GameController {
             return;
         }
 
-        if (typedChar <= 32 && typedChar != ' ') return;
+        if (!Character.isLetter(typedChar) && typedChar != ' ') return;
 
         if (currentIndex >= paragraphText.length()){
+            if (currentWordCorrect) {
+                correctWordCount++;
+                System.out.println("Correct word count: " + correctWordCount);
+            }
             typingFinished();
             return;
         }
@@ -244,10 +260,20 @@ public class GameController {
 
         if (typedChar == expectedChar) {
             current.setStyle("-fx-fill: black; -fx-font-size: 16px;");
-            correctCount++;
+            correctCharCount++;
         } else {
             current.setStyle("-fx-fill: red; -fx-font-size: 16px;");
+            currentWordCorrect = false;
         }
+
+        if (typedChar == ' ') {
+            if (currentWordCorrect) {
+                correctWordCount++;
+                System.out.println("Correct word count: " + correctWordCount);
+            }
+            currentWordCorrect = true; // reset for next word
+        }
+
 
         currentIndex++;
         totalTyped++;

@@ -9,12 +9,12 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.TextFlow?>
 
-<AnchorPane fx:id="rootPane" onKeyTyped="#onKeyTyped" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="Controllers.GameController">
-
-   <!-- Game Title -->
-   <Label fx:id="titleLabel" layoutX="320" layoutY="20" style="-fx-font-size: 28px; -fx-font-weight: bold;" text="TypeRacer" />
+<AnchorPane fx:id="rootPane" onKeyTyped="#onKeyTyped" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.GameController">
+   <Label fx:id="titleLabel" layoutX="300.0" layoutY="20.0" text="Type Racer">
+      <font>
+         <Font name="Arial Bold" size="24.0"/>
+      </font>
+   </Label>
 
    <!-- Player Name Input -->
    <Label layoutX="50.0" layoutY="82.0" style="-fx-font-size: 14px;" text="Your Name:" />
@@ -24,20 +24,22 @@
    <Label layoutX="53.0" layoutY="150.0" style="-fx-font-size: 14px;" text="Paragraph:" />
 
    <!-- Progress Bar -->
-   <Label layoutX="50.0" layoutY="440.0" style="-fx-font-size: 14px;" text="Progress:" />
-   <ProgressBar fx:id="progressBar" layoutX="130.0" layoutY="440.0" prefWidth="300" progress="0.0" />
+   <Label layoutX="50.0" layoutY="493.0" style="-fx-font-size: 14px;" text="Progress:" />
+   <ProgressBar fx:id="progressBar" layoutX="120.0" layoutY="494.0" prefWidth="300" progress="0.0" />
 
    <!-- Start Button -->
-   <Button fx:id="startButton" layoutX="501.0" layoutY="436.0" onAction="#onStartButtonClick" prefWidth="120" text="Start Race" />
+   <Button fx:id="startButton" layoutX="420.0" layoutY="78.0" onAction="#onStartButtonClick" prefWidth="120" text="Start Race" />
 
    <!-- Leaderboard -->
    <Label layoutX="580" layoutY="20" style="-fx-font-size: 16px;" text="Leaderboard:" />
    <ListView fx:id="leaderboardList" layoutX="580" layoutY="50" prefHeight="100" prefWidth="170" />
-   <Label fx:id="timeLabel" layoutX="53.0" layoutY="483.0" prefHeight="20.0" prefWidth="150.0">
+   <Label fx:id="timeLabel" layoutX="590.0" layoutY="160.0" prefHeight="20.0" prefWidth="150.0">
       <font>
          <Font name="Arial Bold" size="16.0" />
       </font>
    </Label>
    <TextFlow fx:id="paragraphFlow" layoutX="53.0" layoutY="188.0" prefHeight="200.0" prefWidth="696.0" />
+   <Label layoutX="53.0" layoutY="440.0" prefHeight="46.0" prefWidth="57.0" text="Current &#10;Word" />
+   <TextField layoutX="130.0" layoutY="451.0" />
 
 </AnchorPane>
