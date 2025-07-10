@@ -92,6 +92,7 @@ public class GameController {
         for (int i = wordStart; i < wordEnd; i++) {
             Text t = textNodes.get(i);
             t.setStyle("-fx-fill: gray; -fx-font-size: 16px;");
+            t.setUnderline(false);
             totalTyped = Math.max(0, totalTyped - 1);
 
             if (t.getText().charAt(0) == paragraphText.charAt(i)) {
@@ -106,8 +107,7 @@ public class GameController {
         if(typingDone) return;
         typingDone = true;
         if (timer != null) timer.stop();
-        playerNameField.setEditable(true);
-        playerNameField.requestFocus();
+
         titleLabel.setText("Type Racer");
         startButton.setText("Restart");
         timer.stop();
@@ -124,6 +124,9 @@ public class GameController {
             return Double.compare(t1, t2);
         });
         leaderboardList.setItems(leaderboard);
+
+        playerNameField.setEditable(true);
+        playerNameField.requestFocus();
     }
 
     private void showAlert() {
@@ -238,14 +241,15 @@ public class GameController {
 
         if (typedChar == '\b') {
             if (currentIndex > 0) {
-                textNodes.get(--currentIndex).setUnderline(false); //Cursor-esque shit
+                currentIndex--;
                 Text previous = textNodes.get(currentIndex);
-
-                if (previous.getStyle().contains("black")) {
-                    correctCharCount--;
-                }
                 previous.setStyle("-fx-fill: gray; -fx-font-size: 16px;");
-                totalTyped--;
+                previous.setUnderline(false);
+                totalTyped = Math.max(0, totalTyped - 1);
+
+                if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
+                    correctCharCount = Math.max(0, correctCharCount - 1);
+                }
             }
             return;
         }
