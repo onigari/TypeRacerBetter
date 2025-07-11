@@ -317,7 +317,7 @@ public class GameController {
             if(result != 0) return result;
             else{
                 double t3 = Double.parseDouble(a.split(" - ")[3].replace("%", ""));
-                double t4 = Double.parseDouble(b.split(" - ")[4].replace("%", ""));
+                double t4 = Double.parseDouble(b.split(" - ")[3].replace("%", ""));
                 return Double.compare(t3, t4);
             }
         });
