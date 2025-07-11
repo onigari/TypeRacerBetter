@@ -311,9 +311,15 @@ public class GameController {
         leaderboard.add(entry);
 
         leaderboard.sort((a,b) -> {
-            double t1 = Double.parseDouble(a.split(" - ")[1].replace(" s", ""));
-            double t2 = Double.parseDouble(b.split(" - ")[1].replace(" s", ""));
-            return Double.compare(t1, t2);
+            double t1 = Double.parseDouble(a.split(" - ")[1].replace("s", ""));
+            double t2 = Double.parseDouble(b.split(" - ")[1].replace("s", ""));
+            int result = Double.compare(t1, t2);
+            if(result != 0) return result;
+            else{
+                double t3 = Double.parseDouble(a.split(" - ")[3].replace("%", ""));
+                double t4 = Double.parseDouble(b.split(" - ")[4].replace("%", ""));
+                return Double.compare(t3, t4);
+            }
         });
         leaderboardList.setItems(leaderboard);
 
