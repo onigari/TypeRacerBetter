@@ -38,7 +38,18 @@ public class MainMenuController {
     }
 
     @FXML
-    private void onMultiPlayerClick(ActionEvent event) throws IOException {}
+    private void onMultiPlayerClick(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MultiPlayerLobby.fxml"));
+        Parent root = loader.load();
+
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+        Scene scene = new Scene(root);
+
+        stage.setScene(scene);
+        stage.setTitle("TypeRacer - SinglePlayer");
+        stage.show();
+    }
 
     @FXML
     private void onExitClick(ActionEvent event) {

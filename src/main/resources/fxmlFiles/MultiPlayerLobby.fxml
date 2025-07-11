@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="414.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MultiPlayerLobby">
+   <children>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="153.0" layoutY="26.0" prefHeight="51.0" prefWidth="293.0" text="LOBBY">
+         <font>
+            <Font name="Comic Sans MS" size="30.0" />
+         </font>
+      </Label>
+      <Label layoutX="145.0" layoutY="99.0" prefHeight="19.0" prefWidth="75.0" text="Name:">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <TextField fx:id="playerNameField" layoutX="221.0" layoutY="96.0" />
+      <Label alignment="CENTER" layoutX="195.0" layoutY="140.0" prefHeight="19.0" prefWidth="202.0" text="Waiting for players...">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <ListView layoutX="111.0" layoutY="200.0" prefHeight="163.0" prefWidth="369.0" />
+      <Label layoutX="111.0" layoutY="171.0" text="Players Joined">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
