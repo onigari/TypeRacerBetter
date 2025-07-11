@@ -187,6 +187,7 @@ public class GameController {
                 currentIndex--;
                 Text previous = textNodes.get(currentIndex);
                 previous.setStyle("-fx-fill: #646669;"); // MonkeyType's untyped color
+                previous.setUnderline(false); // under line
                 totalTyped = Math.max(0, totalTyped - 1);
 
                 if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
@@ -207,6 +208,7 @@ public class GameController {
             char typedChar = newValue.charAt(i);
             char expectedChar = paragraphText.charAt(currentIndex);
             Text current = textNodes.get(currentIndex);
+            textNodes.get(currentIndex).setUnderline(true);
 
             if (typedChar == expectedChar) {
                 current.setStyle("-fx-fill: #d1d0c5;"); // MonkeyType's correct color
@@ -221,7 +223,6 @@ public class GameController {
                 currentWordCorrect = true;
 //                typingField.replaceSelection("");
             }
-
             currentIndex++;
             totalTyped++;
             progressBar.setProgress((double) currentIndex / paragraphText.length());
@@ -312,13 +313,7 @@ public class GameController {
         leaderboard.sort((a,b) -> {
             double t1 = Double.parseDouble(a.split(" - ")[1].replace("s", ""));
             double t2 = Double.parseDouble(b.split(" - ")[1].replace("s", ""));
-            int result = Double.compare(t1, t2);
-            if(result != 0) return result;
-            else{
-                double t3 = Double.parseDouble(a.split(" - ")[3].replace("%", ""));
-                double t4 = Double.parseDouble(b.split(" - ")[3].replace("%", ""));
-                return Double.compare(t3, t4);
-            }
+            return Double.compare(t1, t2);
         });
         leaderboardList.setItems(leaderboard);
 
@@ -430,7 +425,7 @@ public class GameController {
 //
 //        char expectedChar = paragraphText.charAt(currentIndex);
 //        Text current = textNodes.get(currentIndex);
-//        textNodes.get(currentIndex).setUnderline(true); // Cursor-esque shit
+//        textNodes.get(currentIndex).setUnderline(true); // Cursor-esque
 //
 //        if (typedChar == expectedChar) {
 //            current.setStyle("-fx-fill: black; -fx-font-size: 16px;");
