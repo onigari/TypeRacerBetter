@@ -1,45 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.TextFlow?>
 
-<AnchorPane fx:id="rootPane" onKeyTyped="#onKeyTyped" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.GameController">
-   <Label fx:id="titleLabel" layoutX="300.0" layoutY="20.0" text="Type Racer">
-      <font>
-         <Font name="Arial Bold" size="24.0"/>
-      </font>
-   </Label>
+<VBox fx:id="rootPane" alignment="TOP_CENTER" prefHeight="600.0" prefWidth="800.0"
+      xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.GameController" spacing="20" style="-fx-background-color: #323437; -fx-padding: 20;">
 
-   <!-- Player Name Input -->
-   <Label layoutX="50.0" layoutY="82.0" style="-fx-font-size: 14px;" text="Your Name:" />
-   <TextField fx:id="playerNameField" layoutX="130.0" layoutY="78.0" prefWidth="200" />
+   <!-- Header Section -->
+   <HBox alignment="CENTER" spacing="20">
+      <Label fx:id="titleLabel" text="type racer" style="-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold;"/>
+   </HBox>
 
-   <!-- Paragraph to Type -->
-   <Label layoutX="53.0" layoutY="150.0" style="-fx-font-size: 14px;" text="Paragraph:" />
+   <!-- Main Content Area -->
+   <VBox alignment="TOP_CENTER" spacing="15" style="-fx-background-color: #2c2e31; -fx-padding: 20; -fx-border-radius: 5; -fx-background-radius: 5;">
 
-   <!-- Progress Bar -->
-   <Label layoutX="50.0" layoutY="493.0" style="-fx-font-size: 14px;" text="Progress:" />
-   <ProgressBar fx:id="progressBar" layoutX="120.0" layoutY="494.0" prefWidth="300" progress="0.0" />
+      <!-- Stats Bar -->
+      <HBox alignment="CENTER_LEFT" spacing="30">
+         <Label text="time:" style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;"/>
+         <Label fx:id="timeLabel" text="0.00s" style="-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;"/>
 
-   <!-- Start Button -->
-   <Button fx:id="startButton" layoutX="420.0" layoutY="78.0" onAction="#onStartButtonClick" prefWidth="120" text="Start Race" />
+         <Label text="wpm:" style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;"/>
+         <Label fx:id="wpmLabel" text="0" style="-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;"/>
 
-   <!-- Leaderboard -->
-   <Label layoutX="580" layoutY="20" style="-fx-font-size: 16px;" text="Leaderboard:" />
-   <ListView fx:id="leaderboardList" layoutX="580" layoutY="50" prefHeight="100" prefWidth="170" />
-   <Label fx:id="timeLabel" layoutX="590.0" layoutY="160.0" prefHeight="20.0" prefWidth="150.0">
-      <font>
-         <Font name="Arial Bold" size="16.0" />
-      </font>
-   </Label>
-   <TextFlow fx:id="paragraphFlow" layoutX="53.0" layoutY="188.0" prefHeight="200.0" prefWidth="696.0" />
-   <Label layoutX="53.0" layoutY="440.0" prefHeight="46.0" prefWidth="57.0" text="Current &#10;Word" />
-   <TextField layoutX="130.0" layoutY="451.0" />
+         <Label text="accuracy:" style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;"/>
+         <Label fx:id="accuracyLabel" text="0%" style="-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;"/>
+      </HBox>
 
-</AnchorPane>
+      <!-- Progress Bar -->
+      <ProgressBar fx:id="progressBar" prefWidth="1000" progress="0.0" style="-fx-accent: #e2b714; -fx-background-color: #3a3d42;"/>
+
+      <!-- Paragraph Display -->
+      <TextFlow fx:id="paragraphFlow" style="-fx-background-color: #2c2e31; -fx-padding: 15; -fx-font-family: 'Roboto Mono'; -fx-font-size: 22px; -fx-line-spacing: 10;"/>
+
+      <!-- Typing Input -->
+      <TextField fx:id="typingField" style="-fx-font-family: 'Roboto Mono'; -fx-font-size: 22px; -fx-text-fill: #d1d0c5; -fx-background-color: #2c2e31; -fx-border-color: #e2b714; -fx-border-width: 0 0 2 0; -fx-prompt-text-fill: #646669;" promptText="click here or press enter to start"/>
+   </VBox>
+
+   <!-- Bottom Section -->
+   <HBox alignment="CENTER" spacing="30">
+      <!-- Player Name Input -->
+      <HBox alignment="CENTER_LEFT" spacing="10">
+         <Label text="name:" style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;"/>
+         <TextField fx:id="playerNameField" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-border-color: #646669; -fx-prompt-text-fill: #646669;" promptText="your name"/>
+      </HBox>
+
+      <!-- Start Button -->
+      <Button fx:id="startButton" text="start" onAction="#onStartButtonClick" style="-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 15;"/>
+
+      <!-- Leaderboard -->
+      <VBox alignment="CENTER_LEFT" spacing="5">
+         <Label text="leaderboard" style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;"/>
+         <ListView fx:id="leaderboardList" prefWidth="300" prefHeight="150" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-border-color: #646669;"/>
+      </VBox>
+   </HBox>
+</VBox>
