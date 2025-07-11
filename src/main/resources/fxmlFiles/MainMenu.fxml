@@ -16,7 +16,7 @@
       </Text>
 
       <VBox alignment="CENTER" spacing="10">
-         <Button styleClass="menu-button" text="Multiplayer" />
+         <Button fx:id="multiPlayerButton" onAction="#onMultiPlayerClick" styleClass="menu-button" text="Multiplayer" />
          <Button fx:id="singlePlayerButton" onAction="#onSinglePlayerClick" styleClass="menu-button" text="Singleplayer" />
          <Button fx:id="exitButton" onAction="#onExitClick" styleClass="menu-button" text="Exit" />
       </VBox>
