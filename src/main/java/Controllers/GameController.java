@@ -306,8 +306,7 @@ public class GameController {
         double timeInSeconds = finishTime / 1000.0;
         double wpm = calculateWPM();
         double accuracy = calculateAccuracy();
-        String entry = String.format("%s - %.2fs - %d wpm - %.0f%%",
-                name, timeInSeconds, (int)wpm, accuracy);
+        String entry = String.format("%s - %.2fs - %d wpm - %.0f%%", name, timeInSeconds, (int)wpm, accuracy);
         leaderboard.add(entry);
 
         leaderboard.sort((a,b) -> {

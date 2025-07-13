@@ -41,8 +41,8 @@ public class ClientHandler implements Runnable {
                         leaderboard.add(inputLine.substring(7));
                         leaderboard.sort((a, b) -> {
                             try {
-                                double t1 = Double.parseDouble(a.split(";")[1]);
-                                double t2 = Double.parseDouble(b.split(";")[1]);
+                                double t1 = Double.parseDouble(a.split(" - ")[1]);
+                                double t2 = Double.parseDouble(b.split(" - ")[1]);
                                 return Double.compare(t1, t2);
                             } catch (Exception e) {
                                 return 0;

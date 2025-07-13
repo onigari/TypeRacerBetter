@@ -48,7 +48,7 @@ public class MultiPlayerGameController {
                     paragraphText = message.substring(9);
                     Platform.runLater(() -> displayParagraph(paragraphText));
                 } else if (message.startsWith("RESULT:")) {
-                    String[] parts = message.substring(7).split(";");
+                    String[] parts = message.substring(7).split(" - ");
                     if (parts.length == 4) {
                         String entry = String.format("%s - %.2f s - Accuracy: %.2f%% - WPM: %.2f",
                                 parts[0], Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
@@ -84,7 +84,7 @@ public class MultiPlayerGameController {
     }
 
     public void sendFinalResult(String name, double time, double accuracy, double wpm) {
-        String result = name + ";" + time + ";" + accuracy + ";" + wpm;
+        String result = name + " - " + time + " - " + accuracy + " - " + wpm;
         client.sendResult(result);
     }
 }
