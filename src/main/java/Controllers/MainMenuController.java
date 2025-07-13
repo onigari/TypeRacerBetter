@@ -39,6 +39,7 @@ public class MainMenuController {
 
     @FXML
     private void onMultiPlayerClick(ActionEvent event) throws IOException {
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MultiPlayerLobby.fxml"));
         Parent root = loader.load();
 
