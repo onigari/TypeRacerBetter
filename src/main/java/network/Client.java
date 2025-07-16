@@ -5,19 +5,22 @@ import java.net.Socket;
 import java.util.function.Consumer;
 
 public class Client {
-    private Socket socket;
-    private BufferedReader in;
-    private PrintWriter out;
+    private final Socket socket;
+    private final BufferedReader in;
+    private final PrintWriter out;
     private Consumer<String> onMessageReceived;
 
     public Client(String host, int port) throws IOException {
         socket = new Socket(host, port);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
+        listen();
+    }
 
-        new Thread(() -> {
-            String msg;
+    private void listen() {
+        Thread listener = new Thread(() -> {
             try {
+                String msg;
                 while ((msg = in.readLine()) != null) {
                     if (onMessageReceived != null) {
                         onMessageReceived.accept(msg);
@@ -26,11 +29,13 @@ public class Client {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }).start();
+        });
+        listener.setDaemon(true);
+        listener.start();
     }
 
-    public void setOnMessageReceived(Consumer<String> listener) {
-        this.onMessageReceived = listener;
+    public void setOnMessageReceived(Consumer<String> consumer) {
+        this.onMessageReceived = consumer;
     }
 
     public void sendName(String name) {
@@ -41,8 +46,15 @@ public class Client {
         out.println("RESULT:" + result);
     }
 
-    public void close() throws IOException {
-        socket.close();
+    public void sendGameStart() {
+        out.println("GAME-START");
+    }
+
+    public void disconnect() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
-

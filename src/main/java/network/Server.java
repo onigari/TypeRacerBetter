@@ -3,25 +3,70 @@ package network;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Server {
     private static final int PORT = 5000;
-    private static final List<ClientHandler> clients = new ArrayList<>();
-    private static final String PARAGRAPH = "The quick brown fox jumps over the lazy dog.";
+    private static final List<ClientHandler> clients = Collections.synchronizedList(new ArrayList<>());
+    private static boolean gameStarted = false;
 
-    public static void main(String[] args) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(PORT);
-        System.out.println("TypeRacer Server started on port " + PORT);
+    public static void startNewRoom() throws IOException {
+        Thread serverThread = new Thread(() -> {
+            try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+                System.out.println("Room open at: " + serverSocket.getInetAddress().getHostAddress());
 
-        while (true) {
-            Socket socket = serverSocket.accept();
-            System.out.println("New client connected: " + socket);
-            ClientHandler handler = new ClientHandler(socket, clients, PARAGRAPH);
-            clients.add(handler);
-            new Thread(handler).start();
+                while (!gameStarted && clients.size() < 5) {
+                    Socket clientSocket = serverSocket.accept();
+                    if (gameStarted) {
+                        clientSocket.close();
+                        continue;
+                    }
+
+                    ClientHandler handler = new ClientHandler(clientSocket, clients);
+                    clients.add(handler);
+                    handler.start();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        serverThread.setDaemon(true);
+        serverThread.start();
+    }
+
+    public static void broadcast(String message) {
+        synchronized (clients) {
+            for (ClientHandler client : clients) {
+                client.sendMessage(message);
+            }
         }
     }
+
+    public static void setGameStarted(boolean started) {
+        gameStarted = started;
+    }
+
+    public static boolean isGameStarted() {
+        return gameStarted;
+    }
+
+    public static void removeClient(ClientHandler handler) {
+        clients.remove(handler);
+        broadcastPlayerList();
+    }
+
+    public static void broadcastPlayerList() {
+        StringBuilder sb = new StringBuilder("LOBBY-PLAYERS:");
+        for (ClientHandler ch : clients) {
+            sb.append(ch.getPlayerName()).append(",");
+        }
+        if (sb.charAt(sb.length() - 1) == ',') sb.deleteCharAt(sb.length() - 1);
+        broadcast(sb.toString());
+    }
+
+    public static List<ClientHandler> getClients() {
+        return clients;
+    }
 }
+
 
