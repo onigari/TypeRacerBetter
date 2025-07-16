@@ -1,36 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="583.0" prefWidth="836.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MultiPlayerGameController">
-   <children>
-      <Label fx:id="titleLabel" layoutX="336.0" layoutY="29.0" prefHeight="27.0" prefWidth="143.0" text="MultiPlayer">
-         <font>
-            <Font name="Arial Bold" size="24.0" />
-         </font>
-      </Label>
-      <Label layoutX="60.0" layoutY="92.0" style="-fx-font-size: 14px;" text="Your Name:" />
-      <TextField fx:id="playerNameField" layoutX="140.0" layoutY="88.0" prefWidth="200" />
-      <Label layoutX="63.0" layoutY="180.0" prefHeight="20.0" prefWidth="73.0" style="-fx-font-size: 14px;" text="Paragraph:" />
-      <Label layoutX="60.0" layoutY="503.0" style="-fx-font-size: 14px;" text="Progress:" />
-      <ProgressBar fx:id="progressBar" layoutX="130.0" layoutY="504.0" prefWidth="300" progress="0.0" />
-      <Button fx:id="startButton" layoutX="430.0" layoutY="88.0" onAction="#onStartButtonClick" prefWidth="120" text="Start Race" />
-      <Label layoutX="590.0" layoutY="30.0" style="-fx-font-size: 16px;" text="Leaderboard:" />
-      <ListView fx:id="leaderboardList" layoutX="590.0" layoutY="60.0" prefHeight="100" prefWidth="170" />
-      <Label fx:id="timeLabel" layoutX="600.0" layoutY="170.0" prefHeight="20.0" prefWidth="150.0">
-         <font>
-            <Font name="Arial Bold" size="16.0" />
-         </font>
-      </Label>
-      <TextFlow fx:id="paragraphFlow" layoutX="60.0" layoutY="210.0" prefHeight="200.0" prefWidth="696.0" />
-      <Label layoutX="63.0" layoutY="450.0" prefHeight="46.0" prefWidth="57.0" text="Current &#10;Word" />
-      <TextField layoutX="130.0" layoutY="459.0" />
-   </children>
-</AnchorPane>
+<?import javafx.util.Callback?>
+<?import java.net.URL?>
+<?import javafx.scene.paint.Color?>
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.MultiPlayerGameController"
+      spacing="10" style="-fx-background-color: #323437; -fx-padding: 20;"
+      fx:id="rootPane">
+
+   <Label fx:id="titleLabel" text="TypeRacer - Multiplayer"
+          style="-fx-text-fill: #d1d0c5; -fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+   <HBox spacing="10" alignment="CENTER_LEFT">
+      <Label text="Player Name:" style="-fx-text-fill: #d1d0c5;"/>
+      <TextField fx:id="playerNameField" style="-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;"
+                 promptText="Enter your name"/>
+      <Button fx:id="startButton" text="Start Game"
+              style="-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-weight: bold;"
+              onAction="#onStartButtonClick"/>
+   </HBox>
+
+   <Label text="Paragraph to type:" style="-fx-text-fill: #d1d0c5;"/>
+   <TextFlow fx:id="paragraphFlow" style="-fx-background-color: #2c2e31; -fx-padding: 10;"
+             minHeight="100" maxHeight="150"/>
+
+   <ProgressBar fx:id="progressBar" style="-fx-accent: #e2b714;"
+                minWidth="500" maxWidth="500"/>
+
+   <HBox spacing="20" alignment="CENTER">
+      <Label fx:id="timeLabel" text="0.00s" style="-fx-text-fill: #d1d0c5;"/>
+      <Label fx:id="wpmLabel" text="0 WPM" style="-fx-text-fill: #d1d0c5;"/>
+      <Label fx:id="accuracyLabel" text="0%" style="-fx-text-fill: #d1d0c5;"/>
+   </HBox>
+
+   <Label text="Your typing:" style="-fx-text-fill: #d1d0c5;"/>
+   <TextField fx:id="typingField" style="-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;"
+              promptText="Start typing here..."/>
+
+   <Label text="Leaderboard:" style="-fx-text-fill: #d1d0c5; -fx-font-weight: bold;"/>
+   <ListView fx:id="leaderboardList" style="-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;"
+             minHeight="150" maxHeight="150">
+      <cellFactory>
+         <Callback>
+         </Callback>
+      </cellFactory>
+   </ListView>
+
+
+</VBox>

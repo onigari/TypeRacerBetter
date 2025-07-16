@@ -13,4 +13,5 @@ module Controllers {
 
     exports Controllers;
     opens Controllers to javafx.fxml;
+    exports network;
 }

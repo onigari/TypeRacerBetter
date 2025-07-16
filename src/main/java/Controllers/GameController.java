@@ -72,36 +72,6 @@ public class GameController {
         setupUI();
 
         setupEventHandlers();
-
-//        playerNameField.textProperty().addListener((observable, oldValue, newValue) -> {
-//            if(!newValue.equals(oldValue)) {
-//                startButton.setText("Start");
-//            }
-//        });
-//        playerNameField.setOnAction(e -> {
-//            if(paragraphText == null || paragraphText.isEmpty()) {
-//                if(!playerNameField.getText().isEmpty()) {
-//                    onStartButtonClick();
-//                    playerNameField.setEditable(false);
-//                    Platform.runLater(() -> rootPane.requestFocus());
-//                }
-//                else showAlert();
-//            }
-//        });
-//        playerNameField.setOnKeyPressed(e -> {
-//            if(e.getCode() == KeyCode.ENTER) {
-//                onStartButtonClick();
-//            }
-//        });
-//        rootPane.setOnKeyPressed(event -> {
-//            if (event.isControlDown() && event.getCode().toString().equals("BACK_SPACE")) {
-//                System.out.println("Ctrl + Backspace detected!");
-//
-//                // Optional: Clear last word logic here
-//                handleCtrlBackspace();
-//                event.consume(); // stop it from bubbling
-//            }
-//        });
     }
 
     private void loadWords() {
@@ -187,7 +157,7 @@ public class GameController {
                 currentIndex--;
                 Text previous = textNodes.get(currentIndex);
                 previous.setStyle("-fx-fill: #646669;"); // MonkeyType's untyped color
-                previous.setUnderline(false); // under line
+                previous.setUnderline(false); // underline
                 totalTyped = Math.max(0, totalTyped - 1);
 
                 if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
