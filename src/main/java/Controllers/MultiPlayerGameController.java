@@ -8,7 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+
 import javafx.scene.text.*;
 import javafx.util.Duration;
 import network.Client;
@@ -47,10 +47,10 @@ public class MultiPlayerGameController {
         this.playerName = name;
         playerNameLabel.setText(playerName);
         this.leaderboardList.setItems(leaderboard);
-        setupNetworkHandlers();
         requestParagraph();
         setupUI();
         setupEventHandlers();
+        setupNetworkHandlers();
     }
 
     private void setupNetworkHandlers() {
@@ -75,32 +75,19 @@ public class MultiPlayerGameController {
     private void setupUI() {
         progressBar.setProgress(0);
         typingField.setDisable(true);
-//        leaderboardList.setCellFactory(lv -> new ListCell<>() {
-//            @Override
-//            protected void updateItem(String item, boolean empty) {
-//                super.updateItem(item, empty);
-//                if (empty || item == null) {
-//                    setText(null);
-//                    setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
-//                } else {
-//                    setText(item);
-//                    setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
-//               }
-//            }
-//        });
-            leaderboardList.setCellFactory(lv -> new ListCell<String>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                        setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
-                    } else {
-                        setText(item);
-                        setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
-                    }
+        leaderboardList.setCellFactory(lv -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+                } else {
+                    setText(item);
+                    setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
                 }
-            });
+            }
+        });
     }
 
     private void setupParagraph() {
@@ -236,6 +223,7 @@ public class MultiPlayerGameController {
 
     private void typingFinished() {
         if (timer != null) timer.stop();
+        typingField.setDisable(true);
         double time = (System.currentTimeMillis() - startTime) / 1000.0;
         int wordCount = paragraphText.split("\\s+").length;
         double wpm = (wordCount / time) * 60;
@@ -243,7 +231,8 @@ public class MultiPlayerGameController {
     }
 
     private void updateLeaderboard(String data) {
-        leaderboard.setAll(data.split("|"));
+        String[] entries = data.split("\\|");
+        leaderboard.setAll(entries);
         leaderboardList.setItems(leaderboard);
     }
 }

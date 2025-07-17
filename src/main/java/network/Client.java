@@ -50,8 +50,8 @@ public class Client {
     }
 
     public void sendResult(String result) {
-        if (result != null && !result.trim().isEmpty()) {
-            out.println("RESULT:" + result.trim());
+        if (result != null && !result.isEmpty()) {
+            out.println("RESULT:" + result);
         }
     }
 
