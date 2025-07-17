@@ -69,4 +69,9 @@ public class Client {
             System.err.println("Error closing client: " + e.getMessage());
         }
     }
+
+
+    public void sendDebugMessage(String s) {
+        out.println(s);
+    }
 }

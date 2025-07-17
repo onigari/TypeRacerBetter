@@ -8,15 +8,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
-
+import javafx.scene.layout.VBox;
 import javafx.scene.text.*;
 import javafx.util.Duration;
 import network.Client;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.lang.System.out;
 
 public class MultiPlayerGameController {
     @FXML private TextFlow paragraphFlow;
@@ -31,28 +26,15 @@ public class MultiPlayerGameController {
     private Timeline timer;
     private ObservableList<String> leaderboardData = FXCollections.observableArrayList();
 
-    private final List<Text> textNodes = new ArrayList<>();
-    private int currentIndex;
-    private int correctCharCount;
-    private int correctWordCount;
-    private int totalTyped;
-    private boolean currentWordCorrect;
-
-
     public void initialize(Client client, String name) {
         this.client = client;
         this.playerName = name;
         this.leaderboard.setItems(leaderboardData);
-
-        setupNetworkHandlers();
-        startTimer();
-    }
-
-    private void setupNetworkHandlers(){
+        client.sendDebugMessage("SEND_PARA");
         client.setOnMessageReceived(message -> {
-            System.out.println(message);
             if (message.startsWith("PARAGRAPH:")) {
                 paragraph = message.substring(10);
+                client.sendDebugMessage("WE GOT PARA::: " + paragraph);
                 Platform.runLater(this::setupParagraph);
             } else if (message.startsWith("LEADERBOARD:")) {
                 Platform.runLater(() -> updateLeaderboard(message.substring(12)));
@@ -62,15 +44,12 @@ public class MultiPlayerGameController {
 
     private void setupParagraph() {
         paragraphFlow.getChildren().clear();
-        textNodes.clear();
-
         for (char c : paragraph.toCharArray()) {
             Text t = new Text(String.valueOf(c));
-            t.setStyle("-fx-fill: #646669;"); // MonkeyType's untyped color
-            textNodes.add(t);
+            t.setStyle("-fx-fill: gray; -fx-font-size: 16;");
+            paragraphFlow.getChildren().add(t);
         }
-
-        paragraphFlow.getChildren().addAll(textNodes);
+        startTimer();
     }
 
     private void startTimer() {

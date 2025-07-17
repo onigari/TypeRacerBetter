@@ -26,7 +26,6 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            System.out.println("Sent PARAGRAPH to client: " + paragraph);
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
                 System.out.println("Received from " + (playerName != null ? playerName : "unknown") + ": " + inputLine);
@@ -39,7 +38,9 @@ public class ClientHandler implements Runnable {
                 } else if (inputLine.equals("START_GAME") && clients.get(0) == this) {
                     System.out.println("Host (" + playerName + ") initiated game start");
                     Server.broadcastStartGame();
-                    Server.broadcastParagraph();
+                } else if(inputLine.startsWith("SEND_PARA")) {
+                    out.println("PARAGRAPH:" + paragraph);
+                    System.out.println("Sent PARAGRAPH to client: " + paragraph);
                 }
             }
         } catch (IOException e) {
