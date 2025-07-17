@@ -1,80 +1,71 @@
 package Controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.*;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import network.Client;
+import java.io.IOException;
 
 public class MultiPlayerChoiceController {
+    @FXML private TextField nameField;
+    @FXML private TextField ipField;
+    @FXML private Label statusLabel;
 
     @FXML
-    private Button hostGameButton;
-
-    @FXML
-    private Button joinGameButton;
-
-    @FXML
-    private TextField ipAddressField;
-
-    @FXML
-    private TextField nameField;
-
-    @FXML
-    private Label statusLabel;
-
-    @FXML
-    public void onHostClick(ActionEvent event) {
+    private void handleHostGame() {
         String name = nameField.getText().trim();
         if (name.isEmpty()) {
-            statusLabel.setText("Enter a name first.");
+            statusLabel.setText("Please enter your name");
             return;
         }
 
         try {
-            // Starts server locally (host = server)
-            network.Server.startNewRoom();
-
-            // Connect to localhost as client
-            Client client = new Client("127.0.0.1", 5000);
-            loadLobbyScene(event, client, name);
+            // Start server in a new thread
+            new Thread(() -> network.Server.main(new String[]{})).start();
+            // Give the server a moment to start
+            Thread fineThread = new Thread();
+            fineThread.sleep(1000);
+            // Connect to localhost as host
+            Client client = new Client("localhost", 5000);
+            loadLobby(client, name, true);
         } catch (Exception e) {
-            statusLabel.setText("Failed to host game.");
+            statusLabel.setText("Failed to host game: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     @FXML
-    public void onJoinClick(ActionEvent event) {
-        String ip = ipAddressField.getText().trim();
+    private void handleJoinGame() {
         String name = nameField.getText().trim();
-        if (ip.isEmpty() || name.isEmpty()) {
-            statusLabel.setText("Enter both name and IP.");
+        String ip = ipField.getText().trim();
+
+        if (name.isEmpty() || ip.isEmpty()) {
+            statusLabel.setText("Please enter both name and IP address");
             return;
         }
 
         try {
             Client client = new Client(ip, 5000);
-            loadLobbyScene(event, client, name);
-        } catch (Exception e) {
-            statusLabel.setText("Failed to connect to host.");
+            loadLobby(client, name, false);
+        } catch (IOException e) {
+            statusLabel.setText("Failed to connect to server: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void loadLobbyScene(ActionEvent event, Client client, String name) throws Exception {
+    private void loadLobby(Client client, String name, boolean isHost) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MultiPlayerLobby.fxml"));
         Parent root = loader.load();
 
-        MultiPlayerLobby controller = loader.getController();
-        controller.setClient(client, name);
+        MultiPlayerLobbyController controller = loader.getController();
+        controller.initialize(client, name, isHost);
 
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stage = (Stage) nameField.getScene().getWindow();
         stage.setScene(new Scene(root));
-        stage.setTitle("Multiplayer Lobby");
-        stage.show();
+        stage.setTitle("Multiplayer Lobby - " + name);
+        stage.setOnCloseRequest(e -> client.close());
     }
 }
-

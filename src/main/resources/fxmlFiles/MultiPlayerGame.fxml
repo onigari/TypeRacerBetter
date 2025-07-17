@@ -4,51 +4,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<?import javafx.util.Callback?>
-<?import java.net.URL?>
-<?import javafx.scene.paint.Color?>
 <VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="Controllers.MultiPlayerGameController"
-      spacing="10" style="-fx-background-color: #323437; -fx-padding: 20;"
-      fx:id="rootPane">
+      fx:controller="Controllers.MultiPlayerGameController" spacing="10" alignment="CENTER"
+      style="-fx-padding: 20;">
 
-   <Label fx:id="titleLabel" text="TypeRacer - Multiplayer"
-          style="-fx-text-fill: #d1d0c5; -fx-font-size: 24px; -fx-font-weight: bold;"/>
-
-   <HBox spacing="10" alignment="CENTER_LEFT">
-      <Label text="Player Name:" style="-fx-text-fill: #d1d0c5;"/>
-      <TextField fx:id="playerNameField" style="-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;"
-                 promptText="Enter your name"/>
-      <Button fx:id="startButton" text="Start Game"
-              style="-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-weight: bold;"
-              onAction="#onStartButtonClick"/>
-   </HBox>
-
-   <Label text="Paragraph to type:" style="-fx-text-fill: #d1d0c5;"/>
-   <TextFlow fx:id="paragraphFlow" style="-fx-background-color: #2c2e31; -fx-padding: 10;"
-             minHeight="100" maxHeight="150"/>
-
-   <ProgressBar fx:id="progressBar" style="-fx-accent: #e2b714;"
-                minWidth="500" maxWidth="500"/>
-
-   <HBox spacing="20" alignment="CENTER">
-      <Label fx:id="timeLabel" text="0.00s" style="-fx-text-fill: #d1d0c5;"/>
-      <Label fx:id="wpmLabel" text="0 WPM" style="-fx-text-fill: #d1d0c5;"/>
-      <Label fx:id="accuracyLabel" text="0%" style="-fx-text-fill: #d1d0c5;"/>
-   </HBox>
-
-   <Label text="Your typing:" style="-fx-text-fill: #d1d0c5;"/>
-   <TextField fx:id="typingField" style="-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;"
-              promptText="Start typing here..."/>
-
-   <Label text="Leaderboard:" style="-fx-text-fill: #d1d0c5; -fx-font-weight: bold;"/>
-   <ListView fx:id="leaderboardList" style="-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;"
-             minHeight="150" maxHeight="150">
-      <cellFactory>
-         <Callback>
-         </Callback>
-      </cellFactory>
-   </ListView>
-
-
+   <Label fx:id="timerLabel" style="-fx-font-size: 24;"/>
+   <TextFlow fx:id="paragraphFlow" style="-fx-background-color: #eee; -fx-padding: 10;"
+             prefWidth="500" prefHeight="150"/>
+   <ProgressBar fx:id="progressBar" prefWidth="500"/>
+   <ListView fx:id="leaderboard" prefWidth="500" prefHeight="200"/>
 </VBox>

@@ -5,56 +5,68 @@ import java.net.Socket;
 import java.util.function.Consumer;
 
 public class Client {
-    private final Socket socket;
-    private final BufferedReader in;
-    private final PrintWriter out;
+    private Socket socket;
+    private BufferedReader in;
+    private PrintWriter out;
     private Consumer<String> onMessageReceived;
+    private volatile boolean running = true;
 
     public Client(String host, int port) throws IOException {
-        socket = new Socket(host, port);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new PrintWriter(socket.getOutputStream(), true);
-        listen();
-    }
+        try {
+            socket = new Socket(host, port);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
 
-    private void listen() {
-        Thread listener = new Thread(() -> {
-            try {
-                String msg;
-                while ((msg = in.readLine()) != null) {
-                    if (onMessageReceived != null) {
-                        onMessageReceived.accept(msg);
+            new Thread(() -> {
+                try {
+                    String msg;
+                    while (running && (msg = in.readLine()) != null) {
+                        if (onMessageReceived != null) {
+                            onMessageReceived.accept(msg);
+                        }
                     }
+                } catch (IOException e) {
+                    if (running && onMessageReceived != null) {
+                        onMessageReceived.accept("ERROR: Workshop disconnected from server");
+                    }
+                } finally {
+                    close();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        listener.setDaemon(true);
-        listener.start();
+            }).start();
+        } catch (IOException e) {
+            close();
+            throw new IOException("Failed to connect to server: " + e.getMessage());
+        }
     }
 
-    public void setOnMessageReceived(Consumer<String> consumer) {
-        this.onMessageReceived = consumer;
+    public void setOnMessageReceived(Consumer<String> listener) {
+        this.onMessageReceived = listener;
     }
 
     public void sendName(String name) {
-        out.println("NAME:" + name);
+        if (name != null && !name.trim().isEmpty()) {
+            out.println("NAME:" + name.trim());
+        }
     }
 
     public void sendResult(String result) {
-        out.println("RESULT:" + result);
+        if (result != null && !result.trim().isEmpty()) {
+            out.println("RESULT:" + result.trim());
+        }
     }
 
-    public void sendGameStart() {
-        out.println("GAME-START");
+    public void sendStartGame() {
+        out.println("START_GAME");
     }
 
-    public void disconnect() {
+    public void close() {
+        running = false;
         try {
-            socket.close();
+            if (in != null) in.close();
+            if (out != null) out.close();
+            if (socket != null && !socket.isClosed()) socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error closing client: " + e.getMessage());
         }
     }
 }

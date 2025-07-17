@@ -1,145 +1,98 @@
 package Controllers;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.*;
-import javafx.scene.text.TextFlow;
+import javafx.util.Duration;
 import network.Client;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MultiPlayerGameController {
+    @FXML private TextFlow paragraphFlow;
+    @FXML private Label timerLabel;
+    @FXML private ProgressBar progressBar;
+    @FXML private ListView<String> leaderboard;
 
-    @FXML
-    private TextFlow paragraphFlow;
-
-    @FXML
-    private Label countdownLabel;
-
-    @FXML
-    private Label progressLabel;
-
-    @FXML
-    private ListView<String> leaderboardList;
-
-    private List<Text> characterNodes = new ArrayList<>();
-    private int currentIndex = 0;
-    private int correctCount = 0;
-    private int totalChars;
-    private long startTime;
-    private boolean raceStarted = false;
-
-    private String paragraphText;
     private Client client;
     private String playerName;
-    private List<String> leaderboard = new ArrayList<>();
+    private String paragraph;
+    private long startTime;
+    private Timeline timer;
+    private ObservableList<String> leaderboardData = FXCollections.observableArrayList();
 
-    public void setClient(Client client, String playerName) {
+    public void initialize(Client client, String name) {
         this.client = client;
-        this.playerName = playerName;
+        this.playerName = name;
+        this.leaderboard.setItems(leaderboardData);
 
         client.setOnMessageReceived(message -> {
             if (message.startsWith("PARAGRAPH:")) {
-                paragraphText = message.substring(10);
-                Platform.runLater(() -> setupParagraph());
-            } else if (message.startsWith("RESULT:")) {
-                Platform.runLater(() -> updateLeaderboard(message));
+                paragraph = message.substring(10);
+                Platform.runLater(this::setupParagraph);
+            } else if (message.startsWith("LEADERBOARD:")) {
+                Platform.runLater(() -> updateLeaderboard(message.substring(12)));
             }
         });
     }
 
     private void setupParagraph() {
         paragraphFlow.getChildren().clear();
-        characterNodes.clear();
-
-        for (char c : paragraphText.toCharArray()) {
+        for (char c : paragraph.toCharArray()) {
             Text t = new Text(String.valueOf(c));
-            t.setFill(javafx.scene.paint.Color.GRAY);
-            t.setFont(Font.font("Consolas", FontWeight.NORMAL, 18));
-            characterNodes.add(t);
+            t.setStyle("-fx-fill: gray; -fx-font-size: 16;");
+            paragraphFlow.getChildren().add(t);
         }
-
-        paragraphFlow.getChildren().addAll(characterNodes);
-        totalChars = characterNodes.size();
-
-        runCountdown();
+        startTimer();
     }
 
-    private void runCountdown() {
-        countdownLabel.setText("3");
-        new Thread(() -> {
-            try {
-                Thread.sleep(1000);
-                Platform.runLater(() -> countdownLabel.setText("2"));
-                Thread.sleep(1000);
-                Platform.runLater(() -> countdownLabel.setText("1"));
-                Thread.sleep(1000);
-                Platform.runLater(() -> {
-                    countdownLabel.setText("Go!");
-                    raceStarted = true;
-                    startTime = System.currentTimeMillis();
-                });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
+    private void startTimer() {
+        startTime = System.currentTimeMillis();
+        timer = new Timeline(new KeyFrame(Duration.millis(100), e -> {
+            double elapsed = (System.currentTimeMillis() - startTime) / 1000.0;
+            timerLabel.setText(String.format("%.1fs", elapsed));
+        }));
+        timer.setCycleCount(Timeline.INDEFINITE);
+        timer.play();
     }
 
     @FXML
-    public void onKeyPressed(KeyEvent event) {
-        if (!raceStarted) return;
+    private void handleKeyTyped(KeyEvent event) {
+        if (paragraph == null) return;
 
-        String input = event.getText();
-        if (input.isEmpty()) return;
+        String typed = event.getCharacter();
+        int currentPos = paragraphFlow.getChildren().size();
 
-        char typed = input.charAt(0);
-        char expected = paragraphText.charAt(currentIndex);
-        Text currentText = characterNodes.get(currentIndex);
+        if (currentPos < paragraph.length()) {
+            Text t = (Text) paragraphFlow.getChildren().get(currentPos);
+            if (typed.charAt(0) == paragraph.charAt(currentPos)) {
+                t.setFill(javafx.scene.paint.Color.GREEN);
+            } else {
+                t.setFill(javafx.scene.paint.Color.RED);
+            }
 
-        if (typed == expected) {
-            currentText.setFill(javafx.scene.paint.Color.BLACK);
-            correctCount++;
-        } else {
-            currentText.setFill(javafx.scene.paint.Color.RED);
-        }
+            progressBar.setProgress((double)(currentPos+1)/paragraph.length());
 
-        currentIndex++;
-        updateProgress();
-
-        if (currentIndex >= totalChars) {
-            finishRace();
+            if (currentPos == paragraph.length()-1) {
+                finishGame();
+            }
         }
     }
 
-    private void updateProgress() {
-        double percentage = (double) currentIndex / totalChars * 100;
-        progressLabel.setText(String.format("Progress: %.1f%%", percentage));
+    private void finishGame() {
+        if (timer != null) timer.stop();
+        double time = (System.currentTimeMillis() - startTime) / 1000.0;
+        int wordCount = paragraph.split("\\s+").length;
+        double wpm = (wordCount / time) * 60;
+        client.sendResult(String.format("%s;%.2f;%.2f", playerName, time, wpm));
     }
 
-    private void finishRace() {
-        raceStarted = false;
-        long endTime = System.currentTimeMillis();
-        double timeTaken = (endTime - startTime) / 1000.0;
-        double accuracy = ((double) correctCount / totalChars) * 100;
-        double wpm = (paragraphText.split(" ").length / timeTaken) * 60;
-
-        String result = String.format("RESULT:%s;%.2f;%.2f;%.2f",
-                playerName, timeTaken, accuracy, wpm);
-
-        client.sendResult(result);
-    }
-
-    private void updateLeaderboard(String message) {
-        String[] parts = message.substring(7).split(";");
-        String entry = String.format("%s - %.2fs - %.2f%% - %.2f WPM",
-                parts[0], Double.parseDouble(parts[1]),
-                Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
-
-        leaderboard.add(entry);
-        leaderboardList.getItems().setAll(leaderboard);
+    private void updateLeaderboard(String data) {
+        leaderboardData.setAll(data.split("\\|"));
     }
 }

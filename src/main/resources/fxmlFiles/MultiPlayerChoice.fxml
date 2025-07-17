@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.MultiPlayerChoiceController" spacing="10" alignment="CENTER"
+      style="-fx-padding: 20;">
+
+    <Label text="Multiplayer Setup" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+
+    <TextField fx:id="nameField" promptText="Your Name"/>
+    <TextField fx:id="ipField" promptText="Server IP (for joining)"/>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Host Game" onAction="#handleHostGame"/>
+        <Button text="Join Game" onAction="#handleJoinGame"/>
+    </HBox>
+
+    <Label fx:id="statusLabel" style="-fx-text-fill: red;"/>
+</VBox>

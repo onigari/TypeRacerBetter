@@ -3,70 +3,52 @@ package network;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class Server {
+    public static final int MAX_PLAYERS = 4;
+    public static final int COUNTDOWN_SEC = 15;
     private static final int PORT = 5000;
-    private static final List<ClientHandler> clients = Collections.synchronizedList(new ArrayList<>());
-    private static boolean gameStarted = false;
+    private static final List<ClientHandler> clients = new ArrayList<>();
+    private static final String[] PARAGRAPHS = {
+            "The quick brown fox jumps over the lazy dog.",
+            "Programming is the art of telling another human what one wants the computer to do.",
+            "Java is to JavaScript what car is to carpet.",
+            "The best way to predict the future is to invent it."
+    };
+    private static final String selectedParagraph = PARAGRAPHS[new Random().nextInt(PARAGRAPHS.length)];
 
-    public static void startNewRoom() throws IOException {
-        Thread serverThread = new Thread(() -> {
-            try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-                System.out.println("Room open at: " + serverSocket.getInetAddress().getHostAddress());
+    public static void main(String[] args) {
+        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+            System.out.println("Server started on port " + PORT);
+            System.out.println("Selected paragraph: " + selectedParagraph);
 
-                while (!gameStarted && clients.size() < 5) {
-                    Socket clientSocket = serverSocket.accept();
-                    if (gameStarted) {
-                        clientSocket.close();
-                        continue;
-                    }
-
-                    ClientHandler handler = new ClientHandler(clientSocket, clients);
-                    clients.add(handler);
-                    handler.start();
+            while (true) {
+                Socket socket = serverSocket.accept();
+                if (clients.size() >= MAX_PLAYERS) {
+                    System.out.println("Max players reached, rejecting connection: " + socket);
+                    socket.close();
+                    continue;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("New client connected: " + socket.getRemoteSocketAddress());
+                ClientHandler handler = new ClientHandler(socket, clients, selectedParagraph);
+                synchronized (clients) {
+                    clients.add(handler);
+                }
+                new Thread(handler).start();
             }
-        });
-        serverThread.setDaemon(true);
-        serverThread.start();
+        } catch (IOException e) {
+            System.err.println("Server error: " + e.getMessage());
+        }
     }
 
-    public static void broadcast(String message) {
+    public static void broadcastStartGame() {
         synchronized (clients) {
             for (ClientHandler client : clients) {
-                client.sendMessage(message);
+                client.sendMessage("START_GAME");
             }
         }
     }
-
-    public static void setGameStarted(boolean started) {
-        gameStarted = started;
-    }
-
-    public static boolean isGameStarted() {
-        return gameStarted;
-    }
-
-    public static void removeClient(ClientHandler handler) {
-        clients.remove(handler);
-        broadcastPlayerList();
-    }
-
-    public static void broadcastPlayerList() {
-        StringBuilder sb = new StringBuilder("LOBBY-PLAYERS:");
-        for (ClientHandler ch : clients) {
-            sb.append(ch.getPlayerName()).append(",");
-        }
-        if (sb.charAt(sb.length() - 1) == ',') sb.deleteCharAt(sb.length() - 1);
-        broadcast(sb.toString());
-    }
-
-    public static List<ClientHandler> getClients() {
-        return clients;
-    }
 }
-
-
