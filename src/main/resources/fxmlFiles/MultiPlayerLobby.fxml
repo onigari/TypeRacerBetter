@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="Controllers.MultiPlayerLobbyController">
-   <VBox spacing="15" alignment="CENTER" prefWidth="400.0" prefHeight="400.0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-      <Label text="Multiplayer Lobby" style="-fx-font-size: 22px; -fx-text-fill: #d1d0c5;" />
-      <Label fx:id="hostIndicator" style="-fx-text-fill: #d1d0c5;" />
-      <ListView fx:id="playerListView" prefHeight="200" />
-      <Label fx:id="statusLabel" style="-fx-text-fill: #d1d0c5;" />
-      <Button fx:id="startButton" text="Start Game" onAction="#handleStartGame" />
+<VBox alignment="CENTER" spacing="20" style="-fx-background-color: #323437; -fx-padding: 30;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MultiPlayerLobbyController">
+
+   <Label style="-fx-font-family: 'Roboto Mono'; -fx-font-size: 28px; -fx-text-fill: #e2b714; -fx-font-weight: bold;" text="LOBBY" />
+
+   <VBox alignment="CENTER" spacing="15" style="-fx-background-color: #2c2e31; -fx-background-radius: 10; -fx-padding: 20; -fx-min-width: 350;">
+      <HBox alignment="CENTER" spacing="10">
+         <Label fx:id="hostIndicator" style="-fx-font-family: 'Roboto Mono'; -fx-text-fill: #e2b714; -fx-font-size: 16px;" />
+         <Label fx:id="statusLabel" style="-fx-font-family: 'Roboto Mono'; -fx-text-fill: #d1d0c5; -fx-font-size: 16px;" />
+      </HBox>
+
+      <ListView fx:id="playerListView" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #3a3d42; -fx-text-fill: #d1d0c5; -fx-control-inner-background: #3a3d42; -fx-pref-height: 200; -fx-min-width: 300;" />
+
+      <Button fx:id="startButton" onAction="#handleStartGame" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-weight: bold; -fx-font-size: 16px; -fx-min-width: 150;" text="START RACE" />
    </VBox>
-</AnchorPane>
+</VBox>

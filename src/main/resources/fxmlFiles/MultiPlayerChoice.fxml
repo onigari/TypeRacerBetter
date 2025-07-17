@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="Controllers.MultiPlayerChoiceController">
-    <VBox spacing="20.0" alignment="CENTER" prefWidth="400.0" prefHeight="300.0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-        <Label text="TypeRacer - Multiplayer" style="-fx-font-size: 24px; -fx-text-fill: #d1d0c5;" />
-        <TextField fx:id="nameField" promptText="Enter your name" />
-        <TextField fx:id="ipField" promptText="Enter IP (if joining)" />
-        <HBox spacing="10">
-            <Button text="Host Game" onAction="#handleHostGame" />
-            <Button text="Join Game" onAction="#handleJoinGame" />
+<VBox alignment="CENTER" spacing="25" style="-fx-background-color: #323437; -fx-padding: 40;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MultiPlayerChoiceController">
+
+    <Label style="-fx-font-family: 'Roboto Mono'; -fx-font-size: 32px; -fx-text-fill: #e2b714; -fx-font-weight: bold;" text="TYPE RACER" />
+
+    <VBox alignment="CENTER" spacing="15" style="-fx-background-color: #2c2e31; -fx-background-radius: 10; -fx-padding: 25;">
+        <TextField fx:id="nameField" promptText="Your nickname" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #3a3d42; -fx-text-fill: #d1d0c5; -fx-prompt-text-fill: #646669; -fx-font-size: 14px;" />
+
+        <TextField fx:id="ipField" promptText="Host IP (leave empty to host)" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #3a3d42; -fx-text-fill: #d1d0c5; -fx-prompt-text-fill: #646669; -fx-font-size: 14px;" />
+
+        <HBox alignment="CENTER" spacing="15">
+            <Button onAction="#handleHostGame" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-weight: bold; -fx-font-size: 14px; -fx-min-width: 100;" text="HOST" />
+
+            <Button onAction="#handleJoinGame" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #3a3d42; -fx-text-fill: #d1d0c5; -fx-font-weight: bold; -fx-font-size: 14px; -fx-min-width: 100; -fx-border-color: #e2b714; -fx-border-width: 2;" text="JOIN" />
         </HBox>
-        <Label fx:id="statusLabel" textFill="#ca4754" />
     </VBox>
-</AnchorPane>
+
+    <Label fx:id="statusLabel" style="-fx-font-family: 'Roboto Mono'; -fx-text-fill: #ca4754; -fx-font-size: 14px;" />
+</VBox>
