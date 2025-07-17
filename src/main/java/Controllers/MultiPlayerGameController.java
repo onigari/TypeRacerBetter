@@ -75,7 +75,7 @@ public class MultiPlayerGameController {
     private void setupUI() {
         progressBar.setProgress(0);
         typingField.setDisable(true);
-//        leaderboardList.setCellFactory(lv -> new ListCell<String>() {
+//        leaderboardList.setCellFactory(lv -> new ListCell<>() {
 //            @Override
 //            protected void updateItem(String item, boolean empty) {
 //                super.updateItem(item, empty);
@@ -85,19 +85,24 @@ public class MultiPlayerGameController {
 //                } else {
 //                    setText(item);
 //                    setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
-//                }
+//               }
 //            }
 //        });
     }
 
     private void setupParagraph() {
         paragraphFlow.getChildren().clear();
+        textNodes.clear();
+
         for (char c : paragraphText.toCharArray()) {
             Text t = new Text(String.valueOf(c));
-            t.setStyle("-fx-fill: gray; -fx-font-size: 16;");
-            paragraphFlow.getChildren().add(t);
+            t.setStyle("-fx-fill: #646669;");
+            textNodes.add(t);
         }
+        paragraphFlow.getChildren().addAll(textNodes);
         startTimer();
+        typingField.setDisable(false);
+        typingField.requestFocus();
     }
 
     private void setupEventHandlers() {
@@ -226,5 +231,6 @@ public class MultiPlayerGameController {
 
     private void updateLeaderboard(String data) {
         leaderboardData.setAll(data.split("\\|"));
+        leaderboardList.setItems(leaderboardData);
     }
 }
