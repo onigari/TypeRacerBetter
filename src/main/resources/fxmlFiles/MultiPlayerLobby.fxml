@@ -3,12 +3,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="Controllers.MultiPlayerLobbyController" spacing="10" alignment="CENTER"
-      style="-fx-padding: 20;">
-
-   <Label fx:id="statusLabel" style="-fx-font-size: 16;"/>
-   <Label fx:id="hostIndicator" style="-fx-font-weight: bold; -fx-text-fill: #2ecc71;"/>
-   <ListView fx:id="playerListView" prefWidth="300" prefHeight="200"/>
-   <Button fx:id="startButton" text="Start Game" onAction="#handleStartGame"/>
-</VBox>
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="Controllers.MultiPlayerLobbyController">
+   <VBox spacing="15" alignment="CENTER" prefWidth="400.0" prefHeight="400.0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+      <Label text="Multiplayer Lobby" style="-fx-font-size: 22px; -fx-text-fill: #d1d0c5;" />
+      <Label fx:id="hostIndicator" style="-fx-text-fill: #d1d0c5;" />
+      <ListView fx:id="playerListView" prefHeight="200" />
+      <Label fx:id="statusLabel" style="-fx-text-fill: #d1d0c5;" />
+      <Button fx:id="startButton" text="Start Game" onAction="#handleStartGame" />
+   </VBox>
+</AnchorPane>

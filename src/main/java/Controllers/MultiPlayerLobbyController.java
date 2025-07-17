@@ -51,7 +51,7 @@ public class MultiPlayerLobbyController {
                     players.setAll(message.substring(8).split(","));
                     statusLabel.setText(players.size() + " players connected");
                 });
-            } else if (message.equals("GAME_START")) {
+            } else if (message.equals("START_GAME")) {
                 Platform.runLater(this::startGame);
             }
         });
