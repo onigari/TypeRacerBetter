@@ -47,7 +47,7 @@ public class MultiPlayerGameController {
         this.playerName = name;
         playerNameLabel.setText(playerName);
         this.leaderboardList.setItems(leaderboard);
-        requestParagraph();
+
         setupUI();
         setupEventHandlers();
         setupNetworkHandlers();
@@ -55,22 +55,27 @@ public class MultiPlayerGameController {
 
     private void setupNetworkHandlers() {
         client.setOnMessageReceived(message -> {
+            if (message.startsWith("PARAGRAPH:")) {
+                paragraphText = message.substring(10);
+//                client.sendDebugMessage("WE GOT PARA::: " + paragraph);
+                Platform.runLater(this::setupParagraph);
+            }
             if (message.startsWith("LEADERBOARD:")) {
                 Platform.runLater(() -> updateLeaderboard(message.substring(12)));
             }
         });
     }
 
-    private void requestParagraph() {
-        client.sendMessage("SEND_PARA");
-        client.setOnMessageReceived(message -> {
-            if (message.startsWith("PARAGRAPH:")) {
-                paragraphText = message.substring(10);
-//                client.sendDebugMessage("WE GOT PARA::: " + paragraph);
-                Platform.runLater(this::setupParagraph);
-            }
-        });
-    }
+//    private void requestParagraph() {
+//        client.sendMessage("SEND_PARA");
+//        client.setOnMessageReceived(message -> {
+//            if (message.startsWith("PARAGRAPH:")) {
+//                paragraphText = message.substring(10);
+////                client.sendDebugMessage("WE GOT PARA::: " + paragraph);
+//                Platform.runLater(this::setupParagraph);
+//            }
+//        });
+//    }
 
     private void setupUI() {
         progressBar.setProgress(0);

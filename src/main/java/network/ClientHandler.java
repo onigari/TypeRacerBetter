@@ -10,14 +10,14 @@ public class ClientHandler implements Runnable {
     private BufferedReader in;
     private PrintWriter out;
     private List<ClientHandler> clients;
-    private String paragraph;
+    //private String paragraph;
     private String playerName;
     private static final CopyOnWriteArrayList<String> leaderboard = new CopyOnWriteArrayList<>();
 
     public ClientHandler(Socket socket, List<ClientHandler> clients, String paragraph) throws IOException {
         this.socket = socket;
         this.clients = clients;
-        this.paragraph = paragraph;
+        //this.paragraph = paragraph;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(socket.getOutputStream(), true);
         System.out.println("ClientHandler created for: " + socket.getRemoteSocketAddress());
@@ -38,10 +38,11 @@ public class ClientHandler implements Runnable {
                 } else if (inputLine.equals("START_GAME") && clients.get(0) == this) {
                     System.out.println("Host (" + playerName + ") initiated game start");
                     Server.broadcastStartGame();
-                } else if(inputLine.startsWith("SEND_PARA")) {
-                    out.println("PARAGRAPH:" + paragraph);
-                    System.out.println("Sent PARAGRAPH to client: " + paragraph);
                 }
+//                else if(inputLine.startsWith("SEND_PARA")) {
+//                    out.println("PARAGRAPH:" + paragraph);
+//                    System.out.println("Sent PARAGRAPH to client: " + paragraph);
+//                }
             }
         } catch (IOException e) {
             System.out.println("Client disconnected: " + (playerName != null ? playerName : socket.getRemoteSocketAddress()));

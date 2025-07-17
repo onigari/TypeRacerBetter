@@ -1,28 +1,41 @@
 package network;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Server {
     public static final int MAX_PLAYERS = 4;
     public static final int COUNTDOWN_SEC = 15;
     private static final int PORT = 5000;
     private static final List<ClientHandler> clients = new ArrayList<>();
-    private static final String[] PARAGRAPHS = {
-            "The quick brown fox jumps over the lazy dog.",
-            "Programming is the art of telling another human what one wants the computer to do.",
-            "Java is to JavaScript what car is to carpet.",
-            "The best way to predict the future is to invent it."
-    };
-    private static final String selectedParagraph = PARAGRAPHS[new Random().nextInt(PARAGRAPHS.length)];
+    private static List<String> inputStrings = new ArrayList<>() ;
+    private static String selectedParagraph; //= PARAGRAPHS[new Random().nextInt(PARAGRAPHS.length)];
+
+    private static void selectParagraph() {
+        try {
+            File file = new File("src/main/resources/txtFiles/input.txt");
+            Scanner takeIn = new Scanner(file);
+            while (takeIn.hasNextLine()) {
+                inputStrings.add(takeIn.nextLine());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        selectedParagraph = inputStrings.get(new Random().nextInt(inputStrings.size()));
+    }
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Server started on port " + PORT);
+            selectParagraph();
+
             System.out.println("Selected paragraph: " + selectedParagraph);
 
             while (true) {
@@ -48,6 +61,14 @@ public class Server {
         synchronized (clients) {
             for (ClientHandler client : clients) {
                 client.sendMessage("START_GAME");
+            }
+            try{
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            for (ClientHandler client : clients) {
+                client.sendMessage("PARAGRAPH:" + selectedParagraph);
             }
         }
     }
