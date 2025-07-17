@@ -6,8 +6,6 @@ import javafx.scene.control.*;
 import javafx.application.Platform;
 import javafx.animation.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.*;
 import javafx.util.Duration;
@@ -15,7 +13,7 @@ import javafx.util.Duration;
 import java.io.*;
 import java.util.*;
 
-public class GameController {
+public class SinglePlayerGameController {
 
     @FXML
     private VBox rootPane;
@@ -120,13 +118,8 @@ public class GameController {
             handleNewCharacters(oldValue, newValue);
         });
 
-
+        TODO:
         // On pressing space or end of game
-//        typingField.setOnKeyPressed(e -> {
-//            if(e.getCode() == KeyCode.SPACE) {
-//                typingField.clear();
-//            }
-//        });
 
         // Enter key to finish
         typingField.setOnKeyPressed(e -> {

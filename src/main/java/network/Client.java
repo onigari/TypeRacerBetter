@@ -74,4 +74,8 @@ public class Client {
     public void sendDebugMessage(String s) {
         out.println(s);
     }
+
+    public void sendMessage(String s) {
+        out.println(s);
+    }
 }
