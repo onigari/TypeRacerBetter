@@ -21,7 +21,7 @@ public class MultiPlayerGameController {
     @FXML private Label timeLabel;
     @FXML private Label playerNameLabel;
     @FXML private ProgressBar progressBar;
-    @FXML private ListView<String> leaderboard;
+    //@FXML private ListView<String> leaderboard;
     @FXML private Label wpmLabel;
     @FXML private Label accuracyLabel;
     @FXML private TextField typingField;
@@ -32,7 +32,7 @@ public class MultiPlayerGameController {
     private String paragraphText;
     private long startTime;
     private Timeline timer;
-    private ObservableList<String> leaderboardData = FXCollections.observableArrayList();
+    private ObservableList<String> leaderboard = FXCollections.observableArrayList();
     private int totalTyped;
     private int currentIndex;
     private int correctCharCount;
@@ -46,7 +46,7 @@ public class MultiPlayerGameController {
         this.client = client;
         this.playerName = name;
         playerNameLabel.setText(playerName);
-        this.leaderboard.setItems(leaderboardData);
+        this.leaderboardList.setItems(leaderboard);
         setupNetworkHandlers();
         requestParagraph();
         setupUI();
@@ -88,6 +88,19 @@ public class MultiPlayerGameController {
 //               }
 //            }
 //        });
+            leaderboardList.setCellFactory(lv -> new ListCell<String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+                    } else {
+                        setText(item);
+                        setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+                    }
+                }
+            });
     }
 
     private void setupParagraph() {
@@ -230,7 +243,7 @@ public class MultiPlayerGameController {
     }
 
     private void updateLeaderboard(String data) {
-        leaderboardData.setAll(data.split("\\|"));
-        leaderboardList.setItems(leaderboardData);
+        leaderboard.setAll(data.split("|"));
+        leaderboardList.setItems(leaderboard);
     }
 }
