@@ -211,8 +211,12 @@ public class MultiPlayerGameController {
             long elapsed = System.currentTimeMillis() - startTime;
             double seconds = elapsed / 1000.0;
             timeLabel.setText(String.format("%.2fs", seconds));
-            wpmLabel.setText(String.format("%.0f", calculateWPM()));
+            wpmLabel.setText(String.format("%.2f", calculateWPM()));
             accuracyLabel.setText(String.format("%.0f%%", calculateAccuracy()));
+
+            double time = (System.currentTimeMillis() - startTime) / 1000.0;
+            double wpm = calculateWPM();
+            client.sendResult(String.format("%s;%.2f;%.2f", playerName, time, wpm));
         });
     }
 
@@ -230,14 +234,29 @@ public class MultiPlayerGameController {
         if (timer != null) timer.stop();
         typingField.setDisable(true);
         double time = (System.currentTimeMillis() - startTime) / 1000.0;
-        int wordCount = paragraphText.split("\\s+").length;
-        double wpm = (wordCount / time) * 60;
+        double wpm = calculateWPM();
         client.sendResult(String.format("%s;%.2f;%.2f", playerName, time, wpm));
     }
 
     private void updateLeaderboard(String data) {
         String[] entries = data.split("\\|");
         leaderboard.setAll(entries);
+        leaderboard.sort((a,b) -> {
+            double t1 = Double.parseDouble(a.split(" - ")[1].replace("s", ""));
+            double t2 = Double.parseDouble(b.split(" - ")[1].replace("s", ""));
+            int toReturn = Double.compare(t1, t2);
+            if (toReturn == 0) {
+                double t3 = Double.parseDouble(a.split(" - ")[2]);
+                double t4 = Double.parseDouble(b.split(" - ")[2]);
+                int toReturn2 = Double.compare(t3, t4);
+                if (toReturn2 == 0) {
+                    return a.split(" - ")[0].compareTo(b.split(" - ")[0]);
+                }
+                return toReturn2;
+            }
+            return toReturn;
+        });
+        //leaderboardList.getItems().clear();
         leaderboardList.setItems(leaderboard);
     }
 }

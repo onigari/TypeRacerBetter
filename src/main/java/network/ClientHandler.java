@@ -51,6 +51,28 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    private boolean checkClient(String name) {
+        for (String client : leaderboard) {
+            String[] clientParts = client.split(";");
+            if (clientParts[0].equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void updateResult(String result) {
+        String[] parts = result.split(";");
+        for (String client : leaderboard) {
+            String[] clientParts = client.split(";");
+            if(clientParts[0].equals(parts[0])) {
+                leaderboard.remove(client);
+                leaderboard.add(result);
+                return;
+            }
+        }
+    }
+
     private void handleResult(String result) {
         String[] parts = result.split(";");
         if (parts.length != 3) {
@@ -60,7 +82,8 @@ public class ClientHandler implements Runnable {
         try {
             String entry = String.format("%s;%s;%s", parts[0], parts[1], parts[2]);
             synchronized (leaderboard) {
-                leaderboard.add(entry);
+                if(checkClient(parts[0])) updateResult(entry);
+                else leaderboard.add(entry);
                 leaderboard.sort((a, b) -> {
                     try {
                         double t1 = Double.parseDouble(a.split(";")[1]);
@@ -78,12 +101,12 @@ public class ClientHandler implements Runnable {
     }
 
     private void broadcastLeaderboard() {
-        StringBuilder sb = new StringBuilder("LEADERBOARD:");
+        StringBuffer sb = new StringBuffer("LEADERBOARD:");
         synchronized (leaderboard) {
             for (String entry : leaderboard) {
                 String[] parts = entry.split(";");
                 if (parts.length == 3) {
-                    sb.append(String.format("%s - %.2fs (%.2f WPM)|",
+                    sb.append(String.format("%s - %.2fs - %.2f WPM)|",
                             parts[0], Double.parseDouble(parts[1]), Double.parseDouble(parts[2])));
                 }
             }

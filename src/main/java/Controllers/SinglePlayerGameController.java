@@ -276,7 +276,17 @@ public class SinglePlayerGameController {
         leaderboard.sort((a,b) -> {
             double t1 = Double.parseDouble(a.split(" - ")[1].replace("s", ""));
             double t2 = Double.parseDouble(b.split(" - ")[1].replace("s", ""));
-            return Double.compare(t1, t2);
+            int toReturn = Double.compare(t1, t2);
+            if (toReturn == 0) {
+                double t3 = Double.parseDouble(a.split(" - ")[2]);
+                double t4 = Double.parseDouble(b.split(" - ")[2]);
+                int toReturn2 = Double.compare(t3, t4);
+                if (toReturn2 == 0) {
+                    return a.split(" - ")[0].compareTo(b.split(" - ")[0]);
+                }
+                return toReturn2;
+            }
+            return toReturn;
         });
         leaderboardList.setItems(leaderboard);
 
