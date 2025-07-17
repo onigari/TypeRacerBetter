@@ -45,9 +45,9 @@
       <!-- Player Name Input -->
       <HBox alignment="CENTER_LEFT" spacing="10">
          <Label style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="name:" />
-         <TextField fx:id="playerNameField" promptText="your name" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-border-color: #646669; -fx-prompt-text-fill: #646669;" />
+         <Label fx:id="playerNameLabel" prefHeight="36.0" prefWidth="139.0" textFill="WHITE" />
       </HBox>
-      <Label fx:id="timerLabel" prefHeight="59.0" prefWidth="131.0" text="Label" />
+      <Label fx:id="timerLabel" prefHeight="59.0" prefWidth="131.0" textFill="WHITE" />
 
       <!-- Leaderboard -->
       <VBox alignment="CENTER_LEFT" spacing="5">

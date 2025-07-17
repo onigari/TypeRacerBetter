@@ -52,11 +52,11 @@ public class Server {
         }
     }
 
-    public static void broadcastParagraph() {
+    /*public static void broadcastParagraph() {
         synchronized (clients) {
             for (ClientHandler client : clients) {
                 client.sendMessage("PARAGRAPH: " + selectedParagraph);
             }
         }
-    }
+    }*/
 }

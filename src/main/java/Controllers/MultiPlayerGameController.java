@@ -16,6 +16,7 @@ import network.Client;
 public class MultiPlayerGameController {
     @FXML private TextFlow paragraphFlow;
     @FXML private Label timerLabel;
+    @FXML private Label playerNameLabel;
     @FXML private ProgressBar progressBar;
     @FXML private ListView<String> leaderboard;
 
@@ -29,8 +30,13 @@ public class MultiPlayerGameController {
     public void initialize(Client client, String name) {
         this.client = client;
         this.playerName = name;
+        playerNameLabel.setText(playerName);
         this.leaderboard.setItems(leaderboardData);
+        setupNetworkHandlers();
         client.sendDebugMessage("SEND_PARA");
+    }
+
+    private void setupNetworkHandlers() {
         client.setOnMessageReceived(message -> {
             if (message.startsWith("PARAGRAPH:")) {
                 paragraph = message.substring(10);
