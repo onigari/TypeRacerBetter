@@ -119,7 +119,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void broadcastPlayerList() {
-        StringBuilder sb = new StringBuilder("PLAYERS:");
+        StringBuffer sb = new StringBuffer("PLAYERS:");
         synchronized (clients) {
             for (ClientHandler client : clients) {
                 if (client.playerName != null) {
