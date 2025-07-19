@@ -242,12 +242,16 @@ public class MultiPlayerGameController {
         String[] entries = data.split("\\|");
         leaderboard.setAll(entries);
         leaderboard.sort((a,b) -> {
-            double t1 = Double.parseDouble(a.split(" - ")[1].replace("s", ""));
-            double t2 = Double.parseDouble(b.split(" - ")[1].replace("s", ""));
+            String wpm1 = a.split(" - ")[1].replace(" WPM)", "").trim();
+            String wpm2 = b.split(" - ")[1].replace(" WPM)", "").trim();
+            double t1 = Double.parseDouble(wpm1);
+            double t2 = Double.parseDouble(wpm2);
             int toReturn = Double.compare(t1, t2);
             if (toReturn == 0) {
-                double t3 = Double.parseDouble(a.split(" - ")[2]);
-                double t4 = Double.parseDouble(b.split(" - ")[2]);
+                String time1 = a.split(" - ")[2].replace("s", "").trim();
+                String time2 = b.split(" - ")[2].replace("s", "").trim();
+                double t3 = Double.parseDouble(time1);
+                double t4 = Double.parseDouble(time2);
                 int toReturn2 = Double.compare(t3, t4);
                 if (toReturn2 == 0) {
                     return a.split(" - ")[0].compareTo(b.split(" - ")[0]);
