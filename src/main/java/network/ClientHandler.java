@@ -88,35 +88,45 @@ public class ClientHandler implements Runnable {
                     try {
                         double t1 = Double.parseDouble(a.split(";")[1]);
                         double t2 = Double.parseDouble(b.split(";")[1]);
-                        return Double.compare(t1, t2);
+                        int toReturn = Double.compare(t1, t2);
+                        if (toReturn == 0) {
+                            double t3 = Double.parseDouble(a.split(";")[2]);
+                            double t4 = Double.parseDouble(b.split(";")[2]);
+                            int toReturn2 = Double.compare(t3, t4);
+                            if (toReturn2 == 0) {
+                                return a.split(";")[0].compareTo(b.split(";")[0]);
+                            }
+                            return toReturn2;
+                        }
+                        return toReturn;
                     } catch (Exception e) {
                         return 0;
                     }
                 });
-                broadcastLeaderboard();
+                Server.broadcastLeaderboard(leaderboard);
             }
         } catch (Exception e) {
             System.err.println("Error processing result: " + e.getMessage());
         }
     }
 
-    private void broadcastLeaderboard() {
-        StringBuffer sb = new StringBuffer("LEADERBOARD:");
-        synchronized (leaderboard) {
-            for (String entry : leaderboard) {
-                String[] parts = entry.split(";");
-                if (parts.length == 3) {
-                    sb.append(String.format("%s - %.2fs - %.2f WPM)|",
-                            parts[0], Double.parseDouble(parts[1]), Double.parseDouble(parts[2])));
-                }
-            }
-        }
-        synchronized (clients) {
-            for (ClientHandler client : clients) {
-                client.sendMessage(sb.toString());
-            }
-        }
-    }
+//    private void broadcastLeaderboard() {
+//        StringBuffer sb = new StringBuffer("LEADERBOARD:");
+//        synchronized (leaderboard) {
+//            for (String entry : leaderboard) {
+//                String[] parts = entry.split(";");
+//                if (parts.length == 3) {
+//                    sb.append(String.format("%s - %.2fs - %.2f WPM)|",
+//                            parts[0], Double.parseDouble(parts[1]), Double.parseDouble(parts[2])));
+//                }
+//            }
+//        }
+//        synchronized (clients) {
+//            for (ClientHandler client : clients) {
+//                client.sendMessage(sb.toString());
+//            }
+//        }
+//    }
 
     private void broadcastPlayerList() {
         StringBuffer sb = new StringBuffer("PLAYERS:");

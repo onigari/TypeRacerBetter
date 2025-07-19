@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server {
     public static final int MAX_PLAYERS = 4;
@@ -69,6 +70,24 @@ public class Server {
             }
             for (ClientHandler client : clients) {
                 client.sendMessage("PARAGRAPH:" + selectedParagraph);
+            }
+        }
+    }
+
+    public static void broadcastLeaderboard(CopyOnWriteArrayList<String> leaderboard){
+        StringBuffer sb = new StringBuffer("LEADERBOARD:");
+        synchronized (leaderboard) {
+            for (String entry : leaderboard) {
+                String[] parts = entry.split(";");
+                if (parts.length == 3) {
+                    sb.append(String.format("%s - %.2fs - %.2f WPM)|",
+                            parts[0], Double.parseDouble(parts[1]), Double.parseDouble(parts[2])));
+                }
+            }
+        }
+        synchronized (clients) {
+            for (ClientHandler client : clients) {
+                client.sendMessage(sb.toString());
             }
         }
     }
