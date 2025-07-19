@@ -79,9 +79,9 @@ public class Server {
         synchronized (leaderboard) {
             for (String entry : leaderboard) {
                 String[] parts = entry.split(";");
-                if (parts.length == 3) {
-                    sb.append(String.format("%s - %.2fs - %.2f WPM)|",
-                            parts[0], Double.parseDouble(parts[1]), Double.parseDouble(parts[2])));
+                if (parts.length == 4) {
+                    sb.append(String.format("%s - %.2fs - %.2f WPM - %.2f Acc)|",
+                            parts[0], Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3])));
                 }
             }
         }

@@ -216,7 +216,7 @@ public class MultiPlayerGameController {
 
             double time = (System.currentTimeMillis() - startTime) / 1000.0;
             double wpm = calculateWPM();
-            client.sendResult(String.format("%s;%.2f;%.2f", playerName, time, wpm));
+            client.sendResult(String.format("%s;%.2f;%.2f;%.2f", playerName, time, wpm, calculateAccuracy()));
         });
     }
 

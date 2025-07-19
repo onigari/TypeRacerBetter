@@ -75,12 +75,12 @@ public class ClientHandler implements Runnable {
 
     private void handleResult(String result) {
         String[] parts = result.split(";");
-        if (parts.length != 3) {
+        if (parts.length != 4) {
             System.out.println("Invalid result format: " + result);
             return;
         }
         try {
-            String entry = String.format("%s;%s;%s", parts[0], parts[1], parts[2]);
+            String entry = String.format("%s;%s;%s;%s", parts[0], parts[1], parts[2], parts[3]);
             synchronized (leaderboard) {
                 if(checkClient(parts[0])) updateResult(entry);
                 else leaderboard.add(entry);
@@ -88,17 +88,22 @@ public class ClientHandler implements Runnable {
                     try {
                         double t1 = Double.parseDouble(a.split(";")[1]);
                         double t2 = Double.parseDouble(b.split(";")[1]);
-                        int toReturn = Double.compare(t1, t2);
-                        if (toReturn == 0) {
+                        int returnTime = Double.compare(t1, t2);
+                        if (Math.abs(t1 - t2) <= 0.3) {
                             double t3 = Double.parseDouble(a.split(";")[2]);
                             double t4 = Double.parseDouble(b.split(";")[2]);
-                            int toReturn2 = Double.compare(t3, t4);
-                            if (toReturn2 == 0) {
-                                return a.split(";")[0].compareTo(b.split(";")[0]);
+                            int returnWPM = Double.compare(t4, t3);
+                            if (returnWPM == 0) {
+                                double t5 = Double.parseDouble(a.split(";")[3]);
+                                double t6 = Double.parseDouble(b.split(";")[3]);
+                                int returnAcc = Double.compare(t6, t5);
+                                if(returnAcc == 0) {
+                                    return a.split(";")[0].compareTo(b.split(";")[0]);
+                                }
                             }
-                            return toReturn2;
+                            return returnWPM;
                         }
-                        return toReturn;
+                        return returnTime;
                     } catch (Exception e) {
                         return 0;
                     }
