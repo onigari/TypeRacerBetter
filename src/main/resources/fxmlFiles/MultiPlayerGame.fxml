@@ -2,7 +2,6 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -30,10 +29,6 @@
          <Label fx:id="accuracyLabel" style="-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="0%" />
       </HBox>
       <VBox fx:id="progressBarsContainer" spacing="5" />
-
-      <!-- Modify the existing progress bar to be just for current player -->
-      <ProgressBar fx:id="progressBar" prefWidth="720" progress="0.0"
-                   style="-fx-accent: #e2b714; -fx-background-color: #3a3d42;" />
 
 <!--      &lt;!&ndash; Progress Bar &ndash;&gt;-->
 <!--      <ProgressBar fx:id="progressBar" prefWidth="1000" progress="0.0" style="-fx-accent: #e2b714; -fx-background-color: #3a3d42;" />-->

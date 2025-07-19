@@ -24,7 +24,7 @@ public class MultiPlayerGameController {
     @FXML private TextFlow paragraphFlow;
     @FXML private Label timeLabel;
     @FXML private Label playerNameLabel;
-    @FXML private ProgressBar progressBar;
+    //@FXML private ProgressBar progressBar;
     //@FXML private ListView<String> leaderboard;
     @FXML private Label wpmLabel;
     @FXML private Label accuracyLabel;
@@ -99,7 +99,7 @@ public class MultiPlayerGameController {
 //    }
 
     private void setupUI() {
-        progressBar.setProgress(0);
+        //progressBar.setProgress(0);
         typingField.setDisable(true);
         leaderboardList.setCellFactory(lv -> new ListCell<String>() {
             @Override
@@ -114,7 +114,7 @@ public class MultiPlayerGameController {
                 }
             }
         });
-        progressBar.setStyle("-fx-accent: #e2b714; -fx-background-color: #3a3d42; -fx-border-color: #e2b714; -fx-border-width: 2;");
+        //progressBar.setStyle("-fx-accent: #e2b714; -fx-background-color: #3a3d42; -fx-border-color: #e2b714; -fx-border-width: 2;");
     }
 
     private void setupParagraph() {
@@ -203,7 +203,7 @@ public class MultiPlayerGameController {
             totalTyped++;
 //            progressBar.setProgress((double) currentIndex / paragraphText.length());
             double progress = (double) currentIndex / paragraphText.length();
-            progressBar.setProgress(progress);
+            //progressBar.setProgress(progress);
             client.sendProgress(progress);// Send progress update to server
 
             updateStats();
@@ -220,7 +220,7 @@ public class MultiPlayerGameController {
             if (currentIndex > 0) {
                 currentIndex--;
                 double progress = (double) currentIndex / paragraphText.length();
-                progressBar.setProgress(progress);
+                //progressBar.setProgress(progress);
                 client.sendProgress(progress); // Send progress update to server
                 updateStats();
                 Text previous = textNodes.get(currentIndex);
@@ -294,12 +294,12 @@ public class MultiPlayerGameController {
     private void addPlayerProgress(String playerName) {
         if (!playerProgressBars.containsKey(playerName)) {
             ProgressBar pb = new ProgressBar(0);
-            pb.setPrefWidth(720);
+            pb.setPrefWidth(1680);
             pb.setStyle("-fx-accent: " + getColorForPlayer(playerName) + ";");
 
             HBox playerBox = new HBox(5);
             Label nameLabel = new Label(playerName);
-            nameLabel.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-min-width: 150;");
+            nameLabel.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-min-width: 75;");
 
             playerBox.getChildren().addAll(nameLabel, pb);
             progressBarsContainer.getChildren().add(playerBox);

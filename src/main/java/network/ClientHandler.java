@@ -41,6 +41,7 @@ public class ClientHandler implements Runnable {
                 } else if (inputLine.equals("START_GAME") && clients.get(0) == this) {
                     System.out.println("Host (" + playerName + ") initiated game start");
                     Server.broadcastStartGame();
+                    broadcastPlayerList();
                 }
 //                else if(inputLine.startsWith("SEND_PARA")) {
 //                    out.println("PARAGRAPH:" + paragraph);
