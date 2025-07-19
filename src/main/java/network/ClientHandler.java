@@ -13,6 +13,7 @@ public class ClientHandler implements Runnable {
     //private String paragraph;
     private String playerName;
     private static final CopyOnWriteArrayList<String> leaderboard = new CopyOnWriteArrayList<>();
+    private double currentProgress = 0;
 
     public ClientHandler(Socket socket, List<ClientHandler> clients, String paragraph) throws IOException {
         this.socket = socket;
@@ -35,6 +36,8 @@ public class ClientHandler implements Runnable {
                     broadcastPlayerList();
                 } else if (inputLine.startsWith("RESULT:")) {
                     handleResult(inputLine.substring(7));
+                } else if (inputLine.startsWith("PROGRESS:")) {
+                    handleProgress(inputLine.substring(9));
                 } else if (inputLine.equals("START_GAME") && clients.get(0) == this) {
                     System.out.println("Host (" + playerName + ") initiated game start");
                     Server.broadcastStartGame();
@@ -48,6 +51,58 @@ public class ClientHandler implements Runnable {
             System.out.println("Client disconnected: " + (playerName != null ? playerName : socket.getRemoteSocketAddress()));
         } finally {
             cleanup();
+        }
+    }
+
+    // dynamic progress bar
+    // Add to handle progress messages
+    private void handleProgress(String progressData) {
+        try {
+            double progress = Double.parseDouble(progressData);
+            String entry = String.format("%s;%.2f", playerName, progress);
+            synchronized (leaderboard) {
+                updateProgressEntry(entry);
+                broadcastProgress();
+            }
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid progress format: " + progressData);
+        }
+    }
+
+    private void updateProgressEntry(String entry) {
+        String[] parts = entry.split(";");
+        String player = parts[0];
+
+        for (int i = 0; i < leaderboard.size(); i++) {
+            String lbEntry = leaderboard.get(i);
+            if (lbEntry.startsWith(player + ";")) {
+                leaderboard.set(i, entry);
+                return;
+            }
+        }
+        leaderboard.add(entry);
+    }
+
+    private void broadcastProgress() {
+        StringBuilder sb = new StringBuilder("PROGRESS:");
+        synchronized (leaderboard) {
+            for (String entry : leaderboard) {
+                // Check if this is a result entry (has 3 parts) or progress entry (2 parts)
+                String[] parts = entry.split(";");
+                if (parts.length == 2) {
+                    sb.append(entry).append("|");
+                } else if (parts.length == 3) {
+                    // For finished players, progress is 1.0
+                    sb.append(parts[0]).append(";1.0|");
+                }
+            }
+
+        }
+        String progressData = sb.toString();
+        synchronized (clients) {
+            for (ClientHandler client : clients) {
+                client.sendMessage(progressData);
+            }
         }
     }
 

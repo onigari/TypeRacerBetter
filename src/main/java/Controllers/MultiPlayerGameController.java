@@ -9,12 +9,16 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.*;
 import javafx.util.Duration;
 import network.Client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MultiPlayerGameController {
     @FXML private TextFlow paragraphFlow;
@@ -41,12 +45,19 @@ public class MultiPlayerGameController {
     private final List<Text> textNodes = new ArrayList<>();
     private boolean typingDone = false;
 
+    // Add these fields
+    private final Map<String, ProgressBar> playerProgressBars = new HashMap<>();
+    @FXML private VBox progressBarsContainer;
+
+
 
     public void initialize(Client client, String name) {
         this.client = client;
         this.playerName = name;
         playerNameLabel.setText(playerName);
         this.leaderboardList.setItems(leaderboard);
+        // Initialize with empty progress bar for current player
+        addPlayerProgress(playerName);
 
         setupUI();
         setupEventHandlers();
@@ -59,9 +70,19 @@ public class MultiPlayerGameController {
                 paragraphText = message.substring(10);
 //                client.sendDebugMessage("WE GOT PARA::: " + paragraph);
                 Platform.runLater(this::setupParagraph);
-            }
-            if (message.startsWith("LEADERBOARD:")) {
+            } else if (message.startsWith("LEADERBOARD:")) {
                 Platform.runLater(() -> updateLeaderboard(message.substring(12)));
+            } else if (message.startsWith("PROGRESS:")) {
+                Platform.runLater(() -> updateAllProgress(message.substring(9)));
+            } else if (message.startsWith("PLAYERS:")) {
+                Platform.runLater(() -> {
+                    String[] players = message.substring(8).split(",");
+                    for (String player : players) {
+                        if (!player.isEmpty() && !player.equals(playerName)) {
+                            addPlayerProgress(player);
+                        }
+                    }
+                });
             }
         });
     }
@@ -71,7 +92,7 @@ public class MultiPlayerGameController {
 //        client.setOnMessageReceived(message -> {
 //            if (message.startsWith("PARAGRAPH:")) {
 //                paragraphText = message.substring(10);
-////                client.sendDebugMessage("WE GOT PARA::: " + paragraph);
+//                client.sendDebugMessage("WE GOT PARA::: " + paragraph);
 //                Platform.runLater(this::setupParagraph);
 //            }
 //        });
@@ -93,6 +114,7 @@ public class MultiPlayerGameController {
                 }
             }
         });
+        progressBar.setStyle("-fx-accent: #e2b714; -fx-background-color: #3a3d42; -fx-border-color: #e2b714; -fx-border-width: 2;");
     }
 
     private void setupParagraph() {
@@ -137,7 +159,7 @@ public class MultiPlayerGameController {
         // Start typing immediately when typing field gets focus
         typingField.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal && paragraphText != null && !typingDone) {
-                typingField.requestFocus(); //Well, shit was being cleared, deleting previous updates
+                typingField.requestFocus();
             }
         });
 
@@ -179,8 +201,12 @@ public class MultiPlayerGameController {
             }
             currentIndex++;
             totalTyped++;
-            progressBar.setProgress((double) currentIndex / paragraphText.length());
-            //updateStats();
+//            progressBar.setProgress((double) currentIndex / paragraphText.length());
+            double progress = (double) currentIndex / paragraphText.length();
+            progressBar.setProgress(progress);
+            client.sendProgress(progress);// Send progress update to server
+
+            updateStats();
 
             if (currentIndex >= paragraphText.length()) {
                 typingFinished();
@@ -193,6 +219,10 @@ public class MultiPlayerGameController {
         for (int i = 0; i < diff; i++) {
             if (currentIndex > 0) {
                 currentIndex--;
+                double progress = (double) currentIndex / paragraphText.length();
+                progressBar.setProgress(progress);
+                client.sendProgress(progress); // Send progress update to server
+                updateStats();
                 Text previous = textNodes.get(currentIndex);
                 previous.setStyle("-fx-fill: #646669;"); // MonkeyType's untyped color
                 previous.setUnderline(false); // underline
@@ -258,5 +288,58 @@ public class MultiPlayerGameController {
 //        });
         //leaderboardList.getItems().clear();
         leaderboardList.setItems(leaderboard);
+    }
+
+    // Add these new methods
+    private void addPlayerProgress(String playerName) {
+        if (!playerProgressBars.containsKey(playerName)) {
+            ProgressBar pb = new ProgressBar(0);
+            pb.setPrefWidth(720);
+            pb.setStyle("-fx-accent: " + getColorForPlayer(playerName) + ";");
+
+            HBox playerBox = new HBox(5);
+            Label nameLabel = new Label(playerName);
+            nameLabel.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-min-width: 150;");
+
+            playerBox.getChildren().addAll(nameLabel, pb);
+            progressBarsContainer.getChildren().add(playerBox);
+            playerProgressBars.put(playerName, pb);
+        }
+    }
+
+    private String getColorForPlayer(String playerName) {
+        // Simple hash-based color assignment
+        int hash = playerName.hashCode();
+        String[] colors = {"#e2b714", "#d1d0c5", "#ca4754", "#7e57c2", "#26a69a"};
+        return colors[Math.abs(hash) % colors.length];
+    }
+
+    private void updateAllProgress(String progressData) {
+        String[] entries = progressData.split("\\|");
+        for (String entry : entries) {
+            if (!entry.isEmpty()) {
+                String[] parts = entry.split(";");
+                if (parts.length >= 2) {
+                    String player = parts[0];
+                    double progress = Double.parseDouble(parts[1]);
+
+                    Platform.runLater(() -> {
+                        if (!playerProgressBars.containsKey(player)) {
+                            addPlayerProgress(player);
+                        }
+                        ProgressBar pb = playerProgressBars.get(player);
+                        if (pb != null) {
+                            pb.setProgress(progress);
+                            // Highlight current player's bar
+                            if (player.equals(playerName)) {
+                                pb.setStyle("-fx-accent: " + getColorForPlayer(player) + "; -fx-border-color: " + getColorForPlayer(player) + ";");
+                            } else {
+                                pb.setStyle("-fx-accent: " + getColorForPlayer(player) + ";");
+                            }
+                        }
+                    });
+                }
+            }
+        }
     }
 }
