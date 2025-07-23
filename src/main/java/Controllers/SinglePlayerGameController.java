@@ -89,7 +89,7 @@ public class SinglePlayerGameController {
             while(takeIn.hasNextLine()){
                 inputStrings.add(takeIn.nextLine());
             }
-            accuracyChecker = new char[inputStrings.size() + 10];
+            accuracyChecker = new char[inputStrings.size() + 1000];
         }
         catch(IOException e){
             e.printStackTrace();
