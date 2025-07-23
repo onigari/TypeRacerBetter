@@ -42,7 +42,7 @@
    </VBox>
 
    <!-- Bottom Section -->
-   <HBox alignment="CENTER" spacing="30">
+   <HBox alignment="CENTER" prefHeight="183.0" prefWidth="760.0" spacing="30">
       <!-- Player Name Input -->
       <HBox alignment="CENTER_LEFT" spacing="10">
          <Label style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="name:" />
@@ -58,4 +58,5 @@
          <ListView fx:id="leaderboardList" prefHeight="150" prefWidth="300" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-border-color: #646669;" />
       </VBox>
    </HBox>
+   <Label fx:id="escText" alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="365.0" text="Press esc to go back to main menu" />
 </VBox>

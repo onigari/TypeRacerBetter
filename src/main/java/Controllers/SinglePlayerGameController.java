@@ -2,12 +2,16 @@ package Controllers;
 
 import javafx.collections.*;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.application.Platform;
 import javafx.animation.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.*;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.*;
@@ -48,6 +52,9 @@ public class SinglePlayerGameController {
     @FXML
     private Label accuracyLabel;
 
+    @FXML
+    private Label escText;
+
     // Game state fields
     private final List<String> inputStrings = new ArrayList<>();
     private final ObservableList<String> leaderboard = FXCollections.observableArrayList();
@@ -62,7 +69,7 @@ public class SinglePlayerGameController {
     private int correctWordCount;
     private int totalTyped;
     private boolean currentWordCorrect;
-    private StringBuffer storeString;
+    //private StringBuffer storeString;
 
     @FXML
     public void initialize() {
@@ -103,6 +110,7 @@ public class SinglePlayerGameController {
             }
             }
         });
+        escText.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
     }
 
     private void setupEventHandlers() {
@@ -137,9 +145,14 @@ public class SinglePlayerGameController {
         });
 
         // esc to go to main menu
-        typingField.setOnKeyPressed(e -> {
+        rootPane.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
                 // TODO:
+                try {
+                    loadMainMenu();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
@@ -178,7 +191,7 @@ public class SinglePlayerGameController {
     }
 
     private void handleNewCharacters(String oldValue, String newValue) {
-        System.out.println(storeString);
+        //System.out.println(storeString);
         for (int i = oldValue.length(); i < newValue.length(); i++) {
             if (currentIndex >= paragraphText.length()) {
                 typingFinished();
@@ -191,19 +204,19 @@ public class SinglePlayerGameController {
             textNodes.get(currentIndex).setUnderline(true);
 
             if (typedChar == expectedChar) {
-                if(storeString.charAt(currentIndex) != 'F') {
-                    storeString.setCharAt(currentIndex, 'T');
-                }
+//                if(storeString.charAt(currentIndex) != 'F') {
+//                    storeString.setCharAt(currentIndex, 'T');
+//                }
                 current.setStyle("-fx-fill: #d1d0c5;"); // MonkeyType's correct color
                 correctCharCount++;
             } else {
-                storeString.setCharAt(currentIndex, 'F');
+                //storeString.setCharAt(currentIndex, 'F');
                 current.setStyle("-fx-fill: #ca4754;"); // MonkeyType's incorrect color
                 currentWordCorrect = false;
             }
 
             if (typedChar == ' ') {
-                storeString.setCharAt(currentIndex, ' ');
+                //storeString.setCharAt(currentIndex, ' ');
                 if (currentWordCorrect) correctWordCount++;
                 currentWordCorrect = true;
 //                typingField.replaceSelection("");
@@ -329,9 +342,6 @@ public class SinglePlayerGameController {
             return;
         }
 
-        // Reset game state
-        resetGame();
-
         // Setup UI
         titleLabel.setText("type racer - go!");
         startButton.setText("restart");
@@ -339,13 +349,16 @@ public class SinglePlayerGameController {
 
         // Select random paragraph
         paragraphText = inputStrings.get(new Random().nextInt(inputStrings.size()));
-        displayParagraph(paragraphText);
+        //displayParagraph(paragraphText);
 
-        // Start timer
-        startTimer();
+        // Reset game state
+        resetGame();
 
-        // Focus typing field
-        typingField.requestFocus();
+//        // Start timer
+//        startTimer();
+//
+//        // Focus typing field
+//        typingField.requestFocus();
     }
 
     private void resetGame() {
@@ -358,7 +371,18 @@ public class SinglePlayerGameController {
         progressBar.setProgress(0);
         typingField.clear();
         typingField.setDisable(false);
-        storeString.delete(0, storeString.length());
+
+//        titleLabel.setText("type racer - go!");
+//        startButton.setText("restart");
+//        playerNameField.setEditable(false);
+
+        displayParagraph(paragraphText);
+
+        startTimer();
+        typingField.requestFocus();
+//        if(!storeString.isEmpty()){
+//            storeString.delete(0, storeString.length());
+//        }
     }
 
     private void startTimer() {
@@ -375,6 +399,19 @@ public class SinglePlayerGameController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void loadMainMenu() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MainMenu.fxml"));
+        Parent root = loader.load();
+
+        Stage stage = (Stage) startButton.getScene().getWindow();
+        Scene scene = new Scene(root, 800, 600);
+
+        stage.setTitle("TypeRacer");
+        stage.setResizable(true);
+        stage.setScene(scene);
+        stage.show();
     }
 
 //    @FXML
