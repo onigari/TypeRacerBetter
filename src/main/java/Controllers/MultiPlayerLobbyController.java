@@ -8,16 +8,21 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import network.Client;
 
 import java.io.IOException;
 
 public class MultiPlayerLobbyController {
+    @FXML private VBox rootPane;
     @FXML private ListView<String> playerListView;
     @FXML private Label statusLabel;
     @FXML private Button startButton;
     @FXML private Label hostIndicator; // Now properly linked to FXML
+    @FXML private Label escText;
 
     private Client client;
     private String playerName;
@@ -32,6 +37,11 @@ public class MultiPlayerLobbyController {
         setupUI();
         setupNetworkHandlers();
         client.sendName(name);
+
+        Platform.runLater(() -> {
+            rootPane.requestFocus();
+            setupEventHandlers();
+        });
     }
 
     private void setupUI() {
@@ -42,6 +52,8 @@ public class MultiPlayerLobbyController {
         if (hostIndicator != null) {
             hostIndicator.setText(isHost ? "(Host)" : "(Player)");
         }
+
+        escText.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
     }
 
     private void setupNetworkHandlers() {
@@ -57,11 +69,43 @@ public class MultiPlayerLobbyController {
         });
     }
 
+    private void setupEventHandlers() {
+        rootPane.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                // TODO:
+                try {
+                    loadMainMenu();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+    }
+
     @FXML
     private void handleStartGame() {
         if (isHost) {
             client.sendStartGame();
         }
+    }
+
+    private void loadMainMenu() throws IOException {
+        new Thread(() -> {
+            client.close();
+        }).start();
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MainMenu.fxml"));
+        Parent root = loader.load();
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            Scene scene = new Scene(root, 800, 600);
+
+            stage.setTitle("TypeRacer");
+            stage.setResizable(true);
+            stage.setScene(scene);
+            stage.show();
+        });
     }
 
     private void startGame() {

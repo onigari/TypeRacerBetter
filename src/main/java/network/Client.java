@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.function.Consumer;
 
+import static java.lang.System.out;
+
 public class Client {
     private Socket socket;
     private BufferedReader in;
@@ -62,9 +64,11 @@ public class Client {
     public void close() {
         running = false;
         try {
+            out.println("CLOSE");
             if (in != null) in.close();
             if (out != null) out.close();
             if (socket != null && !socket.isClosed()) socket.close();
+            System.out.println("Connection closed");
         } catch (IOException e) {
             System.err.println("Error closing client: " + e.getMessage());
         }

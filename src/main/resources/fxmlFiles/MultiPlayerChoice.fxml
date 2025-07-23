@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="25" style="-fx-background-color: #323437; -fx-padding: 40;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MultiPlayerChoiceController">
+<VBox fx:id="rootPane" alignment="CENTER" spacing="25" style="-fx-background-color: #323437; -fx-padding: 40;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MultiPlayerChoiceController">
 
     <Label style="-fx-font-family: 'Roboto Mono'; -fx-font-size: 32px; -fx-text-fill: #e2b714; -fx-font-weight: bold;" text="TYPE RACER" />
 
@@ -23,4 +23,5 @@
     </VBox>
 
     <Label fx:id="statusLabel" style="-fx-font-family: 'Roboto Mono'; -fx-text-fill: #ca4754; -fx-font-size: 14px;" />
+   <Label fx:id="escText" alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="217.0" text="Press esc to go back to main menu" />
 </VBox>
