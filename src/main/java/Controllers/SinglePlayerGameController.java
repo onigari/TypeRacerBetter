@@ -88,6 +88,7 @@ public class SinglePlayerGameController {
             while(takeIn.hasNextLine()){
                 inputStrings.add(takeIn.nextLine());
             }
+            storeString = new StringBuffer(String.valueOf(inputStrings));
         }
         catch(IOException e){
             e.printStackTrace();
@@ -176,15 +177,19 @@ public class SinglePlayerGameController {
         int diff = oldValue.length() - newValue.length();
         for (int i = 0; i < diff; i++) {
             if (currentIndex > 0) {
+                if(storeString.charAt(currentIndex) == 'T') {
+                    storeString.setCharAt(currentIndex, ' ');
+                }
+
                 currentIndex--;
                 Text previous = textNodes.get(currentIndex);
                 previous.setStyle("-fx-fill: #646669;"); // MonkeyType's untyped color
                 previous.setUnderline(false); // underline
                 totalTyped = Math.max(0, totalTyped - 1);
 
-                if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
-                    correctCharCount--;
-                }
+//                if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
+//                    correctCharCount--;
+//                }
             }
         }
         updateStats();
