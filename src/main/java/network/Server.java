@@ -80,7 +80,7 @@ public class Server {
             for (String entry : leaderboard) {
                 String[] parts = entry.split(";");
                 if (parts.length == 4) {
-                    sb.append(String.format("%s - %.2fs - %.2f WPM - %.2f Acc)|",
+                    sb.append(String.format("%s - %.2fs - %.2f WPM - %.2f %% |",
                             parts[0], Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3])));
                 }
             }

@@ -43,10 +43,6 @@ public class ClientHandler implements Runnable {
                     Server.broadcastStartGame();
                     broadcastPlayerList();
                 }
-//                else if(inputLine.startsWith("SEND_PARA")) {
-//                    out.println("PARAGRAPH:" + paragraph);
-//                    System.out.println("Sent PARAGRAPH to client: " + paragraph);
-//                }
             }
         } catch (IOException e) {
             System.out.println("Client disconnected: " + (playerName != null ? playerName : socket.getRemoteSocketAddress()));

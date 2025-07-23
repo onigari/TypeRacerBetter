@@ -62,6 +62,7 @@ public class SinglePlayerGameController {
     private int correctWordCount;
     private int totalTyped;
     private boolean currentWordCorrect;
+    private StringBuffer storeString;
 
     @FXML
     public void initialize() {
@@ -92,14 +93,14 @@ public class SinglePlayerGameController {
         leaderboardList.setCellFactory(lv -> new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
-                } else {
-                    setText(item);
-                    setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
-                }
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+                setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+            } else {
+                setText(item);
+                setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+            }
             }
         });
     }
@@ -128,10 +129,24 @@ public class SinglePlayerGameController {
             }
         });
 
+        // tab key to restart
+        typingField.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.TAB) {
+                resetGame();
+            }
+        });
+
+        // esc to go to main menu
+        typingField.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                // TODO:
+            }
+        });
+
         // Start typing immediately when typing field gets focus
         typingField.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal && paragraphText != null && !typingDone) {
-                typingField.clear();
+                typingField.requestFocus();
             }
         });
 
@@ -141,6 +156,7 @@ public class SinglePlayerGameController {
                 onStartButtonClick();
             }
         });
+
     }
 
     private void handleBackspace(String oldValue, String newValue) {
@@ -162,6 +178,7 @@ public class SinglePlayerGameController {
     }
 
     private void handleNewCharacters(String oldValue, String newValue) {
+        System.out.println(storeString);
         for (int i = oldValue.length(); i < newValue.length(); i++) {
             if (currentIndex >= paragraphText.length()) {
                 typingFinished();
@@ -174,21 +191,25 @@ public class SinglePlayerGameController {
             textNodes.get(currentIndex).setUnderline(true);
 
             if (typedChar == expectedChar) {
+                if(storeString.charAt(currentIndex) != 'F') {
+                    storeString.setCharAt(currentIndex, 'T');
+                }
                 current.setStyle("-fx-fill: #d1d0c5;"); // MonkeyType's correct color
                 correctCharCount++;
             } else {
+                storeString.setCharAt(currentIndex, 'F');
                 current.setStyle("-fx-fill: #ca4754;"); // MonkeyType's incorrect color
                 currentWordCorrect = false;
             }
 
             if (typedChar == ' ') {
+                storeString.setCharAt(currentIndex, ' ');
                 if (currentWordCorrect) correctWordCount++;
                 currentWordCorrect = true;
 //                typingField.replaceSelection("");
             }
             currentIndex++;
             totalTyped++;
-            progressBar.setProgress((double) currentIndex / paragraphText.length());
             updateStats();
 
             if (currentIndex >= paragraphText.length()) {
@@ -204,6 +225,7 @@ public class SinglePlayerGameController {
             timeLabel.setText(String.format("%.2fs", seconds));
             wpmLabel.setText(String.format("%.0f", calculateWPM()));
             accuracyLabel.setText(String.format("%.0f%%", calculateAccuracy()));
+            progressBar.setProgress((double) currentIndex / paragraphText.length());
         });
     }
 
@@ -336,6 +358,7 @@ public class SinglePlayerGameController {
         progressBar.setProgress(0);
         typingField.clear();
         typingField.setDisable(false);
+        storeString.delete(0, storeString.length());
     }
 
     private void startTimer() {

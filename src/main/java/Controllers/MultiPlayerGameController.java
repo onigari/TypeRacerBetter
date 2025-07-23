@@ -202,7 +202,7 @@ public class MultiPlayerGameController {
             currentIndex++;
             totalTyped++;
 //            progressBar.setProgress((double) currentIndex / paragraphText.length());
-            double progress = (double) currentIndex / paragraphText.length();
+            double progress = (double) correctCharCount / paragraphText.length();
             //progressBar.setProgress(progress);
             client.sendProgress(progress);// Send progress update to server
 
@@ -219,9 +219,7 @@ public class MultiPlayerGameController {
         for (int i = 0; i < diff; i++) {
             if (currentIndex > 0) {
                 currentIndex--;
-                double progress = (double) currentIndex / paragraphText.length();
                 //progressBar.setProgress(progress);
-                client.sendProgress(progress); // Send progress update to server
                 updateStats();
                 Text previous = textNodes.get(currentIndex);
                 previous.setStyle("-fx-fill: #646669;"); // MonkeyType's untyped color
@@ -231,6 +229,8 @@ public class MultiPlayerGameController {
                 if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
                     correctCharCount--;
                 }
+                double progress = (double) correctCharCount / paragraphText.length();
+                client.sendProgress(progress); // Send progress update to server
             }
         }
         //updateStats();
