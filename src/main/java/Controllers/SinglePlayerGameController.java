@@ -66,7 +66,6 @@ public class SinglePlayerGameController {
     private final List<Text> textNodes = new ArrayList<>();
     private int currentIndex;
     private int correctCharCount;
-    private int correctWordCount;
     private int totalTyped;
     private boolean currentWordCorrect;
     //private StringBuffer storeString;
@@ -90,6 +89,7 @@ public class SinglePlayerGameController {
                 inputStrings.add(takeIn.nextLine());
             }
             accuracyChecker = new char[inputStrings.size() + 1000];
+            Arrays.fill(accuracyChecker, 'B');
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -188,16 +188,16 @@ public class SinglePlayerGameController {
                 previous.setUnderline(false); // underline
                 totalTyped = Math.max(0, totalTyped - 1);
 
-//                if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
-//                    if(accuracyChecker[currentIndex] != 'F') {
-//                        correctCharCount--;
-//                        accuracyChecker[currentIndex] = 'F';
-//                    }
-//                }
-
                 if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
-                    correctCharCount = Math.max(0, correctCharCount - 1);
+                    if(accuracyChecker[currentIndex] != 'F') {
+                        correctCharCount--;
+                        accuracyChecker[currentIndex] = 'F';
+                    }
                 }
+
+//                if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
+//                    correctCharCount = Math.max(0, correctCharCount - 1);
+//                }
             }
         }
         updateStats();
@@ -217,7 +217,7 @@ public class SinglePlayerGameController {
             textNodes.get(currentIndex).setUnderline(true);
 
             if (typedChar == expectedChar) {
-                if (accuracyChecker[currentIndex] != 'F') {
+                if(accuracyChecker[currentIndex] == 'B') {
                     accuracyChecker[currentIndex] = 'T';
                     correctCharCount++;
                 }
@@ -230,12 +230,6 @@ public class SinglePlayerGameController {
                 currentWordCorrect = false;
             }
 
-            if (typedChar == ' ') {
-                //storeString.setCharAt(currentIndex, ' ');
-                if (currentWordCorrect) correctWordCount++;
-                currentWordCorrect = true;
-//                typingField.replaceSelection("");
-            }
             currentIndex++;
             totalTyped++;
             updateStats();
@@ -354,7 +348,6 @@ public class SinglePlayerGameController {
         typingDone = false;
         currentIndex = 0;
         correctCharCount = 0;
-        correctWordCount = 0;
         totalTyped = 0;
         currentWordCorrect = true;
         progressBar.setProgress(0);
