@@ -65,6 +65,12 @@ public class MultiPlayerLobbyController {
                 });
             } else if (message.equals("START_GAME")) {
                 Platform.runLater(this::startGame);
+            } else if (message.equals("CLOSE_ALL")){
+                try{
+                    loadMainMenu();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -74,6 +80,7 @@ public class MultiPlayerLobbyController {
             if (e.getCode() == KeyCode.ESCAPE) {
                 // TODO:
                 try {
+                    if(isHost) client.closeAll();
                     loadMainMenu();
                 } catch (IOException ex) {
                     ex.printStackTrace();

@@ -43,10 +43,8 @@ public class ClientHandler implements Runnable {
                     Server.broadcastStartGame();
                     broadcastPlayerList();
                 } else if (inputLine.equals("CLOSE")){
-                    clients.remove(this);
-                    broadcastPlayerList();
-                }
-                else if (inputLine.equals("CLOSE_ALL")){
+                    break;
+                } else if (inputLine.equals("CLOSE_ALL")){
                     for (ClientHandler client : clients) {
                         client.out.println("CLOSE_ALL");
                     }
@@ -194,6 +192,7 @@ public class ClientHandler implements Runnable {
 //    }
 
     private void broadcastPlayerList() {
+        if(clients.isEmpty()) return;
         StringBuffer sb = new StringBuffer("PLAYERS:");
         synchronized (clients) {
             for (ClientHandler client : clients) {
@@ -217,6 +216,7 @@ public class ClientHandler implements Runnable {
 
     private void cleanup() {
         try {
+            //out.println("CLOSE:" + playerName);
             if (in != null) in.close();
             if (out != null) out.close();
             if (socket != null && !socket.isClosed()) socket.close();

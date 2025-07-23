@@ -135,19 +135,12 @@ public class MultiPlayerGameController {
                     throw new RuntimeException(e);
                 }
             }
+//            else if (message.startsWith("CLOSE:")){
+//                String removePlayer = message.substring(6);
+//                if(!removePlayer.equals(playerName)) removePlayerProgress(removePlayer);
+//            }
         });
     }
-
-//    private void requestParagraph() {
-//        client.sendMessage("SEND_PARA");
-//        client.setOnMessageReceived(message -> {
-//            if (message.startsWith("PARAGRAPH:")) {
-//                paragraphText = message.substring(10);
-//                client.sendDebugMessage("WE GOT PARA::: " + paragraph);
-//                Platform.runLater(this::setupParagraph);
-//            }
-//        });
-//    }
 
     private void setupUI() {
         //progressBar.setProgress(0);
@@ -165,7 +158,7 @@ public class MultiPlayerGameController {
                 }
             }
         });
-        //progressBar.setStyle("-fx-accent: #e2b714; -fx-background-color: #3a3d42; -fx-border-color: #e2b714; -fx-border-width: 2;");
+
         escText.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
     }
 
@@ -339,10 +332,22 @@ public class MultiPlayerGameController {
 //            return toReturn;
 //        });
         //leaderboardList.getItems().clear();
-        leaderboardList.setItems(leaderboard);
+        //leaderboardList.setItems(leaderboard);
     }
 
-    // Add these new methods
+//    private void removePlayerProgress(String playerName) {
+//        ProgressBar pb = playerProgressBars.remove(playerName);
+//        if (pb != null) {
+//            // Find the HBox in the VBox and remove it
+//            progressBarsContainer.getChildren().removeIf(node -> {
+//                if (node instanceof HBox hbox) {
+//                    return hbox.getChildren().contains(pb);
+//                }
+//                return false;
+//            });
+//        }
+//    }
+
     private void addPlayerProgress(String playerName) {
         if (!playerProgressBars.containsKey(playerName)) {
             ProgressBar pb = new ProgressBar(0);
