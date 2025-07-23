@@ -42,6 +42,9 @@ public class ClientHandler implements Runnable {
                     System.out.println("Host (" + playerName + ") initiated game start");
                     Server.broadcastStartGame();
                     broadcastPlayerList();
+                } else if (inputLine.equals("CLOSE")){
+                    clients.remove(this);
+                    broadcastPlayerList();
                 }
             }
         } catch (IOException e) {

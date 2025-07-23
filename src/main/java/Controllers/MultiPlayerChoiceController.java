@@ -5,14 +5,46 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import network.Client;
 import java.io.IOException;
 
 public class MultiPlayerChoiceController {
+    @FXML private VBox rootPane;
     @FXML private TextField nameField;
     @FXML private TextField ipField;
     @FXML private Label statusLabel;
+    @FXML private Label escText;
+
+    public void initialize() {
+        escText.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+
+        rootPane.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                // TODO:
+                try {
+                    loadMainMenu();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void loadMainMenu() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MainMenu.fxml"));
+        Parent root = loader.load();
+
+        Stage stage = (Stage) rootPane.getScene().getWindow();
+        Scene scene = new Scene(root, 800, 600);
+
+        stage.setTitle("TypeRacer");
+        stage.setResizable(true);
+        stage.setScene(scene);
+        stage.show();
+    }
 
     @FXML
     private void handleHostGame() {

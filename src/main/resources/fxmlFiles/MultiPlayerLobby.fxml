@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20" style="-fx-background-color: #323437; -fx-padding: 30;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MultiPlayerLobbyController">
+<VBox fx:id="rootPane" alignment="CENTER" spacing="20" style="-fx-background-color: #323437; -fx-padding: 30;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MultiPlayerLobbyController">
 
    <Label style="-fx-font-family: 'Roboto Mono'; -fx-font-size: 28px; -fx-text-fill: #e2b714; -fx-font-weight: bold;" text="LOBBY" />
 
@@ -20,4 +20,5 @@
 
       <Button fx:id="startButton" onAction="#handleStartGame" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-weight: bold; -fx-font-size: 16px; -fx-min-width: 150;" text="START RACE" />
    </VBox>
+   <Label fx:id="escText" alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="217.0" text="Press esc to go back to main menu" />
 </VBox>
