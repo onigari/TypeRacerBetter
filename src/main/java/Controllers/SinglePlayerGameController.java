@@ -254,7 +254,7 @@ public class SinglePlayerGameController {
     private double calculateWPM() {
         long elapsedMillis = System.currentTimeMillis() - startTime;
         double elapsedMinutes = elapsedMillis / 60000.0;
-        return elapsedMinutes == 0 ? 0 : (correctWordCount / elapsedMinutes);
+        return elapsedMinutes == 0 ? 0 : (correctCharCount / 5.0 / elapsedMinutes);
     }
 
     private void displayParagraph(String text) {
