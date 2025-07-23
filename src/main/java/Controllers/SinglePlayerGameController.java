@@ -70,6 +70,7 @@ public class SinglePlayerGameController {
     private int totalTyped;
     private boolean currentWordCorrect;
     //private StringBuffer storeString;
+    private char[] accuracyChecker;
 
     @FXML
     public void initialize() {
@@ -88,7 +89,7 @@ public class SinglePlayerGameController {
             while(takeIn.hasNextLine()){
                 inputStrings.add(takeIn.nextLine());
             }
-            storeString = new StringBuffer(String.valueOf(inputStrings));
+            accuracyChecker = new char[inputStrings.size() + 10];
         }
         catch(IOException e){
             e.printStackTrace();
@@ -98,6 +99,10 @@ public class SinglePlayerGameController {
     private void setupUI() {
         progressBar.setProgress(0);
         typingField.setDisable(true);
+        typingField.setStyle("""
+                -fx-opacity: 0;\s
+                    -fx-background-color: transparent;
+                    -fx-border-color: transparent;""");
         leaderboardList.setCellFactory(lv -> new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -115,6 +120,9 @@ public class SinglePlayerGameController {
     }
 
     private void setupEventHandlers() {
+        for(char c : accuracyChecker) {
+            System.out.print(c);
+        }
         // Typing field listener for character-by-character comparison
         typingField.textProperty().addListener((obs, oldValue, newValue) -> {
             if (paragraphText == null || paragraphText.isEmpty() || typingDone) return;
@@ -127,9 +135,6 @@ public class SinglePlayerGameController {
             // Handle new characters
             handleNewCharacters(oldValue, newValue);
         });
-
-        TODO:
-        // On pressing space or end of game
 
         // Enter key to finish
         typingField.setOnKeyPressed(e -> {
@@ -148,7 +153,6 @@ public class SinglePlayerGameController {
         // esc to go to main menu
         rootPane.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
-                // TODO:
                 try {
                     loadMainMenu();
                 } catch (IOException ex) {
@@ -177,9 +181,7 @@ public class SinglePlayerGameController {
         int diff = oldValue.length() - newValue.length();
         for (int i = 0; i < diff; i++) {
             if (currentIndex > 0) {
-                if(storeString.charAt(currentIndex) == 'T') {
-                    storeString.setCharAt(currentIndex, ' ');
-                }
+
 
                 currentIndex--;
                 Text previous = textNodes.get(currentIndex);
@@ -187,9 +189,16 @@ public class SinglePlayerGameController {
                 previous.setUnderline(false); // underline
                 totalTyped = Math.max(0, totalTyped - 1);
 
+                if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
+                    if(accuracyChecker[currentIndex] != 'F') {
+                        correctCharCount--;
+                        accuracyChecker[currentIndex] = 'F';
+                    }
+                }
+
 //                if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
-//                    correctCharCount--;
-//                }
+//                         correctCharCount--;
+//                  }
             }
         }
         updateStats();
@@ -209,13 +218,15 @@ public class SinglePlayerGameController {
             textNodes.get(currentIndex).setUnderline(true);
 
             if (typedChar == expectedChar) {
-//                if(storeString.charAt(currentIndex) != 'F') {
-//                    storeString.setCharAt(currentIndex, 'T');
-//                }
+                if(accuracyChecker[currentIndex] != 'F') {
+                    accuracyChecker[currentIndex] = 'T';
+                    correctCharCount++;
+                }
+
                 current.setStyle("-fx-fill: #d1d0c5;"); // MonkeyType's correct color
-                correctCharCount++;
             } else {
-                //storeString.setCharAt(currentIndex, 'F');
+                accuracyChecker[currentIndex] = 'F';
+
                 current.setStyle("-fx-fill: #ca4754;"); // MonkeyType's incorrect color
                 currentWordCorrect = false;
             }
