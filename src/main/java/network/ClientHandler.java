@@ -10,10 +10,8 @@ public class ClientHandler implements Runnable {
     private BufferedReader in;
     private PrintWriter out;
     private List<ClientHandler> clients;
-    //private String paragraph;
     private String playerName;
     private static final CopyOnWriteArrayList<String> leaderboard = new CopyOnWriteArrayList<>();
-    private double currentProgress = 0;
 
     public ClientHandler(Socket socket, List<ClientHandler> clients, String paragraph) throws IOException {
         this.socket = socket;
@@ -58,7 +56,6 @@ public class ClientHandler implements Runnable {
     }
 
     // dynamic progress bar
-    // Add to handle progress messages
     private void handleProgress(String progressData) {
         try {
             double progress = Double.parseDouble(progressData);

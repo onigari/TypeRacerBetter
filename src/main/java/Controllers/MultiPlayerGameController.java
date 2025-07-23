@@ -21,14 +21,8 @@ import javafx.util.Duration;
 import network.Client;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
 
 public class MultiPlayerGameController {
     public Label titleLabel;
@@ -51,11 +45,11 @@ public class MultiPlayerGameController {
     private int totalTyped;
     private int currentIndex;
     private int correctCharCount;
-    private int correctWordCount;
     private boolean currentWordCorrect;
     private final List<Text> textNodes = new ArrayList<>();
     private boolean typingDone = false;
     private boolean isHost;
+    private char[] accuracyChecker;
 
     // Add these fields
     private final Map<String, ProgressBar> playerProgressBars = new HashMap<>();
@@ -140,7 +134,8 @@ public class MultiPlayerGameController {
         client.setOnMessageReceived(message -> {
             if (message.startsWith("PARAGRAPH:")) {
                 paragraphText = message.substring(10);
-//                client.sendDebugMessage("WE GOT PARA::: " + paragraph);
+                accuracyChecker = new char[paragraphText.length() + 1000];
+                Arrays.fill(accuracyChecker, 'B');
                 Platform.runLater(this::setupParagraph);
             } else if (message.startsWith("LEADERBOARD:")) {
                 Platform.runLater(() -> updateLeaderboard(message.substring(12)));
@@ -204,7 +199,6 @@ public class MultiPlayerGameController {
         }
         paragraphFlow.getChildren().addAll(textNodes);
 
-        typingField.requestFocus();
     }
 
     private void setupEventHandlers() {
@@ -262,27 +256,22 @@ public class MultiPlayerGameController {
             textNodes.get(currentIndex).setUnderline(true);
 
             if (typedChar == expectedChar) {
+                if(accuracyChecker[currentIndex] == 'B') {
+                    accuracyChecker[currentIndex] = 'T';
+                    correctCharCount++;
+                }
                 current.setStyle("-fx-fill: #d1d0c5;"); // MonkeyType's correct color
-                correctCharCount++;
             } else {
+                accuracyChecker[currentIndex] = 'F';
+
                 current.setStyle("-fx-fill: #ca4754;"); // MonkeyType's incorrect color
                 currentWordCorrect = false;
             }
 
-            if (typedChar == ' ') {
-                if (currentWordCorrect) correctWordCount++;
-                currentWordCorrect = true;
-//                typingField.replaceSelection("");
-            }
             currentIndex++;
             totalTyped++;
-//            progressBar.setProgress((double) currentIndex / paragraphText.length());
-            double progress = (double) correctCharCount / paragraphText.length();
-            //progressBar.setProgress(progress);
-            client.sendProgress(progress);// Send progress update to server
 
             updateStats();
-
             if (currentIndex >= paragraphText.length()) {
                 typingFinished();
             }
@@ -294,21 +283,20 @@ public class MultiPlayerGameController {
         for (int i = 0; i < diff; i++) {
             if (currentIndex > 0) {
                 currentIndex--;
-                //progressBar.setProgress(progress);
-                updateStats();
                 Text previous = textNodes.get(currentIndex);
                 previous.setStyle("-fx-fill: #646669;"); // MonkeyType's untyped color
                 previous.setUnderline(false); // underline
                 totalTyped = Math.max(0, totalTyped - 1);
 
                 if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
-                    correctCharCount--;
+                    if(accuracyChecker[currentIndex] != 'F') {
+                        correctCharCount--;
+                        accuracyChecker[currentIndex] = 'F';
+                    }
                 }
-                double progress = (double) correctCharCount / paragraphText.length();
-                client.sendProgress(progress); // Send progress update to server
             }
         }
-        //updateStats();
+        updateStats();
     }
 
     private void updateStats() {
@@ -316,12 +304,15 @@ public class MultiPlayerGameController {
             long elapsed = System.currentTimeMillis() - startTime;
             double seconds = elapsed / 1000.0;
             timeLabel.setText(String.format("%.2fs", seconds));
-            wpmLabel.setText(String.format("%.2f", calculateWPM()));
+            wpmLabel.setText(String.format("%d", (int) calculateWPM()));
             accuracyLabel.setText(String.format("%.0f%%", calculateAccuracy()));
+            double progress = (double) currentIndex / paragraphText.length();
+            client.sendProgress(progress); // Send progress update to server
 
             double time = (System.currentTimeMillis() - startTime) / 1000.0;
             double wpm = calculateWPM();
-            client.sendResult(String.format("%s;%.2f;%d;%.2f", playerName, time, (int) wpm, calculateAccuracy()));
+            double accuracy = calculateAccuracy();
+            client.sendResult(String.format("%s;%.2f;%d;%.2f", playerName, time, (int) wpm, accuracy));
         });
     }
 
@@ -332,7 +323,7 @@ public class MultiPlayerGameController {
     private double calculateWPM() {
         long elapsedMillis = System.currentTimeMillis() - startTime;
         double elapsedMinutes = elapsedMillis / 60000.0;
-        return elapsedMinutes == 0 ? 0 : (correctWordCount / elapsedMinutes);
+        return elapsedMinutes == 0 ? 0 : (correctCharCount / 5.0 / elapsedMinutes);
     }
 
     private void typingFinished() {
@@ -378,6 +369,7 @@ public class MultiPlayerGameController {
 //        }
 //    }
 
+    // variable progress bar
     private void addPlayerProgress(String playerName) {
         if (!playerProgressBars.containsKey(playerName)) {
             ProgressBar pb = new ProgressBar(0);
