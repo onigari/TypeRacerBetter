@@ -26,7 +26,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+
 public class MultiPlayerGameController {
+    public Label titleLabel;
     @FXML private VBox rootPane;
     @FXML private TextFlow paragraphFlow;
     @FXML private Label timeLabel;
@@ -66,28 +71,34 @@ public class MultiPlayerGameController {
         this.isHost = isHost;
         // Initialize with empty progress bar for current player
         addPlayerProgress(playerName);
-
         setupUI();
-        setupEventHandlers();
         setupNetworkHandlers();
+        setupEventHandlers();
         setupGlobalHandlers();
+        waitingQueue();
     }
 
-    private void setupGlobalHandlers() {
-        Platform.runLater(() -> {
-            rootPane.requestFocus();
-            rootPane.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-                if (e.getCode() == KeyCode.ESCAPE) {
-                    // TODO:
-                    try {
-                        if(isHost) client.closeAll();
-                        else loadMainMenu();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
-        });
+    private void waitingQueue() {
+        final int[] timeLeft = {3}; // 3, 2, 1
+
+        Timeline countdown = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            if (timeLeft[0] > 0) {
+                titleLabel.setText("Starting in " + timeLeft[0]);
+                timeLeft[0]--;
+            } else {
+                // Countdown done - run your game logic here
+                titleLabel.setText("GO!");
+                startTimer();
+                typingField.setDisable(false);
+                typingField.requestFocus();
+            }
+        }));
+
+        countdown.setCycleCount(4); // Run 4 times: show 3, show 2, show 1, then start game
+        countdown.play();
+
+        // Show initial countdown
+        titleLabel.setText("Starting in 3");
     }
 
     private void loadMainMenu() throws IOException {
@@ -106,6 +117,22 @@ public class MultiPlayerGameController {
             stage.setResizable(true);
             stage.setScene(scene);
             stage.show();
+        });
+    }
+
+    private void setupGlobalHandlers() {
+        Platform.runLater(() -> {
+            rootPane.requestFocus();
+            rootPane.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+                if (e.getCode() == KeyCode.ESCAPE) {
+                    try {
+                        if(isHost) client.closeAll();
+                        else loadMainMenu();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
         });
     }
 
@@ -145,6 +172,10 @@ public class MultiPlayerGameController {
     private void setupUI() {
         //progressBar.setProgress(0);
         typingField.setDisable(true);
+        typingField.setStyle("""
+                -fx-opacity: 0;\s
+                    -fx-background-color: transparent;
+                    -fx-border-color: transparent;""");
         leaderboardList.setCellFactory(lv -> new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -172,8 +203,7 @@ public class MultiPlayerGameController {
             textNodes.add(t);
         }
         paragraphFlow.getChildren().addAll(textNodes);
-        startTimer();
-        typingField.setDisable(false);
+
         typingField.requestFocus();
     }
 
@@ -291,7 +321,7 @@ public class MultiPlayerGameController {
 
             double time = (System.currentTimeMillis() - startTime) / 1000.0;
             double wpm = calculateWPM();
-            client.sendResult(String.format("%s;%.2f;%.2f;%.2f", playerName, time, wpm, calculateAccuracy()));
+            client.sendResult(String.format("%s;%.2f;%d;%.2f", playerName, time, (int) wpm, calculateAccuracy()));
         });
     }
 
@@ -356,7 +386,7 @@ public class MultiPlayerGameController {
 
             HBox playerBox = new HBox(5);
             Label nameLabel = new Label(playerName);
-            nameLabel.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-min-width: 75;");
+            nameLabel.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'JetBrains Mono Medium'; -fx-min-width: 75;");
 
             playerBox.getChildren().addAll(nameLabel, pb);
             progressBarsContainer.getChildren().add(playerBox);

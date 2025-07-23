@@ -34,7 +34,7 @@
 <!--      <ProgressBar fx:id="progressBar" prefWidth="1000" progress="0.0" style="-fx-accent: #e2b714; -fx-background-color: #3a3d42;" />-->
 
       <!-- Paragraph Display -->
-      <TextFlow fx:id="paragraphFlow" prefHeight="89.0" prefWidth="720.0" style="-fx-background-color: #2c2e31; -fx-padding: 15; -fx-font-family: 'Roboto Mono'; -fx-font-size: 22px; -fx-line-spacing: 10;" />
+      <TextFlow fx:id="paragraphFlow"  prefHeight="89.0" prefWidth="720.0" style="-fx-background-color: #2c2e31; -fx-font-family: 'JetBrains Mono Medium'; -fx-padding: 15; -fx-font-family: 'Roboto Mono'; -fx-font-size: 22px; -fx-line-spacing: 10;" />
 
       <!-- Typing Input -->
       <TextField fx:id="typingField" prefWidth="720.0" promptText="click here or press enter to start" style="-fx-font-family: 'Roboto Mono'; -fx-font-size: 22px; -fx-text-fill: #d1d0c5; -fx-background-color: #2c2e31; -fx-border-color: #e2b714; -fx-border-width: 0 0 2 0; -fx-prompt-text-fill: #646669;" />

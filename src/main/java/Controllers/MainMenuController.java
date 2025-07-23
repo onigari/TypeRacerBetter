@@ -30,7 +30,7 @@ public class MainMenuController {
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-        Scene scene = new Scene(root, 1120, 630);
+        Scene scene = new Scene(root, 1420, 800);
 
         stage.setScene(scene);
         stage.setTitle("TypeRacer - SinglePlayer");

@@ -119,9 +119,6 @@ public class SinglePlayerGameController {
     }
 
     private void setupEventHandlers() {
-        for (char c : accuracyChecker) {
-            System.out.print(c);
-        }
         // Typing field listener for character-by-character comparison
         typingField.textProperty().addListener((obs, oldValue, newValue) -> {
             if (paragraphText == null || paragraphText.isEmpty() || typingDone) return;
@@ -194,17 +191,12 @@ public class SinglePlayerGameController {
                         accuracyChecker[currentIndex] = 'F';
                     }
                 }
-
-//                if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
-//                    correctCharCount = Math.max(0, correctCharCount - 1);
-//                }
             }
         }
         updateStats();
     }
 
     private void handleNewCharacters(String oldValue, String newValue) {
-        //System.out.println(storeString);
         for (int i = oldValue.length(); i < newValue.length(); i++) {
             if (currentIndex >= paragraphText.length()) {
                 typingFinished();
@@ -336,12 +328,6 @@ public class SinglePlayerGameController {
 
         // Reset game state
         resetGame();
-
-//        // Start timer
-//        startTimer();
-//
-//        // Focus typing field
-//        typingField.requestFocus();
     }
 
     private void resetGame() {
