@@ -46,6 +46,11 @@ public class ClientHandler implements Runnable {
                     clients.remove(this);
                     broadcastPlayerList();
                 }
+                else if (inputLine.equals("CLOSE_ALL")){
+                    for (ClientHandler client : clients) {
+                        client.out.println("CLOSE_ALL");
+                    }
+                }
             }
         } catch (IOException e) {
             System.out.println("Client disconnected: " + (playerName != null ? playerName : socket.getRemoteSocketAddress()));

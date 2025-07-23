@@ -114,7 +114,7 @@ public class MultiPlayerLobbyController {
             Parent root = loader.load();
 
             MultiPlayerGameController controller = loader.getController();
-            controller.initialize(client, playerName);
+            controller.initialize(client, playerName, isHost);
 
             Stage stage = (Stage) playerListView.getScene().getWindow();
             stage.setScene(new Scene(root));

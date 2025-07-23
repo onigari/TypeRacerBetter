@@ -6,30 +6,36 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.*;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import network.Client;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MultiPlayerGameController {
+    @FXML private VBox rootPane;
     @FXML private TextFlow paragraphFlow;
     @FXML private Label timeLabel;
     @FXML private Label playerNameLabel;
-    //@FXML private ProgressBar progressBar;
-    //@FXML private ListView<String> leaderboard;
     @FXML private Label wpmLabel;
     @FXML private Label accuracyLabel;
     @FXML private TextField typingField;
     @FXML private ListView<String> leaderboardList;
+    @FXML private Label escText;
 
     private Client client;
     private String playerName;
@@ -44,6 +50,7 @@ public class MultiPlayerGameController {
     private boolean currentWordCorrect;
     private final List<Text> textNodes = new ArrayList<>();
     private boolean typingDone = false;
+    private boolean isHost;
 
     // Add these fields
     private final Map<String, ProgressBar> playerProgressBars = new HashMap<>();
@@ -51,17 +58,55 @@ public class MultiPlayerGameController {
 
 
 
-    public void initialize(Client client, String name) {
+    public void initialize(Client client, String name, boolean isHost) {
         this.client = client;
         this.playerName = name;
         playerNameLabel.setText(playerName);
         this.leaderboardList.setItems(leaderboard);
+        this.isHost = isHost;
         // Initialize with empty progress bar for current player
         addPlayerProgress(playerName);
 
         setupUI();
         setupEventHandlers();
         setupNetworkHandlers();
+        setupGlobalHandlers();
+    }
+
+    private void setupGlobalHandlers() {
+        Platform.runLater(() -> {
+            rootPane.requestFocus();
+            rootPane.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+                if (e.getCode() == KeyCode.ESCAPE) {
+                    // TODO:
+                    try {
+                        if(isHost) client.closeAll();
+                        else loadMainMenu();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+        });
+    }
+
+    private void loadMainMenu() throws IOException {
+        new Thread(() -> {
+            client.close();
+        }).start();
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MainMenu.fxml"));
+        Parent root = loader.load();
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            Scene scene = new Scene(root, 800, 600);
+
+            stage.setTitle("TypeRacer");
+            stage.setResizable(true);
+            stage.setScene(scene);
+            stage.show();
+        });
     }
 
     private void setupNetworkHandlers() {
@@ -83,6 +128,12 @@ public class MultiPlayerGameController {
                         }
                     }
                 });
+            } else if (message.equals("CLOSE_ALL")) {
+                try {
+                    loadMainMenu();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
@@ -115,6 +166,7 @@ public class MultiPlayerGameController {
             }
         });
         //progressBar.setStyle("-fx-accent: #e2b714; -fx-background-color: #3a3d42; -fx-border-color: #e2b714; -fx-border-width: 2;");
+        escText.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
     }
 
     private void setupParagraph() {

@@ -74,6 +74,10 @@ public class Client {
         }
     }
 
+    public void closeAll() {
+        out.println("CLOSE_ALL");
+    }
+
     public void sendProgress(double progress) {
         if (progress >= 0 && progress <= 1) {
             out.println("PROGRESS:" + progress);
