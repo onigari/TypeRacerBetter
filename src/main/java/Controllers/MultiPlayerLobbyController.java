@@ -78,7 +78,6 @@ public class MultiPlayerLobbyController {
     private void setupEventHandlers() {
         rootPane.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
-                // TODO:
                 try {
                     if(isHost) client.closeAll();
                     loadMainMenu();

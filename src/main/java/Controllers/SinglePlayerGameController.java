@@ -3,6 +3,7 @@ package Controllers;
 import javafx.collections.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -10,8 +11,10 @@ import javafx.application.Platform;
 import javafx.animation.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
 import javafx.stage.Stage;
@@ -196,15 +199,41 @@ public class SinglePlayerGameController {
         displayField.setEditable(false);
 
         leaderboardList.setCellFactory(lv -> new ListCell<String>() {
+            private final HBox hbox = new HBox(10);
+            private final Text rank = new Text();
+            private final Text entry = new Text();
+
+            {
+                hbox.setAlignment(Pos.CENTER_LEFT);
+                rank.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
+                hbox.getChildren().addAll(rank, entry);
+
+                // Default style
+                setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;");
+            }
+
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
-                    setText(null);
-                    setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+                    setGraphic(null);
                 } else {
-                    setText(item);
-                    setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+                    rank.setText((getIndex() + 1) + ".");
+                    entry.setText(item.split(" - ")[0]); // Show only name initially
+
+                    // Highlight current player's entry
+                    if (item.contains(playerNameField.getText())) {
+                        setStyle("-fx-background-color: #3a3d42; -fx-text-fill: #e2b714;");
+                        entry.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
+                    } else {
+                        setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#2c2e31" : "#323437") + ";");
+                        entry.setStyle("-fx-fill: #d1d0c5;");
+                    }
+
+                    setGraphic(hbox);
+
+                    // Tooltip with full details
+                    setTooltip(new Tooltip(item));
                 }
             }
         });

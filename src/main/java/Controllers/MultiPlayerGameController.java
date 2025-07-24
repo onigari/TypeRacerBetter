@@ -110,7 +110,7 @@ public class MultiPlayerGameController {
     }
 
     private void countDownTimer() {
-        final int[] timeLeft = {10000};
+        final int[] timeLeft = {20000};
 
         Timeline countdown = new Timeline(new KeyFrame(Duration.millis(1), e -> {
             if (timeLeft[0] > 0) {
@@ -123,7 +123,7 @@ public class MultiPlayerGameController {
             }
         }));
 
-        countdown.setCycleCount(10000);
+        countdown.setCycleCount(20000);
         countdown.play();
 
         bigTimerLabel.setText("Time left: " + timeLeft[0] + " seconds");
@@ -511,6 +511,7 @@ public class MultiPlayerGameController {
     }
 
     private void typingFinished() {
+        rootPane.requestFocus();
         if (timer != null) timer.stop();
         typingField.setDisable(true);
         displayField.clear(); // Clear display field when finished
