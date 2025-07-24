@@ -42,3 +42,58 @@ AnchorPane, VBox {
 .menu-button:pressed {
     -fx-background-color: #555;
 }
+.root {
+    -fx-background-color: #323437;
+    -fx-font-family: "Roboto Mono";
+}
+
+.display-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-alignment: center;
+    -fx-spacing: 2px;
+    -fx-padding: 10px;
+}
+
+.typing-label {
+    -fx-font-family: "Roboto Mono";
+    -fx-font-size: 18px;
+    -fx-text-fill: #d1d0c5;
+}
+
+.title-label {
+    -fx-font-family: "Roboto Mono";
+    -fx-font-size: 28px;
+    -fx-text-fill: #d1d0c5;
+}
+
+.input-field {
+    -fx-font-family: "Roboto Mono";
+    -fx-font-size: 16px;
+    -fx-text-fill: #d1d0c5;
+    -fx-background-color: #2c2e31;
+    -fx-border-color: #646669;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+.game-button {
+    -fx-font-family: "Roboto Mono";
+    -fx-font-size: 16px;
+    -fx-text-fill: #d1d0c5;
+    -fx-background-color: #646669;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+.progress-bar {
+    -fx-accent: #e2b714;
+    -fx-background-color: #2c2e31;
+}
+
+.list-view {
+    -fx-background-color: #2c2e31;
+    -fx-border-color: #646669;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}

@@ -9,7 +9,10 @@ import javafx.scene.control.*;
 import javafx.application.Platform;
 import javafx.animation.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -19,6 +22,10 @@ import java.util.*;
 
 public class SinglePlayerGameController {
 
+    public GridPane keyboardRow1;
+    public GridPane keyboardRow2;
+    public GridPane keyboardRow3;
+    public GridPane keyboardRow4;
     @FXML
     private VBox rootPane;
 
@@ -78,11 +85,91 @@ public class SinglePlayerGameController {
     private int currentWordIndex = 0;
     private int currentWordCharIndex = 0;
 
+    private final Map<Character, Rectangle> keyRectangles = new HashMap<>();
+    private final Map<Character, Text> keyTexts = new HashMap<>();
+
+    // Add this method to initialize the keyboard
+    private void initializeKeyboard() {
+        // Row 1: Tab Q W E R T Y U I O P { }
+        String[] row1Keys = {"Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "{", "}"};
+        addKeysToRow(keyboardRow1, row1Keys);
+
+        // Row 2: Caps Lock A S D F G H J K L ; " Enter
+        String[] row2Keys = {"Caps Lock", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "\"", "Enter"};
+        addKeysToRow(keyboardRow2, row2Keys);
+
+        // Row 3: Shift Z X C V B N M < > ? Shift
+        String[] row3Keys = {"Shift", "Z", "X", "C", "V", "B", "N", "M", "<", ">", "?", "Shift"};
+        addKeysToRow(keyboardRow3, row3Keys);
+
+        // Row 4: Ctrl Alt (space) Alt Ctrl
+        String[] row4Keys = {"Ctrl", "Alt", " ", "Alt", "Ctrl"};
+        addKeysToRow(keyboardRow4, row4Keys);
+    }
+
+    private void addKeysToRow(GridPane row, String[] keys) {
+        row.getChildren().clear();
+        for (int i = 0; i < keys.length; i++) {
+            String key = keys[i];
+
+            // Create key rectangle
+            Rectangle rect = new Rectangle(40, 40);
+            if (key.equals(" ")) {
+                rect.setWidth(200); // Make spacebar wider
+            } else if (key.equals("Ctrl") || key.equals("Alt") || key.equals("Tab")) { // For modifier keys
+                rect.setWidth(60);
+            } else if (key.length() > 1) rect.setWidth(100);
+            rect.setArcWidth(5);
+            rect.setArcHeight(5);
+            rect.setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-stroke-width: 1;");
+
+            // Create key text
+            Text text = new Text(key);
+            text.setStyle("-fx-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;");
+
+            // Create container and add both
+            StackPane container = new StackPane();
+            container.getChildren().addAll(rect, text);
+
+            // Add to grid
+            row.add(container, i, 0);
+
+            // Store references for highlighting
+            if (key.length() == 1) {
+                char c = key.charAt(0);
+                keyRectangles.put(c, rect);
+                keyTexts.put(c, text);
+            } else if (key.equals(" ")) {
+                keyRectangles.put(' ', rect);
+                keyTexts.put(' ', text);
+            }
+        }
+    }
+
+    // Add this method to highlight a key
+    private void highlightKey(char c, boolean highlight) {
+        Platform.runLater(() -> {
+            Rectangle rect = keyRectangles.get(Character.toUpperCase(c));
+            Text text = keyTexts.get(Character.toUpperCase(c));
+
+            if (rect != null && text != null) {
+                if (highlight) {
+                    rect.setStyle("-fx-fill: #e2b714; -fx-stroke: #e2b714; -fx-stroke-width: 1;");
+                    text.setStyle("-fx-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;");
+                } else {
+                    rect.setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-stroke-width: 1;");
+                    text.setStyle("-fx-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;");
+                }
+            }
+        });
+    }
+
     @FXML
     public void initialize() {
         loadWords();
         setupUI();
         setupEventHandlers();
+        initializeKeyboard();
     }
 
     private void loadWords() {
@@ -103,21 +190,10 @@ public class SinglePlayerGameController {
     private void setupUI() {
         progressBar.setProgress(0);
         typingField.setDisable(true);
-        typingField.setStyle("""
-                -fx-opacity: 0;\s
-                    -fx-background-color: transparent;
-                    -fx-border-color: transparent;""");
 
         // Setup displayField
         displayField.setDisable(true);
         displayField.setEditable(false);
-        displayField.setStyle("""
-                -fx-font-family: 'Roboto Mono';
-                -fx-font-size: 24px;
-                -fx-text-fill: #646669;
-                -fx-background-color: transparent;
-                -fx-border-color: transparent;
-                -fx-alignment: center;""");
 
         leaderboardList.setCellFactory(lv -> new ListCell<String>() {
             @Override
@@ -227,79 +303,62 @@ public class SinglePlayerGameController {
 
             // Add typed characters with appropriate styling
             for (int i = 0; i < currentWord.length(); i++) {
-                if (i < currentWordCharIndex) {
-                    // Character has been typed - will be styled based on correctness in the actual display
-                    displayText.append(currentWord.charAt(i));
-                } else {
-                    // Character not yet typed
-                    displayText.append(currentWord.charAt(i));
-                }
+                displayText.append(currentWord.charAt(i));
             }
 
             displayField.setText(displayText.toString());
 
-            // Style the display field based on typing correctness
-            updateDisplayFieldStyling(typedText);
-        }
-    }
+            int wordStartPosition = 0;
+            for (int i = 0; i < currentWordIndex; i++) {
+                wordStartPosition += paragraphWords[i].length() + 1; // +1 for space
+            }
 
-    private void updateDisplayFieldStyling(String typedText) {
-        if (paragraphWords == null || currentWordIndex >= paragraphWords.length) {
-            return;
-        }
+            boolean wordIsCorrectSoFar = true;
+            if (typedText.length() > wordStartPosition) {
+                String typedPortionOfWord = typedText.substring(wordStartPosition,
+                        Math.min(typedText.length(), wordStartPosition + currentWord.length()));
 
-        String currentWord = paragraphWords[currentWordIndex];
-
-        // Calculate the starting position of current word in the paragraph
-        int wordStartPosition = 0;
-        for (int i = 0; i < currentWordIndex; i++) {
-            wordStartPosition += paragraphWords[i].length() + 1; // +1 for space
-        }
-
-        boolean wordIsCorrectSoFar = true;
-        if (typedText.length() > wordStartPosition) {
-            String typedPortionOfWord = typedText.substring(wordStartPosition,
-                    Math.min(typedText.length(), wordStartPosition + currentWord.length()));
-
-            // Check if typed portion matches the expected word portion
-            for (int i = 0; i < typedPortionOfWord.length(); i++) {
-                if (i >= currentWord.length() || typedPortionOfWord.charAt(i) != currentWord.charAt(i)) {
-                    wordIsCorrectSoFar = false;
-                    break;
+                // Check if typed portion matches the expected word portion
+                for (int i = 0; i < typedPortionOfWord.length(); i++) {
+                    if (i >= currentWord.length() || typedPortionOfWord.charAt(i) != currentWord.charAt(i)) {
+                        wordIsCorrectSoFar = false;
+                        break;
+                    }
                 }
             }
-        }
 
-        // Apply styling based on correctness
-        if (currentWordCharIndex == 0) {
-            // No characters typed yet - default style
-            displayField.setStyle("""
+            // Style the display field based on typing correctness
+            if (currentWordCharIndex == 0) {
+                // No characters typed yet - default style
+                displayField.setStyle("""
                 -fx-font-family: 'Roboto Mono';
                 -fx-font-size: 24px;
                 -fx-text-fill: #646669;
                 -fx-background-color: transparent;
                 -fx-border-color: transparent;
-                -fx-alignment: center;""");
-        } else if (wordIsCorrectSoFar) {
-            // Correct so far - green text
-            displayField.setStyle("""
+                -fx-alignment: CENTER_LEFT;""");
+            } else if (wordIsCorrectSoFar) {
+                // Correct so far - green text
+                displayField.setStyle("""
                 -fx-font-family: 'Roboto Mono';
                 -fx-font-size: 24px;
                 -fx-text-fill: #d1d0c5;
                 -fx-background-color: transparent;
                 -fx-border-color: transparent;
-                -fx-alignment: center;""");
-        } else {
-            // Incorrect - red text
-            displayField.setStyle("""
+                -fx-alignment: CENTER_LEFT;""");
+            } else {
+                // Incorrect - red text
+                displayField.setStyle("""
                 -fx-font-family: 'Roboto Mono';
                 -fx-font-size: 24px;
                 -fx-text-fill: #ca4754;
                 -fx-background-color: transparent;
                 -fx-border-color: transparent;
-                -fx-alignment: center;""");
+                -fx-alignment: CENTER_LEFT;""");
+            }
         }
     }
+
 
     private void handleBackspace(String oldValue, String newValue) {
         int diff = oldValue.length() - newValue.length();
@@ -320,6 +379,9 @@ public class SinglePlayerGameController {
             }
         }
         updateStats();
+
+        // Update display field after backspace
+        updateDisplayField(newValue);
     }
 
     private void handleNewCharacters(String oldValue, String newValue) {
@@ -330,6 +392,12 @@ public class SinglePlayerGameController {
             }
 
             char typedChar = newValue.charAt(i);
+            highlightKey(typedChar, true);
+
+            PauseTransition pause = new PauseTransition(Duration.millis(200));
+            pause.setOnFinished(e -> highlightKey(typedChar, false));
+            pause.play();
+
             char expectedChar = paragraphText.charAt(currentIndex);
             Text current = textNodes.get(currentIndex);
             textNodes.get(currentIndex).setUnderline(true);
@@ -362,7 +430,7 @@ public class SinglePlayerGameController {
         Platform.runLater(() -> {
             long elapsed = System.currentTimeMillis() - startTime;
             double seconds = elapsed / 1000.0;
-            timeLabel.setText(String.format("%.2fs", seconds));
+            timeLabel.setText(String.format("%ds", (int) seconds));
             wpmLabel.setText(String.format("%.0f", calculateWPM()));
             accuracyLabel.setText(String.format("%.0f%%", calculateAccuracy()));
             progressBar.setProgress((double) currentIndex / paragraphText.length());

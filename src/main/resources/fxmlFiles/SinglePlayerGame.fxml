@@ -8,9 +8,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Text?>
 
+<?import javafx.scene.layout.ColumnConstraints?>
 <VBox fx:id="rootPane" alignment="TOP_CENTER" prefHeight="600.0" prefWidth="800.0" spacing="20" style="-fx-background-color: #323437; -fx-padding: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.SinglePlayerGameController">
-
    <!-- Header Section -->
    <HBox alignment="CENTER" spacing="20">
       <Label fx:id="titleLabel" style="-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold;" text="TypeRacer SinglePlayer" />
@@ -18,7 +21,6 @@
 
    <!-- Main Content Area -->
    <VBox alignment="TOP_CENTER" spacing="15" style="-fx-background-color: #2c2e31; -fx-padding: 20; -fx-border-radius: 5; -fx-background-radius: 5;">
-
       <!-- Stats Bar -->
       <HBox alignment="CENTER_LEFT" spacing="30">
          <Label style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="time:" />
@@ -35,16 +37,86 @@
       <ProgressBar fx:id="progressBar" prefWidth="1000" progress="0.0" style="-fx-accent: #e2b714; -fx-background-color: #3a3d42;" />
 
       <!-- Paragraph Display -->
-      <TextFlow fx:id="paragraphFlow" style="-fx-background-color: #2c2e31; -fx-padding: 15; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 22px; -fx-line-spacing: 10;" stylesheets="@../css/style.css" />
+      <TextFlow fx:id="paragraphFlow" style="-fx-background-color: #2c2e31; -fx-padding: 15; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 22px; -fx-line-spacing: 10;"  />
 
       <!-- Typing Input -->
-      <TextField fx:id="typingField" promptText="click here or press enter to start" style="-fx-font-family: 'Roboto Mono'; -fx-font-size: 22px; -fx-text-fill: #d1d0c5;-fx-opacity: 0;s-fx-background-color: transparent; -fx-border-color: transparent; -fx-border-color: #e2b714; -fx-border-width: 0 0 2 0; -fx-prompt-text-fill: #646669;" />
+      <TextField fx:id="typingField" promptText="click here or press enter to start" style="-fx-background-color: transparent; -fx-opacity: 0; -fx-border-color: transparent; -fx-font-family: 'Roboto Mono'; -fx-font-size: 22px; -fx-text-fill: #d1d0c5;-fx-opacity: 0;s-fx-background-color: transparent; -fx-border-color: transparent; -fx-border-color: #e2b714; -fx-border-width: 0 0 2 0; -fx-prompt-text-fill: #646669;" />
    </VBox>
    <HBox prefHeight="51.0" prefWidth="760.0">
       <children>
-         <TextField fx:id="displayField" prefHeight="48.0" prefWidth="760.0" promptText="click here or press enter to start" style="-fx-font-family: 'Roboto Mono'; -fx-font-size: 22px; -fx-text-fill: #d1d0c5; -fx-background-color: #2c2e31; -fx-border-color: #e2b714; -fx-border-width: 0 0 2 0; -fx-prompt-text-fill: #646669;" />
+         <TextField fx:id="displayField" prefHeight="48.0" prefWidth="760.0" style="-fx-font-family: 'JetBrains Mono Medium';fx-font-size: 22px;-fx-text-fill: #646669; -fx-background-color: transparent; -fx-border-color: transparent; -fx-alignment: CENTER_LEFT; -fx-font-size: 22px; -fx-text-fill: #d1d0c5; -fx-background-color: transparent; -fx-border-color: #e2b714; -fx-border-width: 0 0 2 0; -fx-prompt-text-fill: #646669;" />
       </children>
    </HBox>
+
+   <!-- Keyboard Visualization -->
+   <VBox alignment="CENTER" spacing="5" style="-fx-padding: 10;">
+      <!-- Row 1: Tab Q W E R T Y U I O P { } -->
+      <GridPane fx:id="keyboardRow1" hgap="3" vgap="3" alignment="CENTER">
+         <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" minWidth="60.0" prefWidth="60.0" /> <!-- Tab -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- Q -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- W -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- E -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- R -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- T -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- Y -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- U -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- I -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- O -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- P -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- { -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- } -->
+         </columnConstraints>
+      </GridPane>
+
+      <!-- Row 2: Caps Lock A S D F G H J K L ; " Enter -->
+      <GridPane fx:id="keyboardRow2" hgap="3" vgap="3" alignment="CENTER">
+         <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="100.0" /> <!-- Caps Lock -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- A -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- S -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- D -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- F -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- G -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- H -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- J -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- K -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- L -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- ; -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- " -->
+            <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="100.0" /> <!-- Enter -->
+         </columnConstraints>
+      </GridPane>
+
+      <!-- Row 3: Shift Z X C V B N M < > ? Shift -->
+      <GridPane fx:id="keyboardRow3" hgap="3" vgap="3" alignment="CENTER">
+         <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="100.0" /> <!-- Shift -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- Z -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- X -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- C -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- V -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- B -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- N -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- M -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- < -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- > -->
+            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- ? -->
+            <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="100.0" /> <!-- Shift -->
+         </columnConstraints>
+      </GridPane>
+
+      <!-- Row 4: Ctrl Alt (space) Alt Ctrl -->
+      <GridPane fx:id="keyboardRow4" hgap="3" vgap="3" alignment="CENTER">
+         <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" minWidth="60.0" prefWidth="60.0" /> <!-- Ctrl -->
+            <ColumnConstraints hgrow="NEVER" minWidth="60.0" prefWidth="60.0" /> <!-- Alt -->
+            <ColumnConstraints hgrow="NEVER" minWidth="200.0" prefWidth="200.0" /> <!-- Space -->
+            <ColumnConstraints hgrow="NEVER" minWidth="60.0" prefWidth="60.0" /> <!-- Alt -->
+            <ColumnConstraints hgrow="NEVER" minWidth="60.0" prefWidth="60.0" /> <!-- Ctrl -->
+         </columnConstraints>
+      </GridPane>
+   </VBox>
 
    <!-- Bottom Section -->
    <HBox alignment="CENTER" prefHeight="183.0" prefWidth="760.0" spacing="30">
