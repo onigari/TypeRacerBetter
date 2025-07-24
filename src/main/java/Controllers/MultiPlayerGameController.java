@@ -39,6 +39,7 @@ public class MultiPlayerGameController {
     @FXML private TextField displayField;
     @FXML private ListView<String> leaderboardList;
     @FXML private Label escText;
+    @FXML private Button restartButton;
 
     private Client client;
     private String playerName;
@@ -72,6 +73,7 @@ public class MultiPlayerGameController {
         playerNameLabel.setText(playerName);
         this.leaderboardList.setItems(leaderboard);
         this.isHost = isHost;
+        restartButton.setDisable(true);
         // Initialize with empty progress bar for current player
         addPlayerProgress(playerName);
         setupUI();
@@ -193,6 +195,8 @@ public class MultiPlayerGameController {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+            } else if (message.equals("GAME_FINISHED")) {
+                restartButton.setDisable(!isHost);
             }
 //            else if (message.startsWith("CLOSE:")){
 //                String removePlayer = message.substring(6);
@@ -268,6 +272,11 @@ public class MultiPlayerGameController {
 
     }
 
+    @FXML
+    private void onRestartClicked(){
+
+    }
+
     private void startTimer() {
         startTime = System.currentTimeMillis();
         if (timer != null) timer.stop();
@@ -326,7 +335,7 @@ public class MultiPlayerGameController {
             if (currentIndex >= paragraphText.length()) {
                 typingFinished();
             }
-            if (IntStream.range(0, 5).noneMatch(j -> correctWordCheker[currentIndex - j] == 'T')) {
+            if (IntStream.range(0, 5).noneMatch(j -> accuracyChecker[currentIndex - j] == 'T')) {
                 showAlert("You have to type the correct word!!!!");
             }
         }
@@ -451,6 +460,7 @@ public class MultiPlayerGameController {
         Platform.runLater(() -> {
             long elapsed = System.currentTimeMillis() - startTime;
             double seconds = elapsed / 1000.0;
+            timeLabel.setText(String.format("%.1fs", seconds));
             timeLabel.setText(String.format("%d", (int) seconds));
             wpmLabel.setText(String.format("%d", (int) calculateWPM()));
             accuracyLabel.setText(String.format("%.0f%%", calculateAccuracy()));

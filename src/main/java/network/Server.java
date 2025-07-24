@@ -90,5 +90,13 @@ public class Server {
                 client.sendMessage(sb.toString());
             }
         }
+
+        if(leaderboard.size() == clients.size()){
+            synchronized (clients) {
+                for (ClientHandler client : clients) {
+                    client.sendMessage("GAME_FINISHED");
+                }
+            }
+        }
     }
 }
