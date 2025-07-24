@@ -47,6 +47,9 @@ public class SinglePlayerGameController {
     private TextField typingField;
 
     @FXML
+    private TextField displayField;  // New field to show one word at a time
+
+    @FXML
     private Label wpmLabel;
 
     @FXML
@@ -68,15 +71,17 @@ public class SinglePlayerGameController {
     private int correctCharCount;
     private int totalTyped;
     private boolean currentWordCorrect;
-    //private StringBuffer storeString;
     private char[] accuracyChecker;
+
+    // New fields for word-by-word display
+    private String[] paragraphWords;
+    private int currentWordIndex = 0;
+    private int currentWordCharIndex = 0;
 
     @FXML
     public void initialize() {
         loadWords();
-
         setupUI();
-
         setupEventHandlers();
     }
 
@@ -102,6 +107,18 @@ public class SinglePlayerGameController {
                 -fx-opacity: 0;\s
                     -fx-background-color: transparent;
                     -fx-border-color: transparent;""");
+
+        // Setup displayField
+        displayField.setDisable(true);
+        displayField.setEditable(false);
+        displayField.setStyle("""
+                -fx-font-family: 'Roboto Mono';
+                -fx-font-size: 24px;
+                -fx-text-fill: #646669;
+                -fx-background-color: transparent;
+                -fx-border-color: transparent;
+                -fx-alignment: center;""");
+
         leaderboardList.setCellFactory(lv -> new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -130,6 +147,9 @@ public class SinglePlayerGameController {
             }
             // Handle new characters
             handleNewCharacters(oldValue, newValue);
+
+            // Update display field
+            updateDisplayField(newValue);
         });
 
         // Enter key to finish
@@ -170,15 +190,121 @@ public class SinglePlayerGameController {
                 onStartButtonClick();
             }
         });
+    }
 
+    private void updateDisplayField(String typedText) {
+        if (paragraphWords == null || paragraphWords.length == 0) {
+            return;
+        }
+
+        // Find current word and position based on typed characters
+        int charCount = 0;
+        int wordIndex = 0;
+        int wordCharIndex = 0;
+
+        // Calculate which word we're currently typing
+        for (int i = 0; i < paragraphWords.length; i++) {
+            if (charCount + paragraphWords[i].length() >= typedText.length()) {
+                wordIndex = i;
+                wordCharIndex = typedText.length() - charCount;
+                break;
+            }
+            charCount += paragraphWords[i].length() + 1; // +1 for space
+            if (charCount > typedText.length()) {
+                wordIndex = i;
+                wordCharIndex = 0;
+                break;
+            }
+        }
+
+        currentWordIndex = wordIndex;
+        currentWordCharIndex = Math.max(0, Math.min(wordCharIndex, paragraphWords[wordIndex].length()));
+
+        // Build display text for current word
+        if (currentWordIndex < paragraphWords.length) {
+            String currentWord = paragraphWords[currentWordIndex];
+            StringBuilder displayText = new StringBuilder();
+
+            // Add typed characters with appropriate styling
+            for (int i = 0; i < currentWord.length(); i++) {
+                if (i < currentWordCharIndex) {
+                    // Character has been typed - will be styled based on correctness in the actual display
+                    displayText.append(currentWord.charAt(i));
+                } else {
+                    // Character not yet typed
+                    displayText.append(currentWord.charAt(i));
+                }
+            }
+
+            displayField.setText(displayText.toString());
+
+            // Style the display field based on typing correctness
+            updateDisplayFieldStyling(typedText);
+        }
+    }
+
+    private void updateDisplayFieldStyling(String typedText) {
+        if (paragraphWords == null || currentWordIndex >= paragraphWords.length) {
+            return;
+        }
+
+        String currentWord = paragraphWords[currentWordIndex];
+
+        // Calculate the starting position of current word in the paragraph
+        int wordStartPosition = 0;
+        for (int i = 0; i < currentWordIndex; i++) {
+            wordStartPosition += paragraphWords[i].length() + 1; // +1 for space
+        }
+
+        boolean wordIsCorrectSoFar = true;
+        if (typedText.length() > wordStartPosition) {
+            String typedPortionOfWord = typedText.substring(wordStartPosition,
+                    Math.min(typedText.length(), wordStartPosition + currentWord.length()));
+
+            // Check if typed portion matches the expected word portion
+            for (int i = 0; i < typedPortionOfWord.length(); i++) {
+                if (i >= currentWord.length() || typedPortionOfWord.charAt(i) != currentWord.charAt(i)) {
+                    wordIsCorrectSoFar = false;
+                    break;
+                }
+            }
+        }
+
+        // Apply styling based on correctness
+        if (currentWordCharIndex == 0) {
+            // No characters typed yet - default style
+            displayField.setStyle("""
+                -fx-font-family: 'Roboto Mono';
+                -fx-font-size: 24px;
+                -fx-text-fill: #646669;
+                -fx-background-color: transparent;
+                -fx-border-color: transparent;
+                -fx-alignment: center;""");
+        } else if (wordIsCorrectSoFar) {
+            // Correct so far - green text
+            displayField.setStyle("""
+                -fx-font-family: 'Roboto Mono';
+                -fx-font-size: 24px;
+                -fx-text-fill: #d1d0c5;
+                -fx-background-color: transparent;
+                -fx-border-color: transparent;
+                -fx-alignment: center;""");
+        } else {
+            // Incorrect - red text
+            displayField.setStyle("""
+                -fx-font-family: 'Roboto Mono';
+                -fx-font-size: 24px;
+                -fx-text-fill: #ca4754;
+                -fx-background-color: transparent;
+                -fx-border-color: transparent;
+                -fx-alignment: center;""");
+        }
     }
 
     private void handleBackspace(String oldValue, String newValue) {
         int diff = oldValue.length() - newValue.length();
         for (int i = 0; i < diff; i++) {
             if (currentIndex > 0) {
-
-
                 currentIndex--;
                 Text previous = textNodes.get(currentIndex);
                 previous.setStyle("-fx-fill: #646669;"); // MonkeyType's untyped color
@@ -258,6 +384,9 @@ public class SinglePlayerGameController {
         textNodes.clear();
         paragraphText = text;
 
+        // Split paragraph into words for the display field
+        paragraphWords = text.split(" ");
+
         for (char c : text.toCharArray()) {
             Text t = new Text(String.valueOf(c));
             t.setStyle("-fx-fill: #646669;"); // MonkeyType's untyped color
@@ -265,6 +394,11 @@ public class SinglePlayerGameController {
         }
 
         paragraphFlow.getChildren().addAll(textNodes);
+
+        // Initialize display field with first word
+        if (paragraphWords.length > 0) {
+            displayField.setText(paragraphWords[0]);
+        }
     }
 
     private void typingFinished() {
@@ -275,6 +409,7 @@ public class SinglePlayerGameController {
         titleLabel.setText("type racer - finished!");
         startButton.setText("restart");
         typingField.setDisable(true);
+        displayField.clear(); // Clear display field when finished
 
         long finishTime = System.currentTimeMillis() - startTime;
         double timeInSeconds = finishTime / 1000.0;
@@ -324,7 +459,6 @@ public class SinglePlayerGameController {
 
         // Select random paragraph
         paragraphText = inputStrings.get(new Random().nextInt(inputStrings.size()));
-        //displayParagraph(paragraphText);
 
         // Reset game state
         resetGame();
@@ -336,21 +470,17 @@ public class SinglePlayerGameController {
         correctCharCount = 0;
         totalTyped = 0;
         currentWordCorrect = true;
+        currentWordIndex = 0;
+        currentWordCharIndex = 0;
         progressBar.setProgress(0);
         typingField.clear();
         typingField.setDisable(false);
-
-//        titleLabel.setText("type racer - go!");
-//        startButton.setText("restart");
-//        playerNameField.setEditable(false);
+        displayField.clear();
 
         displayParagraph(paragraphText);
 
         startTimer();
         typingField.requestFocus();
-//        if(!storeString.isEmpty()){
-//            storeString.delete(0, storeString.length());
-//        }
     }
 
     private void startTimer() {
