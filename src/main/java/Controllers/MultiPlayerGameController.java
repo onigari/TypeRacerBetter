@@ -22,6 +22,7 @@ import network.Client;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.IntStream;
 
 
 public class MultiPlayerGameController {
@@ -51,6 +52,7 @@ public class MultiPlayerGameController {
     private boolean typingDone = false;
     private boolean isHost;
     private char[] accuracyChecker;
+    private char[] correctWordCheker;
 
     // Add these fields
     private final Map<String, ProgressBar> playerProgressBars = new HashMap<>();
@@ -135,7 +137,9 @@ public class MultiPlayerGameController {
         client.setOnMessageReceived(message -> {
             if (message.startsWith("PARAGRAPH:")) {
                 paragraphText = message.substring(10);
-                accuracyChecker = new char[paragraphText.length() + 1000];
+                accuracyChecker = new char[paragraphText.length() + 100];
+                correctWordCheker = new char[paragraphText.length() + 100];
+                Arrays.fill(accuracyChecker, 'B');
                 Arrays.fill(accuracyChecker, 'B');
                 Platform.runLater(this::setupParagraph);
             } else if (message.startsWith("LEADERBOARD:")) {
@@ -213,17 +217,11 @@ public class MultiPlayerGameController {
                 return;
             }
             // Handle new characters
-            handleNewCharacters(oldValue, newValue);
-        });
-
-        TODO:
-        // On pressing space or end of game
-
-        // Enter key to finish
-        typingField.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.ENTER) {
-                typingFinished();
-            }
+//            if (new String(accuracyChecker).indexOf('F') != -1) {
+            if(currentIndex > 0 && correctWordCheker[currentIndex-1] == 'F') {
+                showAlert("All words have to be correct!!!");
+                return;
+            } else handleNewCharacters(oldValue, newValue);
         });
 
         // Start typing immediately when typing field gets focus
@@ -261,9 +259,11 @@ public class MultiPlayerGameController {
                     accuracyChecker[currentIndex] = 'T';
                     correctCharCount++;
                 }
+                correctWordCheker[currentIndex] = 'T';
                 current.setStyle("-fx-fill: #d1d0c5;"); // MonkeyType's correct color
             } else {
                 accuracyChecker[currentIndex] = 'F';
+                correctWordCheker[currentIndex] = 'F';
 
                 current.setStyle("-fx-fill: #ca4754;"); // MonkeyType's incorrect color
                 currentWordCorrect = false;
@@ -275,6 +275,9 @@ public class MultiPlayerGameController {
             updateStats();
             if (currentIndex >= paragraphText.length()) {
                 typingFinished();
+            }
+            if (IntStream.range(0, 5).noneMatch(j -> accuracyChecker[currentIndex - j] == 'T')) {
+                showAlert("You have to type the correct word!!!!");
             }
         }
     }
@@ -294,6 +297,7 @@ public class MultiPlayerGameController {
                         correctCharCount--;
                         accuracyChecker[currentIndex] = 'F';
                     }
+                    correctWordCheker[currentIndex] = 'B';
                 }
             }
         }
@@ -438,5 +442,13 @@ public class MultiPlayerGameController {
                 }
             }
         }
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("TypeRacer");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
