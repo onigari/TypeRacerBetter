@@ -361,7 +361,7 @@ public class MultiPlayerGameController {
             if (currentIndex >= paragraphText.length()) {
                 typingFinished();
             }
-            if (IntStream.range(0, 5).noneMatch(j -> accuracyChecker[currentIndex - j] == 'T')) {
+            if (IntStream.range(0, 5).noneMatch(j -> correctWordCheker[currentIndex - j] == 'T')) {
                 showAlert("You have to type the correct word!!!!");
             }
         }
@@ -521,6 +521,8 @@ public class MultiPlayerGameController {
         double accuracy = calculateAccuracy();
         client.sendResult(String.format("%s;%.2f;%d;%.2f", playerName, time, (int) wpm, accuracy));
         rootPane.requestFocus();
+        accuracyChecker = new char[paragraphText.length() + 1000];
+        correctWordCheker = new char[paragraphText.length() + 1000];
     }
 
     private void updateLeaderboard(String data) {
