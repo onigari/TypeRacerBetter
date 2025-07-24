@@ -35,7 +35,7 @@
 
       <!-- Paragraph Display -->
       <TextFlow fx:id="paragraphFlow" style="-fx-background-color: #2c2e31; -fx-padding: 15; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 22px; -fx-line-spacing: 10;" />
-   
+
             <!-- Typing Input -->
       <TextField fx:id="typingField" prefWidth="720.0" promptText="click here or press enter to start" style="-fx-font-family: 'Roboto Mono'; -fx-font-size: 22px; -fx-text-fill: #d1d0c5; -fx-background-color: #2c2e31; -fx-border-color: #e2b714; -fx-border-width: 0 0 2 0; -fx-prompt-text-fill: #646669;" />
    </VBox>
