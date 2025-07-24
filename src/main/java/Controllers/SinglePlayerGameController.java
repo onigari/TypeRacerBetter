@@ -374,7 +374,7 @@ public class SinglePlayerGameController {
         Parent root = loader.load();
 
         Stage stage = (Stage) startButton.getScene().getWindow();
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 1420, 800);
 
         stage.setTitle("TypeRacer");
         stage.setResizable(true);

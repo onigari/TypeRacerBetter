@@ -23,7 +23,6 @@ public class MultiPlayerChoiceController {
 
         rootPane.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
-                // TODO:
                 try {
                     loadMainMenu();
                 } catch (IOException ex) {
@@ -38,7 +37,7 @@ public class MultiPlayerChoiceController {
         Parent root = loader.load();
 
         Stage stage = (Stage) rootPane.getScene().getWindow();
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 1420, 800);
 
         stage.setTitle("TypeRacer");
         stage.setResizable(true);
@@ -96,7 +95,7 @@ public class MultiPlayerChoiceController {
         controller.initialize(client, name, isHost);
 
         Stage stage = (Stage) nameField.getScene().getWindow();
-        stage.setScene(new Scene(root));
+        stage.setScene(new Scene(root, 1420, 800));
         stage.setTitle("Multiplayer Lobby - " + name);
         stage.setOnCloseRequest(e -> client.close());
     }

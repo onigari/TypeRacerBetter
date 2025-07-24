@@ -106,7 +106,7 @@ public class MultiPlayerLobbyController {
 
         Platform.runLater(() -> {
             Stage stage = (Stage) rootPane.getScene().getWindow();
-            Scene scene = new Scene(root, 800, 600);
+            Scene scene = new Scene(root, 1420, 800);
 
             stage.setTitle("TypeRacer");
             stage.setResizable(true);
@@ -124,7 +124,7 @@ public class MultiPlayerLobbyController {
             controller.initialize(client, playerName, isHost);
 
             Stage stage = (Stage) playerListView.getScene().getWindow();
-            stage.setScene(new Scene(root));
+            stage.setScene(new Scene(root, 1420, 800));
             stage.setTitle("TypeRacer - " + playerName);
         } catch (IOException e) {
             e.printStackTrace();

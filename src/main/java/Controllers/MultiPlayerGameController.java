@@ -33,6 +33,7 @@ public class MultiPlayerGameController {
     @FXML private Label wpmLabel;
     @FXML private Label accuracyLabel;
     @FXML private TextField typingField;
+    @FXML private TextField displayField;
     @FXML private ListView<String> leaderboardList;
     @FXML private Label escText;
 
@@ -297,6 +298,23 @@ public class MultiPlayerGameController {
             }
         }
         updateStats();
+    }
+
+    private void updateDisplayField(String input) {
+        if (input.contains(" ")) {
+            // Reset displayField to show only the next word
+            String[] words = paragraphText.split("\\s+");
+            int wordIndex = currentIndex / (paragraphText.length() / words.length); // Approximate word index
+            if (wordIndex < words.length) {
+                displayField.setText(words[wordIndex].trim());
+            } else {
+                displayField.setText("");
+            }
+            typingField.setText(""); // Clear typingField after space
+        } else {
+            // Show the current input as the word being typed
+            displayField.setText(input);
+        }
     }
 
     private void updateStats() {
