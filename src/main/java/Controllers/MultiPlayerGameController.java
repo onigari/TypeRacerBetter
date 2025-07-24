@@ -26,7 +26,8 @@ import java.util.stream.IntStream;
 
 
 public class MultiPlayerGameController {
-    public Label titleLabel;
+    @FXML private Label titleLabel;
+    @FXML private Label bigTimerLabel;
     @FXML private VBox rootPane;
     @FXML private TextFlow paragraphFlow;
     @FXML private Label timeLabel;
@@ -80,12 +81,13 @@ public class MultiPlayerGameController {
 
         Timeline countdown = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             if (timeLeft[0] > 0) {
-                titleLabel.setText("Starting in " + timeLeft[0]);
+                bigTimerLabel.setText("Starting in " + timeLeft[0]);
                 timeLeft[0]--;
             } else {
                 // Countdown done - run your game logic here
-                titleLabel.setText("GO!");
+                bigTimerLabel.setText("GO!");
                 startTimer();
+                countDownTimer();
                 typingField.setDisable(false);
                 typingField.requestFocus();
             }
@@ -95,7 +97,28 @@ public class MultiPlayerGameController {
         countdown.play();
 
         // Show initial countdown
-        titleLabel.setText("Starting in 3");
+        bigTimerLabel.setText("Starting in 3");
+    }
+
+    private void countDownTimer() {
+        final int[] timeLeft = {10000};
+
+        Timeline countdown = new Timeline(new KeyFrame(Duration.millis(1), e -> {
+            if (timeLeft[0] > 0) {
+                double seconds = (double)timeLeft[0] / 1000;
+                bigTimerLabel.setText(String.format("Time left: %.2f seconds", seconds));
+                timeLeft[0]--;
+            } else {
+                bigTimerLabel.setText("TIMES UP!");
+                typingFinished();
+            }
+        }));
+
+        countdown.setCycleCount(10000);
+        countdown.play();
+
+        bigTimerLabel.setText("Time left: " + timeLeft[0] + " seconds");
+        timeLeft[0]--;
     }
 
     private void loadMainMenu() throws IOException {
@@ -239,7 +262,22 @@ public class MultiPlayerGameController {
         timer = new Timeline(new KeyFrame(Duration.millis(100), e -> updateStats()));
         timer.setCycleCount(Timeline.INDEFINITE);
         timer.play();
+//        new Thread(() -> {
+//            while (true){
+//                boolean check = checkTimer();
+//                if(check) break;
+//            }
+//        }).start();
     }
+
+//    private boolean checkTimer() {
+//        long elapsed = System.currentTimeMillis() - startTime;
+//        if(elapsed > 10000) {
+//            typingFinished();
+//            return true;
+//        }
+//        return false;
+//    }
 
     @FXML
     private void handleNewCharacters(String oldValue, String newValue) {
@@ -331,10 +369,10 @@ public class MultiPlayerGameController {
             double progress = (double) currentIndex / paragraphText.length();
             client.sendProgress(progress); // Send progress update to server
 
-            double time = (System.currentTimeMillis() - startTime) / 1000.0;
-            double wpm = calculateWPM();
-            double accuracy = calculateAccuracy();
-            client.sendResult(String.format("%s;%.2f;%d;%.2f", playerName, time, (int) wpm, accuracy));
+//            double time = (System.currentTimeMillis() - startTime) / 1000.0;
+//            double wpm = calculateWPM();
+//            double accuracy = calculateAccuracy();
+//            client.sendResult(String.format("%s;%.2f;%d;%.2f", playerName, time, (int) wpm, accuracy));
         });
     }
 
@@ -351,9 +389,11 @@ public class MultiPlayerGameController {
     private void typingFinished() {
         if (timer != null) timer.stop();
         typingField.setDisable(true);
+        updateStats();
         double time = (System.currentTimeMillis() - startTime) / 1000.0;
         double wpm = calculateWPM();
-        client.sendResult(String.format("%s;%.2f;%.2f", playerName, time, wpm));
+        double accuracy = calculateAccuracy();
+        client.sendResult(String.format("%s;%.2f;%d;%.2f", playerName, time, (int) wpm, accuracy));
     }
 
     private void updateLeaderboard(String data) {

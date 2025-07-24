@@ -137,8 +137,8 @@ public class ClientHandler implements Runnable {
         try {
             String entry = String.format("%s;%s;%s;%s", parts[0], parts[1], parts[2], parts[3]);
             synchronized (leaderboard) {
-                if(checkClient(parts[0])) updateResult(entry);
-                else leaderboard.add(entry);
+                //if(checkClient(parts[0])) updateResult(entry); // for dynamic leaderboard implementation
+                leaderboard.add(entry);
                 leaderboard.sort((a, b) -> {
                     try {
                         double t1 = Double.parseDouble(a.split(";")[1]);
