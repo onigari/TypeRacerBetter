@@ -26,6 +26,7 @@ import java.util.stream.IntStream;
 
 
 public class MultiPlayerGameController {
+    @FXML public Label warningText;
     @FXML private Label titleLabel;
     @FXML private Label bigTimerLabel;
     @FXML private VBox rootPane;
@@ -54,6 +55,10 @@ public class MultiPlayerGameController {
     private boolean isHost;
     private char[] accuracyChecker;
     private char[] correctWordCheker;
+
+    private String[] paragraphWords;
+    private int currentWordIndex = 0;
+    private int currentWordCharIndex = 0;
 
     // Add these fields
     private final Map<String, ProgressBar> playerProgressBars = new HashMap<>();
@@ -160,8 +165,12 @@ public class MultiPlayerGameController {
         client.setOnMessageReceived(message -> {
             if (message.startsWith("PARAGRAPH:")) {
                 paragraphText = message.substring(10);
-                accuracyChecker = new char[paragraphText.length() + 100];
-                correctWordCheker = new char[paragraphText.length() + 100];
+                paragraphWords = paragraphText.split(" ");
+                if (paragraphWords.length > 0) {
+                    displayField.setText(paragraphWords[0]);
+                }
+                accuracyChecker = new char[paragraphText.length() + 1000];
+                correctWordCheker = new char[paragraphText.length() + 1000];
                 Arrays.fill(accuracyChecker, 'B');
                 Arrays.fill(accuracyChecker, 'B');
                 Platform.runLater(this::setupParagraph);
@@ -193,8 +202,10 @@ public class MultiPlayerGameController {
     }
 
     private void setupUI() {
-        //progressBar.setProgress(0);
         typingField.setDisable(true);
+        displayField.setDisable(true);
+        displayField.setEditable(false);
+
         typingField.setStyle("""
                 -fx-opacity: 0;\s
                     -fx-background-color: transparent;
@@ -239,12 +250,13 @@ public class MultiPlayerGameController {
                 handleBackspace(oldValue, newValue);
                 return;
             }
-            // Handle new characters
-//            if (new String(accuracyChecker).indexOf('F') != -1) {
+
             if(currentIndex > 0 && correctWordCheker[currentIndex-1] == 'F') {
-                showAlert("All words have to be correct!!!");
-                return;
-            } else handleNewCharacters(oldValue, newValue);
+                warningText.setText("All words have to be correct!!!");
+            } else warningText.setStyle("-fx-background-color: transparent; -fx-opacity: 0; -fx-border-color: transparent;");
+            handleNewCharacters(oldValue, newValue);
+
+            updateDisplayField(newValue);
         });
 
         // Start typing immediately when typing field gets focus
@@ -314,7 +326,7 @@ public class MultiPlayerGameController {
             if (currentIndex >= paragraphText.length()) {
                 typingFinished();
             }
-            if (IntStream.range(0, 5).noneMatch(j -> accuracyChecker[currentIndex - j] == 'T')) {
+            if (IntStream.range(0, 5).noneMatch(j -> correctWordCheker[currentIndex - j] == 'T')) {
                 showAlert("You have to type the correct word!!!!");
             }
         }
@@ -340,22 +352,98 @@ public class MultiPlayerGameController {
             }
         }
         updateStats();
+
+        updateDisplayField(newValue);
     }
 
-    private void updateDisplayField(String input) {
-        if (input.contains(" ")) {
-            // Reset displayField to show only the next word
-            String[] words = paragraphText.split("\\s+");
-            int wordIndex = currentIndex / (paragraphText.length() / words.length); // Approximate word index
-            if (wordIndex < words.length) {
-                displayField.setText(words[wordIndex].trim());
-            } else {
-                displayField.setText("");
+    private void updateDisplayField(String typedText) {
+        if (paragraphWords == null || paragraphWords.length == 0) {
+            return;
+        }
+
+        // Find current word and position based on typed characters
+        int charCount = 0;
+        int wordIndex = 0;
+        int wordCharIndex = 0;
+
+        // Calculate which word we're currently typing
+        for (int i = 0; i < paragraphWords.length; i++) {
+            if (charCount + paragraphWords[i].length() >= typedText.length()) {
+                wordIndex = i;
+                wordCharIndex = typedText.length() - charCount;
+                break;
             }
-            typingField.setText(""); // Clear typingField after space
-        } else {
-            // Show the current input as the word being typed
-            displayField.setText(input);
+            charCount += paragraphWords[i].length() + 1; // +1 for space
+            if (charCount > typedText.length()) {
+                wordIndex = i;
+                wordCharIndex = 0;
+                break;
+            }
+        }
+
+        currentWordIndex = wordIndex;
+        currentWordCharIndex = Math.max(0, Math.min(wordCharIndex, paragraphWords[wordIndex].length()));
+
+        // Build display text for current word
+        if (currentWordIndex < paragraphWords.length) {
+            String currentWord = paragraphWords[currentWordIndex];
+            StringBuilder displayText = new StringBuilder();
+
+            // Add typed characters with appropriate styling
+            for (int i = 0; i < currentWord.length(); i++) {
+                displayText.append(currentWord.charAt(i));
+            }
+
+            displayField.setText(displayText.toString());
+
+            int wordStartPosition = 0;
+            for (int i = 0; i < currentWordIndex; i++) {
+                wordStartPosition += paragraphWords[i].length() + 1; // +1 for space
+            }
+
+            boolean wordIsCorrectSoFar = true;
+            if (typedText.length() > wordStartPosition) {
+                String typedPortionOfWord = typedText.substring(wordStartPosition,
+                        Math.min(typedText.length(), wordStartPosition + currentWord.length()));
+
+                // Check if typed portion matches the expected word portion
+                for (int i = 0; i < typedPortionOfWord.length(); i++) {
+                    if (i >= currentWord.length() || typedPortionOfWord.charAt(i) != currentWord.charAt(i)) {
+                        wordIsCorrectSoFar = false;
+                        break;
+                    }
+                }
+            }
+
+            // Style the display field based on typing correctness
+            if (currentWordCharIndex == 0) {
+                // No characters typed yet - default style
+                displayField.setStyle("""
+                -fx-font-family: 'Roboto Mono';
+                -fx-font-size: 24px;
+                -fx-text-fill: #646669;
+                -fx-background-color: transparent;
+                -fx-border-color: transparent;
+                -fx-alignment: CENTER_LEFT;""");
+            } else if (wordIsCorrectSoFar) {
+                // Correct so far - green text
+                displayField.setStyle("""
+                -fx-font-family: 'Roboto Mono';
+                -fx-font-size: 24px;
+                -fx-text-fill: #d1d0c5;
+                -fx-background-color: transparent;
+                -fx-border-color: transparent;
+                -fx-alignment: CENTER_LEFT;""");
+            } else {
+                // Incorrect - red text
+                displayField.setStyle("""
+                -fx-font-family: 'Roboto Mono';
+                -fx-font-size: 24px;
+                -fx-text-fill: #ca4754;
+                -fx-background-color: transparent;
+                -fx-border-color: transparent;
+                -fx-alignment: CENTER_LEFT;""");
+            }
         }
     }
 
@@ -363,7 +451,7 @@ public class MultiPlayerGameController {
         Platform.runLater(() -> {
             long elapsed = System.currentTimeMillis() - startTime;
             double seconds = elapsed / 1000.0;
-            timeLabel.setText(String.format("%.2fs", seconds));
+            timeLabel.setText(String.format("%d", (int) seconds));
             wpmLabel.setText(String.format("%d", (int) calculateWPM()));
             accuracyLabel.setText(String.format("%.0f%%", calculateAccuracy()));
             double progress = (double) currentIndex / paragraphText.length();
@@ -389,6 +477,7 @@ public class MultiPlayerGameController {
     private void typingFinished() {
         if (timer != null) timer.stop();
         typingField.setDisable(true);
+        displayField.clear(); // Clear display field when finished
         updateStats();
         double time = (System.currentTimeMillis() - startTime) / 1000.0;
         double wpm = calculateWPM();

@@ -478,6 +478,7 @@ public class SinglePlayerGameController {
         startButton.setText("restart");
         typingField.setDisable(true);
         displayField.clear(); // Clear display field when finished
+        updateStats();
 
         long finishTime = System.currentTimeMillis() - startTime;
         double timeInSeconds = finishTime / 1000.0;

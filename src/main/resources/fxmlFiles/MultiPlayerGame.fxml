@@ -13,6 +13,7 @@
    <HBox alignment="CENTER" spacing="20">
       <Label fx:id="titleLabel" style="-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold;" text="TypeRacer MultiPlayer" />
    </HBox>
+   <Label fx:id="warningText" alignment="CENTER" contentDisplay="CENTER" prefHeight="36.0" prefWidth="217.0" style="-fx-background-color: transparent; -fx-opacity: 0; -fx-border-color: transparent;" text="You have to type all the words correctly" textFill="#f20909" />
    <Label fx:id="bigTimerLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="447.0" text="Label" textFill="WHITE" />
 
    <!-- Main Content Area -->
@@ -42,7 +43,7 @@
    </VBox>
    <HBox prefHeight="99.0" prefWidth="760.0">
       <children>
-         <TextField fx:id="typingField1" prefHeight="48.0" prefWidth="760.0" promptText="click here or press enter to start" style="-fx-font-family: 'Roboto Mono'; -fx-font-size: 22px; -fx-text-fill: #d1d0c5; -fx-background-color: #2c2e31; -fx-border-color: #e2b714; -fx-border-width: 0 0 2 0; -fx-prompt-text-fill: #646669;" />
+         <TextField fx:id="displayField" prefHeight="48.0" prefWidth="760.0" style="-fx-font-family: 'JetBrains Mono Medium';fx-font-size: 22px;-fx-text-fill: #646669; -fx-background-color: transparent; -fx-border-color: transparent; -fx-alignment: CENTER_LEFT; -fx-font-size: 22px; -fx-text-fill: #d1d0c5; -fx-background-color: transparent; -fx-border-color: #e2b714; -fx-border-width: 0 0 2 0; -fx-prompt-text-fill: #646669;" />
       </children>
    </HBox>
 
@@ -61,5 +62,5 @@
          <ListView fx:id="leaderboardList" prefHeight="150" prefWidth="300" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-border-color: #646669;" />
       </VBox>
    </HBox>
-   <Label fx:id="escText" alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="217.0" text="Press esc to go back to main menu" />
+   <Label fx:id="escText" alignment="CENTER" contentDisplay="CENTER" layoutX="302.0" layoutY="573.0" prefHeight="19.0" prefWidth="217.0" text="Press esc to go back to main menu" />
 </VBox>
