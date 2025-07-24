@@ -11,6 +11,8 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static java.lang.System.out;
+
 public class Server {
     public static final int MAX_PLAYERS = 4;
     public static final int COUNTDOWN_SEC = 15;
@@ -34,19 +36,19 @@ public class Server {
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Server started on port " + PORT);
+            out.println("Server started on port " + PORT);
             selectParagraph();
 
-            System.out.println("Selected paragraph: " + selectedParagraph);
+            out.println("Selected paragraph: " + selectedParagraph);
 
             while (true) {
                 Socket socket = serverSocket.accept();
                 if (clients.size() >= MAX_PLAYERS) {
-                    System.out.println("Max players reached, rejecting connection: " + socket);
+                    out.println("Max players reached, rejecting connection: " + socket);
                     socket.close();
                     continue;
                 }
-                System.out.println("New client connected: " + socket.getRemoteSocketAddress());
+                out.println("New client connected: " + socket.getRemoteSocketAddress());
                 ClientHandler handler = new ClientHandler(socket, clients, selectedParagraph);
                 synchronized (clients) {
                     clients.add(handler);
@@ -74,12 +76,22 @@ public class Server {
         }
     }
 
+    public static void broadcastRestart() {
+        synchronized (clients) {
+            for (ClientHandler client : clients) {
+                client.sendMessage("RESTART");
+            }
+        }
+    }
+
     public static void broadcastLeaderboard(CopyOnWriteArrayList<String> leaderboard){
         StringBuffer sb = new StringBuffer("LEADERBOARD:");
+        int count = 0;
         synchronized (leaderboard) {
             for (String entry : leaderboard) {
                 String[] parts = entry.split(";");
                 if (parts.length == 4) {
+                    count++;
                     sb.append(String.format("%s - %.2fs - %.2f WPM - %.2f %% |",
                             parts[0], Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3])));
                 }
@@ -91,7 +103,10 @@ public class Server {
             }
         }
 
-        if(leaderboard.size() == clients.size()){
+        out.println(count);
+        out.println(clients.size());
+
+        if(count == clients.size()){
             synchronized (clients) {
                 for (ClientHandler client : clients) {
                     client.sendMessage("GAME_FINISHED");

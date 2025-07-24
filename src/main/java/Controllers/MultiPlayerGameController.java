@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static java.lang.System.out;
+
 
 public class MultiPlayerGameController {
     @FXML public Label warningText;
@@ -147,12 +149,29 @@ public class MultiPlayerGameController {
         });
     }
 
+    private void loadLobby() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MultiPlayerLobby.fxml"));
+        Parent root = loader.load();
+
+        MultiPlayerLobbyController controller = loader.getController();
+        controller.initialize(client, playerName, isHost);
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            stage.setScene(new Scene(root, 1420, 800));
+
+            stage.setTitle("Multiplayer Lobby - " + playerName);
+            stage.setOnCloseRequest(e -> client.close());
+        });
+    }
+
     private void setupGlobalHandlers() {
         Platform.runLater(() -> {
             rootPane.requestFocus();
             rootPane.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
                 if (e.getCode() == KeyCode.ESCAPE) {
                     try {
+                        out.println("To Close");
                         if(isHost) client.closeAll();
                         else loadMainMenu();
                     } catch (IOException ex) {
@@ -196,7 +215,14 @@ public class MultiPlayerGameController {
                     throw new RuntimeException(e);
                 }
             } else if (message.equals("GAME_FINISHED")) {
+                out.println("GAME FINISHED received");
                 restartButton.setDisable(!isHost);
+            } else if (message.equals("RESTART")) {
+                try {
+                    loadLobby();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
 //            else if (message.startsWith("CLOSE:")){
 //                String removePlayer = message.substring(6);
@@ -274,7 +300,7 @@ public class MultiPlayerGameController {
 
     @FXML
     private void onRestartClicked(){
-
+        client.sendMessage("RESTART");
     }
 
     private void startTimer() {
@@ -493,6 +519,7 @@ public class MultiPlayerGameController {
         double wpm = calculateWPM();
         double accuracy = calculateAccuracy();
         client.sendResult(String.format("%s;%.2f;%d;%.2f", playerName, time, (int) wpm, accuracy));
+        rootPane.requestFocus();
     }
 
     private void updateLeaderboard(String data) {
