@@ -1,6 +1,7 @@
 package Controllers;
 
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -13,8 +14,11 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -28,6 +32,11 @@ import static java.lang.System.out;
 
 
 public class MultiPlayerGameController {
+    public GridPane keyboardRow1;
+    public GridPane keyboardRow2;
+    public GridPane keyboardRow3;
+    public GridPane keyboardRow4;
+
     @FXML public Label warningText;
     @FXML private Label titleLabel;
     @FXML private Label bigTimerLabel;
@@ -70,7 +79,83 @@ public class MultiPlayerGameController {
     private final Map<String, ProgressBar> playerProgressBars = new HashMap<>();
     @FXML private VBox progressBarsContainer;
 
+    private final Map<Character, Rectangle> keyRectangles = new HashMap<>();
+    private final Map<Character, Text> keyTexts = new HashMap<>();
 
+    private void initializeKeyboard() {
+        // Row 1: Tab Q W E R T Y U I O P { }
+        String[] row1Keys = {"Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "{", "}"};
+        addKeysToRow(keyboardRow1, row1Keys);
+
+        // Row 2: Caps Lock A S D F G H J K L ; " Enter
+        String[] row2Keys = {"Caps Lock", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "\"", "Enter"};
+        addKeysToRow(keyboardRow2, row2Keys);
+
+        // Row 3: Shift Z X C V B N M < > ? Shift
+        String[] row3Keys = {"Shift", "Z", "X", "C", "V", "B", "N", "M", "<", ">", "?", "Shift"};
+        addKeysToRow(keyboardRow3, row3Keys);
+
+        // Row 4: Ctrl Alt (space) Alt Ctrl
+        String[] row4Keys = {"Ctrl", "Alt", " ", "Alt", "Ctrl"};
+        addKeysToRow(keyboardRow4, row4Keys);
+    }
+
+    private void addKeysToRow(GridPane row, String[] keys) {
+        row.getChildren().clear();
+        for (int i = 0; i < keys.length; i++) {
+            String key = keys[i];
+
+            // Create key rectangle
+            Rectangle rect = new Rectangle(40, 40);
+            if (key.equals(" ")) {
+                rect.setWidth(200); // Make spacebar wider
+            } else if (key.equals("Ctrl") || key.equals("Alt") || key.equals("Tab")) { // For modifier keys
+                rect.setWidth(60);
+            } else if (key.length() > 1) rect.setWidth(100);
+            rect.setArcWidth(5);
+            rect.setArcHeight(5);
+            rect.setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-stroke-width: 1;");
+
+            // Create key text
+            Text text = new Text(key);
+            text.setStyle("-fx-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;");
+
+            // Create container and add both
+            StackPane container = new StackPane();
+            container.getChildren().addAll(rect, text);
+
+            // Add to grid
+            row.add(container, i, 0);
+
+            // Store references for highlighting
+            if (key.length() == 1) {
+                char c = key.charAt(0);
+                keyRectangles.put(c, rect);
+                keyTexts.put(c, text);
+            } else if (key.equals(" ")) {
+                keyRectangles.put(' ', rect);
+                keyTexts.put(' ', text);
+            }
+        }
+    }
+
+    // Add this method to highlight a key
+    private void highlightKey(char c, boolean highlight) {
+        Platform.runLater(() -> {
+            Rectangle rect = keyRectangles.get(Character.toUpperCase(c));
+            Text text = keyTexts.get(Character.toUpperCase(c));
+
+            if (rect != null && text != null) {
+                if (highlight) {
+                    rect.setStyle("-fx-fill: #e2b714; -fx-stroke: #e2b714; -fx-stroke-width: 1;");
+                    text.setStyle("-fx-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;");
+                } else {
+                    rect.setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-stroke-width: 1;");
+                    text.setStyle("-fx-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;");
+                }
+            }
+        });
+    }
 
     public void initialize(Client client, String name, boolean isHost) {
         this.client = client;
@@ -86,6 +171,7 @@ public class MultiPlayerGameController {
         setupEventHandlers();
         setupGlobalHandlers();
         waitingQueue();
+        initializeKeyboard();
     }
 
     private void waitingQueue() {
@@ -341,6 +427,12 @@ public class MultiPlayerGameController {
             }
 
             char typedChar = newValue.charAt(i);
+            highlightKey(typedChar, true);
+
+            PauseTransition pause = new PauseTransition(Duration.millis(200));
+            pause.setOnFinished(e -> highlightKey(typedChar, false));
+            pause.play();
+
             char expectedChar = paragraphText.charAt(currentIndex);
             Text current = textNodes.get(currentIndex);
             textNodes.get(currentIndex).setUnderline(true);
@@ -368,7 +460,7 @@ public class MultiPlayerGameController {
                 typingFinished();
             }
 //            } else showAlert("You have to type the correct word!!!!");
-            if (IntStream.range(0, 5).noneMatch(j -> correctWordCheker[currentIndex - j] == 'T')) {
+            if (currentIndex < paragraphText.length() && IntStream.range(0, 5).noneMatch(j -> correctWordCheker[currentIndex - j] == 'T')) {
                 showAlert("You have to type the correct word!!!!");
             }
         }
