@@ -37,7 +37,7 @@ public class MultiPlayerChoiceController {
         Parent root = loader.load();
 
         Stage stage = (Stage) rootPane.getScene().getWindow();
-        Scene scene = new Scene(root, 1420, 800);
+        Scene scene = new Scene(root);
 
         stage.setTitle("TypeRacer");
         stage.setResizable(true);
@@ -95,7 +95,7 @@ public class MultiPlayerChoiceController {
         controller.initialize(client, name, isHost);
 
         Stage stage = (Stage) nameField.getScene().getWindow();
-        stage.setScene(new Scene(root, 1420, 800));
+        stage.setScene(new Scene(root));
         stage.setTitle("Multiplayer Lobby - " + name);
         stage.setOnCloseRequest(e -> client.close());
     }

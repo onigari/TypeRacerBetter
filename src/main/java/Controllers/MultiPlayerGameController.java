@@ -43,6 +43,9 @@ public class MultiPlayerGameController {
     @FXML private Label escText;
     @FXML private Button restartButton;
 
+    private final int waitTime = 3;
+    private final int gameTime = 30;
+
     private Client client;
     private String playerName;
     private String paragraphText;
@@ -86,7 +89,7 @@ public class MultiPlayerGameController {
     }
 
     private void waitingQueue() {
-        final int[] timeLeft = {3}; // 3, 2, 1
+        final int[] timeLeft = {waitTime}; // 3, 2, 1
 
         Timeline countdown = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             if (timeLeft[0] > 0) {
@@ -102,7 +105,7 @@ public class MultiPlayerGameController {
             }
         }));
 
-        countdown.setCycleCount(4); // Run 4 times: show 3, show 2, show 1, then start game
+        countdown.setCycleCount(waitTime + 1); // Run 4 times: show 3, show 2, show 1, then start game
         countdown.play();
 
         // Show initial countdown
@@ -110,12 +113,15 @@ public class MultiPlayerGameController {
     }
 
     private void countDownTimer() {
-        final int[] timeLeft = {20000};
+        final int[] timeLeft = {gameTime};
 
-        Timeline countdown = new Timeline(new KeyFrame(Duration.millis(1), e -> {
+        Timeline countdown = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             if (timeLeft[0] > 0) {
-                double seconds = (double)timeLeft[0] / 1000;
-                bigTimerLabel.setText(String.format("Time left: %.2f seconds", seconds));
+                int seconds = (int) timeLeft[0];
+                bigTimerLabel.setText(String.format("Time left: %d seconds", seconds));
+                if(timeLeft[0] < 5) {
+                    // TODO: set color red
+                }
                 timeLeft[0]--;
             } else {
                 bigTimerLabel.setText("TIMES UP!");
@@ -123,7 +129,7 @@ public class MultiPlayerGameController {
             }
         }));
 
-        countdown.setCycleCount(20000);
+        countdown.setCycleCount(gameTime + 1);
         countdown.play();
 
         bigTimerLabel.setText("Time left: " + timeLeft[0] + " seconds");
@@ -193,7 +199,7 @@ public class MultiPlayerGameController {
                 accuracyChecker = new char[paragraphText.length() + 1000];
                 correctWordCheker = new char[paragraphText.length() + 1000];
                 Arrays.fill(accuracyChecker, 'B');
-                Arrays.fill(accuracyChecker, 'B');
+                Arrays.fill(correctWordCheker, 'B');
                 Platform.runLater(this::setupParagraph);
             } else if (message.startsWith("LEADERBOARD:")) {
                 Platform.runLater(() -> updateLeaderboard(message.substring(12)));
@@ -329,7 +335,7 @@ public class MultiPlayerGameController {
     @FXML
     private void handleNewCharacters(String oldValue, String newValue) {
         for (int i = oldValue.length(); i < newValue.length(); i++) {
-            if (currentIndex >= paragraphText.length()) {
+            if (currentIndex >= paragraphText.length() && !new String(correctWordCheker).contains("F") && !typingDone) {
                 typingFinished();
                 return;
             }
@@ -358,9 +364,10 @@ public class MultiPlayerGameController {
             totalTyped++;
 
             updateStats();
-            if (currentIndex >= paragraphText.length()) {
+            if (currentIndex >= paragraphText.length() && !new String(correctWordCheker).contains("F") && !typingDone) {
                 typingFinished();
             }
+//            } else showAlert("You have to type the correct word!!!!");
             if (IntStream.range(0, 5).noneMatch(j -> correctWordCheker[currentIndex - j] == 'T')) {
                 showAlert("You have to type the correct word!!!!");
             }
@@ -511,6 +518,10 @@ public class MultiPlayerGameController {
     }
 
     private void typingFinished() {
+        if(typingDone) {
+            return;
+        }
+        typingDone = true;
         rootPane.requestFocus();
         if (timer != null) timer.stop();
         typingField.setDisable(true);
@@ -523,6 +534,8 @@ public class MultiPlayerGameController {
         rootPane.requestFocus();
         accuracyChecker = new char[paragraphText.length() + 1000];
         correctWordCheker = new char[paragraphText.length() + 1000];
+        Arrays.fill(accuracyChecker, 'B');
+        Arrays.fill(correctWordCheker, 'B');
     }
 
     private void updateLeaderboard(String data) {

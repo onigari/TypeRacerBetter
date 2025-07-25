@@ -82,6 +82,7 @@ public class SinglePlayerGameController {
     private int totalTyped;
     private boolean currentWordCorrect;
     private char[] accuracyChecker;
+    private char[] correctWordCheker;
 
     // New fields for word-by-word display
     private String[] paragraphWords;
@@ -184,7 +185,9 @@ public class SinglePlayerGameController {
                 inputStrings.add(takeIn.nextLine());
             }
             accuracyChecker = new char[inputStrings.size() + 1000];
+            correctWordCheker = new char[inputStrings.size() + 1000];
             Arrays.fill(accuracyChecker, 'B');
+            Arrays.fill(correctWordCheker, 'B');
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -402,8 +405,10 @@ public class SinglePlayerGameController {
                 if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
                     if(accuracyChecker[currentIndex] != 'F') {
                         correctCharCount--;
+                        System.out.println(correctCharCount);
                         accuracyChecker[currentIndex] = 'F';
                     }
+                    correctWordCheker[currentIndex] = 'B';
                 }
             }
         }
@@ -435,12 +440,13 @@ public class SinglePlayerGameController {
                 if(accuracyChecker[currentIndex] == 'B') {
                     accuracyChecker[currentIndex] = 'T';
                     correctCharCount++;
+                    System.out.println(correctCharCount);
                 }
-
+                correctWordCheker[currentIndex] = 'T';
                 current.setStyle("-fx-fill: #d1d0c5;"); // MonkeyType's correct color
             } else {
                 accuracyChecker[currentIndex] = 'F';
-
+                correctWordCheker[currentIndex] = 'F';
                 current.setStyle("-fx-fill: #ca4754;"); // MonkeyType's incorrect color
                 currentWordCorrect = false;
             }
@@ -574,7 +580,10 @@ public class SinglePlayerGameController {
         typingField.clear();
         typingField.setDisable(false);
         displayField.clear();
-
+        accuracyChecker = new char[paragraphText.length() + 1000];
+        correctWordCheker = new char[paragraphText.length() + 1000];
+        Arrays.fill(accuracyChecker, 'B');
+        Arrays.fill(correctWordCheker, 'B');
         displayParagraph(paragraphText);
 
         startTimer();
