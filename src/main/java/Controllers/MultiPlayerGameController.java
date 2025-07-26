@@ -69,7 +69,7 @@ public class MultiPlayerGameController {
     private boolean typingDone = false;
     private boolean isHost;
     private char[] accuracyChecker;
-    private char[] correctWordCheker;
+    private char[] correctWordChecker;
 
     private String[] paragraphWords;
     private int currentWordIndex = 0;
@@ -81,6 +81,8 @@ public class MultiPlayerGameController {
 
     private final Map<Character, Rectangle> keyRectangles = new HashMap<>();
     private final Map<Character, Text> keyTexts = new HashMap<>();
+
+    private static boolean gameRunning;
 
     private void initializeKeyboard() {
         // Row 1: Tab Q W E R T Y U I O P { }
@@ -164,6 +166,7 @@ public class MultiPlayerGameController {
         this.leaderboardList.setItems(leaderboard);
         this.isHost = isHost;
         restartButton.setDisable(true);
+        gameRunning = true;
         // Initialize with empty progress bar for current player
         addPlayerProgress(playerName);
         setupUI();
@@ -202,7 +205,7 @@ public class MultiPlayerGameController {
         final int[] timeLeft = {gameTime};
 
         Timeline countdown = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            if (timeLeft[0] > 0) {
+            if (timeLeft[0] > 0 && gameRunning) {
                 int seconds = (int) timeLeft[0];
                 bigTimerLabel.setText(String.format("Time left: %d seconds", seconds));
                 if(timeLeft[0] < 5) {
@@ -283,9 +286,9 @@ public class MultiPlayerGameController {
                     displayField.setText(paragraphWords[0]);
                 }
                 accuracyChecker = new char[paragraphText.length() + 1000];
-                correctWordCheker = new char[paragraphText.length() + 1000];
+                correctWordChecker = new char[paragraphText.length() + 1000];
                 Arrays.fill(accuracyChecker, 'B');
-                Arrays.fill(correctWordCheker, 'B');
+                Arrays.fill(correctWordChecker, 'B');
                 Platform.runLater(this::setupParagraph);
             } else if (message.startsWith("LEADERBOARD:")) {
                 Platform.runLater(() -> updateLeaderboard(message.substring(12)));
@@ -308,6 +311,7 @@ public class MultiPlayerGameController {
                 }
             } else if (message.equals("GAME_FINISHED")) {
                 out.println("GAME FINISHED received");
+                gameRunning = false;
                 restartButton.setDisable(!isHost);
             } else if (message.equals("RESTART")) {
                 try {
@@ -373,7 +377,7 @@ public class MultiPlayerGameController {
                 return;
             }
 
-            if(currentIndex > 0 && correctWordCheker[currentIndex-1] == 'F') {
+            if(currentIndex > 0 && correctWordChecker[currentIndex-1] == 'F') {
                 warningText.setText("All words have to be correct!!!");
             } else warningText.setStyle("-fx-background-color: transparent; -fx-opacity: 0; -fx-border-color: transparent;");
             handleNewCharacters(oldValue, newValue);
@@ -421,7 +425,7 @@ public class MultiPlayerGameController {
     @FXML
     private void handleNewCharacters(String oldValue, String newValue) {
         for (int i = oldValue.length(); i < newValue.length(); i++) {
-            if (currentIndex >= paragraphText.length() && !new String(correctWordCheker).contains("F") && !typingDone) {
+            if (currentIndex >= paragraphText.length() && !new String(correctWordChecker).contains("F") && !typingDone) {
                 typingFinished();
                 return;
             }
@@ -442,11 +446,11 @@ public class MultiPlayerGameController {
                     accuracyChecker[currentIndex] = 'T';
                     correctCharCount++;
                 }
-                correctWordCheker[currentIndex] = 'T';
+                correctWordChecker[currentIndex] = 'T';
                 current.setStyle("-fx-fill: #d1d0c5;"); // MonkeyType's correct color
             } else {
                 accuracyChecker[currentIndex] = 'F';
-                correctWordCheker[currentIndex] = 'F';
+                correctWordChecker[currentIndex] = 'F';
 
                 current.setStyle("-fx-fill: #ca4754;"); // MonkeyType's incorrect color
                 currentWordCorrect = false;
@@ -456,11 +460,11 @@ public class MultiPlayerGameController {
             totalTyped++;
 
             updateStats();
-            if (currentIndex >= paragraphText.length() && !new String(correctWordCheker).contains("F") && !typingDone) {
+            if (currentIndex >= paragraphText.length() && !new String(correctWordChecker).contains("F") && !typingDone) {
                 typingFinished();
             }
 //            } else showAlert("You have to type the correct word!!!!");
-            if (currentIndex < paragraphText.length() && IntStream.range(0, 5).noneMatch(j -> correctWordCheker[currentIndex - j] == 'T')) {
+            if (currentIndex < paragraphText.length() && IntStream.range(0, 5).noneMatch(j -> correctWordChecker[currentIndex - j] == 'T')) {
                 showAlert("You have to type the correct word!!!!");
             }
         }
@@ -481,7 +485,7 @@ public class MultiPlayerGameController {
                         correctCharCount--;
                         accuracyChecker[currentIndex] = 'F';
                     }
-                    correctWordCheker[currentIndex] = 'B';
+                    correctWordChecker[currentIndex] = 'B';
                 }
             }
         }
@@ -625,9 +629,9 @@ public class MultiPlayerGameController {
         client.sendResult(String.format("%s;%.2f;%d;%.2f", playerName, time, (int) wpm, accuracy));
         rootPane.requestFocus();
         accuracyChecker = new char[paragraphText.length() + 1000];
-        correctWordCheker = new char[paragraphText.length() + 1000];
+        correctWordChecker = new char[paragraphText.length() + 1000];
         Arrays.fill(accuracyChecker, 'B');
-        Arrays.fill(correctWordCheker, 'B');
+        Arrays.fill(correctWordChecker, 'B');
     }
 
     private void updateLeaderboard(String data) {
