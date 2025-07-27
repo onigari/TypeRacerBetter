@@ -44,7 +44,7 @@
    </VBox>
    <HBox prefHeight="51.0" prefWidth="760.0">
       <children>
-         <TextField fx:id="displayField" prefHeight="48.0" prefWidth="760.0" style="-fx-font-family: 'JetBrains Mono Medium';fx-font-size: 22px;-fx-text-fill: #646669; -fx-background-color: transparent; -fx-border-color: transparent; -fx-alignment: CENTER_LEFT; -fx-font-size: 22px; -fx-text-fill: #d1d0c5; -fx-background-color: transparent; -fx-border-color: #e2b714; -fx-border-width: 0 0 2 0; -fx-prompt-text-fill: #646669;" />
+         <TextField fx:id="displayField" prefHeight="48.0" prefWidth="760.0" style="-fx-font-family: 'JetBrains Mono Medium';fx-font-size: 22px;-fx-text-fill: #646669; -fx-background-color: transparent; -fx-border-color: transparent; -fx-alignment: CENTER_LEFT; -fx-font-size: 22px; -fx-text-fill: #d1d0c5; -fx-background-color: transparent; -fx-border-color: #e2b714; -fx-border-width: 0 0 0 0; -fx-prompt-text-fill: #646669;" />
       </children>
    </HBox>
 
