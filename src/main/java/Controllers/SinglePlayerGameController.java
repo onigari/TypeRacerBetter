@@ -152,10 +152,10 @@ public class SinglePlayerGameController {
 
     // Add this method to highlight a key
     private void highlightKey(String c, boolean highlight) {
-        String temp = c.toUpperCase();
+//        String temp = c.toUpperCase();
         Platform.runLater(() -> {
-            Rectangle rect = keyRectangles.get(temp);
-            Text text = keyTexts.get(temp);
+            Rectangle rect = keyRectangles.get(c);
+            Text text = keyTexts.get(c);
 
             if (rect != null && text != null) {
                 if (highlight) {
