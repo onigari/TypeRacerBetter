@@ -480,9 +480,9 @@ public class MultiPlayerGameController {
                 typingFinished();
             }
 //            } else showAlert("You have to type the correct word!!!!");
-            if (currentIndex < paragraphText.length() && IntStream.range(0, 5).noneMatch(j -> correctWordChecker[currentIndex - j] == 'T')) {
-                showAlert("You have to type the correct word!!!!");
-            }
+            if (currentIndex < paragraphText.length() && currentIndex > 0 && IntStream.range(0, 5).noneMatch(j -> correctWordChecker[currentIndex - j] == 'T')) {
+                warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono';");
+            } else warningText.setStyle("-fx-opacity: 0;-fx-font-family: 'Roboto Mono';");
         }
     }
 
