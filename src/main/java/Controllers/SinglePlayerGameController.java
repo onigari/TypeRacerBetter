@@ -105,11 +105,11 @@ public class SinglePlayerGameController {
         addKeysToRow(keyboardRow2, row2Keys);
 
         // Row 3: Shift Z X C V B N M < > ? Shift
-        String[] row3Keys = {"Shift", "Z", "X", "C", "V", "B", "N", "M", "<", ">", "?", "Shift"};
+        String[] row3Keys = {"LShift", "Z", "X", "C", "V", "B", "N", "M", "<", ">", "?", "RShift"};
         addKeysToRow(keyboardRow3, row3Keys);
 
         // Row 4: Ctrl Alt (space) Alt Ctrl
-        String[] row4Keys = {"Ctrl", "Alt", " ", "Alt", "Ctrl"};
+        String[] row4Keys = {"LCtrl", "LAlt", " ", "RAlt", "RCtrl"};
         addKeysToRow(keyboardRow4, row4Keys);
     }
 
@@ -123,7 +123,7 @@ public class SinglePlayerGameController {
             Rectangle rect = new Rectangle(40, 40);
             if (key.equals(" ")) {
                 rect.setWidth(200); // Make spacebar wider
-            } else if (key.equals("Ctrl") || key.equals("Alt") || key.equals("Tab")) { // For modifier keys
+            } else if (key.endsWith("Ctrl") || key.endsWith("Alt") || key.equals("Tab")) { // For modifier keys
                 rect.setWidth(60);
             } else if (key.length() > 1) rect.setWidth(100);
             rect.setArcWidth(5);
@@ -152,10 +152,9 @@ public class SinglePlayerGameController {
 
     // Add this method to highlight a key
     private void highlightKey(String c, boolean highlight) {
-//        String temp = c.toUpperCase();
         Platform.runLater(() -> {
-            Rectangle rect = keyRectangles.get(c);
             Text text = keyTexts.get(c);
+            Rectangle rect = keyRectangles.get(c);
 
             if (rect != null && text != null) {
                 if (highlight) {
@@ -264,11 +263,22 @@ public class SinglePlayerGameController {
         typingField.setOnKeyPressed(e -> {
             // highlight key
             String typedText = e.getCode().getName();
-            highlightKey(String.valueOf(typedText), true);
             out.println("typed: " + typedText);
-            PauseTransition pause = new PauseTransition(Duration.millis(200));
-            pause.setOnFinished(event -> highlightKey(String.valueOf(typedText), false));
-            pause.play();
+            if(typedText.equals("Alt") || typedText.equals("Ctrl") || typedText.equals("Shift")) {
+                highlightKey("L" + typedText, true);
+                PauseTransition pause = new PauseTransition(Duration.millis(200));
+                pause.setOnFinished(event -> highlightKey("L" + typedText, false));
+                pause.play();
+                highlightKey("R" + typedText, true);
+                pause = new PauseTransition(Duration.millis(200));
+                pause.setOnFinished(event -> highlightKey("R" + typedText, false));
+                pause.play();
+            } else {
+                highlightKey(typedText, true);
+                PauseTransition pause = new PauseTransition(Duration.millis(200));
+                pause.setOnFinished(event -> highlightKey(typedText, false));
+                pause.play();
+            }
             // tab key to restart
             if (e.getCode() == KeyCode.TAB) {
                 resetGame();
