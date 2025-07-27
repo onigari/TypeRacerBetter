@@ -76,7 +76,7 @@ public class MultiPlayerLobbyController {
                 Platform.runLater(this::startGame);
             } else if (message.equals("CLOSE_ALL")){
                 try{
-                    loadMainMenu();
+                    loadMainMenu((Stage) rootPane.getScene().getWindow());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -91,7 +91,7 @@ public class MultiPlayerLobbyController {
             if (e.getCode() == KeyCode.ESCAPE) {
                 try {
                     if(isHost) client.closeAll();
-                    loadMainMenu();
+                    loadMainMenu((Stage) rootPane.getScene().getWindow() );
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -127,7 +127,7 @@ public class MultiPlayerLobbyController {
         client.sendMessage("TIME:" + 90);
     }
 
-    private void loadMainMenu() throws IOException {
+    private void loadMainMenu(Stage stage) throws IOException {
         new Thread(() -> {
             client.close();
         }).start();
@@ -136,7 +136,7 @@ public class MultiPlayerLobbyController {
         Parent root = loader.load();
 
         Platform.runLater(() -> {
-            Stage stage = (Stage) rootPane.getScene().getWindow();
+            //Stage stage = (Stage) statusLabel.getScene().getWindow();
             Scene scene = new Scene(root, 1420, 800);
 
             stage.setTitle("TypeRacer");

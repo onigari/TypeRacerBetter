@@ -1,8 +1,11 @@
 package network;
 
+import kotlin.UninitializedPropertyAccessException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -22,22 +25,28 @@ public class Server {
     private static String selectedParagraph; //= PARAGRAPHS[new Random().nextInt(PARAGRAPHS.length)];
 
     private static void selectParagraph(int gameTime) {
-        String filePath = "src/main/resources/txtFiles/input" + gameTime + ".txt";
-        try {
-            File file = new File(filePath);
-            Scanner takeIn = new Scanner(file);
+        inputStrings.clear();
+        String resourcePath = "/data/input" + gameTime + ".txt";
+
+        try (InputStream input = Server.class.getResourceAsStream(resourcePath);
+             Scanner takeIn = new Scanner(input)) {
+
             while (takeIn.hasNextLine()) {
                 inputStrings.add(takeIn.nextLine());
             }
-        } catch (FileNotFoundException e) {
+
+            selectedParagraph = inputStrings.get(new Random().nextInt(inputStrings.size()));
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        selectedParagraph = inputStrings.get(new Random().nextInt(inputStrings.size()));
     }
+
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             out.println("Server started on port " + PORT);
+
             //selectParagraph();
 
             //out.println("Selected paragraph: " + selectedParagraph);

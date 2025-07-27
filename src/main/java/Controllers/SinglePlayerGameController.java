@@ -19,6 +19,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import network.Server;
 
 import java.io.*;
 import java.util.*;
@@ -185,9 +186,9 @@ public class SinglePlayerGameController {
     }
 
     private void loadWords() {
-        try {
-            File file = new File("src/main/resources/txtFiles/input.txt");
-            Scanner takeIn = new Scanner(file);
+        String resourcePath = "/data/input.txt";
+        try (InputStream input = getClass().getResourceAsStream(resourcePath);
+             Scanner takeIn = new Scanner(input)){
 
             while (takeIn.hasNextLine()) {
                 inputStrings.add(takeIn.nextLine());
