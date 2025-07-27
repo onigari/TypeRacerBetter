@@ -23,6 +23,8 @@ import javafx.util.Duration;
 import java.io.*;
 import java.util.*;
 
+import static java.lang.System.out;
+
 public class SinglePlayerGameController {
 
     public GridPane keyboardRow1;
@@ -89,8 +91,8 @@ public class SinglePlayerGameController {
     private int currentWordIndex = 0;
     private int currentWordCharIndex = 0;
 
-    private final Map<Character, Rectangle> keyRectangles = new HashMap<>();
-    private final Map<Character, Text> keyTexts = new HashMap<>();
+    private final Map<String, Rectangle> keyRectangles = new HashMap<>();
+    private final Map<String, Text> keyTexts = new HashMap<>();
 
     // Add this method to initialize the keyboard
     private void initializeKeyboard() {
@@ -139,22 +141,18 @@ public class SinglePlayerGameController {
             row.add(container, i, 0);
 
             // Store references for highlighting
-            if (key.length() == 1) {
-                char c = key.charAt(0);
-                keyRectangles.put(c, rect);
-                keyTexts.put(c, text);
-            } else if (key.equals(" ")) {
-                keyRectangles.put(' ', rect);
-                keyTexts.put(' ', text);
-            }
+
+                keyRectangles.put(key, rect);
+                keyTexts.put(key, text);
         }
     }
 
     // Add this method to highlight a key
-    private void highlightKey(char c, boolean highlight) {
+    private void highlightKey(String c, boolean highlight) {
+        String temp = c.toUpperCase();
         Platform.runLater(() -> {
-            Rectangle rect = keyRectangles.get(Character.toUpperCase(c));
-            Text text = keyTexts.get(Character.toUpperCase(c));
+            Rectangle rect = keyRectangles.get(temp);
+            Text text = keyTexts.get(temp);
 
             if (rect != null && text != null) {
                 if (highlight) {
@@ -260,16 +258,22 @@ public class SinglePlayerGameController {
             updateDisplayField(newValue);
         });
 
-        // Enter key to finish
+        // highlight key
         typingField.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.ENTER) {
-                typingFinished();
-            }
+            String typedText = e.getCode().getName();
+            highlightKey(typedText, true);
+            out.println(typedText);
         });
+
+
 
         // tab key to restart
         typingField.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.TAB) {
+                resetGame();
+            }
+            if (e.getCode() == KeyCode.ENTER) {
+                typingFinished();
                 resetGame();
             }
         });
@@ -405,7 +409,7 @@ public class SinglePlayerGameController {
                 if (paragraphText.charAt(currentIndex) == previous.getText().charAt(0)) {
                     if(accuracyChecker[currentIndex] != 'F') {
                         correctCharCount--;
-                        System.out.println(correctCharCount);
+                        out.println(correctCharCount);
                         accuracyChecker[currentIndex] = 'F';
                     }
                     correctWordCheker[currentIndex] = 'B';
@@ -426,10 +430,11 @@ public class SinglePlayerGameController {
             }
 
             char typedChar = newValue.charAt(i);
-            highlightKey(typedChar, true);
+            out.println(typedChar);
+            highlightKey(String.valueOf(typedChar), true);
 
             PauseTransition pause = new PauseTransition(Duration.millis(200));
-            pause.setOnFinished(e -> highlightKey(typedChar, false));
+            pause.setOnFinished(e -> highlightKey(String.valueOf(typedChar), false));
             pause.play();
 
             char expectedChar = paragraphText.charAt(currentIndex);
@@ -440,7 +445,7 @@ public class SinglePlayerGameController {
                 if(accuracyChecker[currentIndex] == 'B') {
                     accuracyChecker[currentIndex] = 'T';
                     correctCharCount++;
-                    System.out.println(correctCharCount);
+                    out.println(correctCharCount);
                 }
                 correctWordCheker[currentIndex] = 'T';
                 current.setStyle("-fx-fill: #d1d0c5;"); // MonkeyType's correct color
