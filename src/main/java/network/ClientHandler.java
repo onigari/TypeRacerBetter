@@ -12,7 +12,7 @@ public class ClientHandler implements Runnable {
     private static List<ClientHandler> clients;
     private String paragraph;
     private String playerName;
-    private String playersList;
+    private static String playersList;
     private static int gameTime;
     private static final CopyOnWriteArrayList<String> leaderboard = new CopyOnWriteArrayList<>();
 
@@ -203,7 +203,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void initiatePlayerList() {
+    private static void initiatePlayerList() {
         if(clients.isEmpty()) return;
         StringBuffer sb = new StringBuffer("PLAYERS:");
         synchronized (clients) {

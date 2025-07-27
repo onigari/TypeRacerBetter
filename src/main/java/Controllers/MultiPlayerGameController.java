@@ -191,7 +191,7 @@ public class MultiPlayerGameController {
         setupGlobalHandlers();
         waitingQueue();
         initializeKeyboard();
-        client.sendMessage("GET_PARAGRAPH");
+        client.sendMessage("GET_PLAYERS");
     }
 
     private void waitingQueue() {
@@ -307,20 +307,21 @@ public class MultiPlayerGameController {
                 Arrays.fill(accuracyChecker, 'B');
                 Arrays.fill(correctWordChecker, 'B');
                 Platform.runLater(this::setupParagraph);
-                client.sendMessage("GET_PLAYERS");
             } else if (message.startsWith("LEADERBOARD:")) {
                 Platform.runLater(() -> updateLeaderboard(message.substring(12)));
             } else if (message.startsWith("PROGRESS:")) {
                 Platform.runLater(() -> updateAllProgress(message.substring(9)));
             } else if (message.startsWith("PLAYERS:")) {
+                out.println(message);
                 Platform.runLater(() -> {
                     String[] players = message.substring(8).split(",");
                     for (String player : players) {
-                        if (!player.isEmpty() && !player.equals(playerName)) {
+                        if (!player.equals(playerName)) {
                             addPlayerProgress(player);
                         }
                     }
                 });
+                client.sendMessage("GET_PARAGRAPH");
             } else if (message.equals("CLOSE_ALL")) {
                 try {
                     loadMainMenu();
