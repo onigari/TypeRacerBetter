@@ -289,6 +289,7 @@ public class MultiPlayerGameController {
                 Arrays.fill(accuracyChecker, 'B');
                 Arrays.fill(correctWordChecker, 'B');
                 Platform.runLater(this::setupParagraph);
+                client.sendMessage("GET_PLAYERS");
             } else if (message.startsWith("LEADERBOARD:")) {
                 Platform.runLater(() -> updateLeaderboard(message.substring(12)));
             } else if (message.startsWith("PROGRESS:")) {

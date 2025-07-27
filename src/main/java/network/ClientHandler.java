@@ -12,6 +12,7 @@ public class ClientHandler implements Runnable {
     private List<ClientHandler> clients;
     private String paragraph;
     private String playerName;
+    private String playersList;
     private static final CopyOnWriteArrayList<String> leaderboard = new CopyOnWriteArrayList<>();
 
     public ClientHandler(Socket socket, List<ClientHandler> clients, String paragraph) throws IOException {
@@ -32,6 +33,7 @@ public class ClientHandler implements Runnable {
                 if (inputLine.startsWith("NAME:")) {
                     this.playerName = inputLine.substring(5).trim();
                     if (playerName.isEmpty()) playerName = "Anonymous_" + socket.getPort();
+                    initiatePlayerList();
                     broadcastPlayerList();
                 } else if (inputLine.startsWith("RESULT:")) {
                     handleResult(inputLine.substring(7));
@@ -40,7 +42,7 @@ public class ClientHandler implements Runnable {
                 } else if (inputLine.equals("START_GAME") && clients.get(0) == this) {
                     System.out.println("Host (" + playerName + ") initiated game start");
                     Server.broadcastStartGame();
-                    broadcastPlayerList();
+                    initiatePlayerList();
                     leaderboard.clear();
                 } else if (inputLine.equals("CLOSE")){
                     break;
@@ -52,6 +54,8 @@ public class ClientHandler implements Runnable {
                     Server.broadcastRestart();
                 } else if (inputLine.equals("GET_PARAGRAPH")) {
                     out.println("PARAGRAPH:" + paragraph);
+                } else if (inputLine.equals("GET_PLAYERS")) {
+                    out.println(playersList);
                 }
             }
         } catch (IOException e) {
@@ -199,6 +203,14 @@ public class ClientHandler implements Runnable {
 //    }
 
     private void broadcastPlayerList() {
+        synchronized (clients) {
+            for (ClientHandler client : clients) {
+                client.sendMessage(playersList);
+            }
+        }
+    }
+
+    private void initiatePlayerList() {
         if(clients.isEmpty()) return;
         StringBuffer sb = new StringBuffer("PLAYERS:");
         synchronized (clients) {
@@ -208,12 +220,7 @@ public class ClientHandler implements Runnable {
                 }
             }
         }
-        String playerList = sb.toString();
-        synchronized (clients) {
-            for (ClientHandler client : clients) {
-                client.sendMessage(playerList);
-            }
-        }
+        playersList = sb.toString();
     }
 
     void sendMessage(String message) {
@@ -233,6 +240,7 @@ public class ClientHandler implements Runnable {
         synchronized (clients) {
             clients.remove(this);
         }
+        initiatePlayerList();
         broadcastPlayerList();
     }
 }
