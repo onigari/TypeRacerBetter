@@ -95,7 +95,7 @@ public class MultiPlayerGameController {
         addKeysToRow(keyboardRow2, row2Keys);
 
         // Row 3: Shift Z X C V B N M < > ? Shift
-        String[] row3Keys = {"LShift", "Z", "X", "C", "V", "B", "N", "M", "<", ">", "?", "RShift"};
+        String[] row3Keys = {"LShift", "Z", "X", "C", "V", "B", "N", "M", ",", ".", "?", "RShift"};
         addKeysToRow(keyboardRow3, row3Keys);
 
         // Row 4: Ctrl Alt (space) Alt Ctrl
@@ -217,7 +217,7 @@ public class MultiPlayerGameController {
                 int seconds = (int) timeLeft[0];
                 bigTimerLabel.setText(String.format("Time left: %d seconds", seconds));
                 if(timeLeft[0] < 5) {
-                    bigTimerLabel.setText("-fx-text-fill: #800b0d;");
+                    bigTimerLabel.setStyle("-fx-text-fill: #800b0d;");
                 }
                 timeLeft[0]--;
             } else {
@@ -386,9 +386,9 @@ public class MultiPlayerGameController {
                 return;
             }
 
-            if(currentIndex > 0 && correctWordChecker[currentIndex-1] == 'F') {
+            if(currentIndex > 5 && IntStream.range(0, 5).allMatch(j -> correctWordChecker[currentIndex - j] == 'F')) {
                 warningText.setText("All words have to be correct!!!");
-            } else warningText.setStyle("-fx-background-color: transparent; -fx-opacity: 0; -fx-border-color: transparent;");
+            }
             handleNewCharacters(oldValue, newValue);
 
             updateDisplayField(newValue);
@@ -489,7 +489,7 @@ public class MultiPlayerGameController {
                 typingFinished();
             }
 //            } else showAlert("You have to type the correct word!!!!");
-            if (currentIndex < paragraphText.length() && currentIndex > 0 && IntStream.range(0, 5).noneMatch(j -> correctWordChecker[currentIndex - j] == 'T')) {
+            if (currentIndex > 0 && new String(correctWordChecker).contains("F")) {
                 warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono';");
             } else warningText.setStyle("-fx-opacity: 0;-fx-font-family: 'Roboto Mono';");
         }
@@ -514,6 +514,9 @@ public class MultiPlayerGameController {
                 }
             }
         }
+        if (currentIndex > 0 && new String(correctWordChecker).contains("F")) {
+            warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono';");
+        } else warningText.setStyle("-fx-opacity: 0;-fx-font-family: 'Roboto Mono';");
         updateStats();
 
         updateDisplayField(newValue);
@@ -548,65 +551,63 @@ public class MultiPlayerGameController {
         currentWordCharIndex = Math.max(0, Math.min(wordCharIndex, paragraphWords[wordIndex].length()));
 
         // Build display text for current word
-        if (currentWordIndex < paragraphWords.length) {
-            String currentWord = paragraphWords[currentWordIndex];
-            StringBuilder displayText = new StringBuilder();
+        String currentWord = paragraphWords[currentWordIndex];
+        StringBuilder displayText = new StringBuilder();
 
-            // Add typed characters with appropriate styling
-            for (int i = 0; i < currentWord.length(); i++) {
-                displayText.append(currentWord.charAt(i));
-            }
+        // Add typed characters with appropriate styling
+        for (int i = 0; i < currentWord.length(); i++) {
+            displayText.append(currentWord.charAt(i));
+        }
 
-            displayField.setText(displayText.toString());
+        displayField.setText(displayText.toString());
 
-            int wordStartPosition = 0;
-            for (int i = 0; i < currentWordIndex; i++) {
-                wordStartPosition += paragraphWords[i].length() + 1; // +1 for space
-            }
+        int wordStartPosition = 0;
+        for (int i = 0; i < currentWordIndex; i++) {
+            wordStartPosition += paragraphWords[i].length() + 1; // +1 for space
+        }
 
-            boolean wordIsCorrectSoFar = true;
-            if (typedText.length() > wordStartPosition) {
-                String typedPortionOfWord = typedText.substring(wordStartPosition,
-                        Math.min(typedText.length(), wordStartPosition + currentWord.length()));
+        boolean wordIsCorrectSoFar = true;
+        if (typedText.length() > wordStartPosition) {
+            String typedPortionOfWord = typedText.substring(wordStartPosition,
+                    Math.min(typedText.length(), wordStartPosition + currentWord.length()));
 
-                // Check if typed portion matches the expected word portion
-                for (int i = 0; i < typedPortionOfWord.length(); i++) {
-                    if (i >= currentWord.length() || typedPortionOfWord.charAt(i) != currentWord.charAt(i)) {
-                        wordIsCorrectSoFar = false;
-                        break;
-                    }
+            // Check if typed portion matches the expected word portion
+            for (int i = 0; i < typedPortionOfWord.length(); i++) {
+                if (i >= currentWord.length() || typedPortionOfWord.charAt(i) != currentWord.charAt(i)) {
+                    wordIsCorrectSoFar = false;
+                    break;
                 }
             }
+        }
 
-            // Style the display field based on typing correctness
-            if (currentWordCharIndex == 0) {
-                // No characters typed yet - default style
-                displayField.setStyle("""
-                -fx-font-family: 'Roboto Mono';
-                -fx-font-size: 24px;
-                -fx-text-fill: #646669;
-                -fx-background-color: transparent;
-                -fx-border-color: transparent;
-                -fx-alignment: CENTER_LEFT;""");
-            } else if (wordIsCorrectSoFar) {
-                // Correct so far - green text
-                displayField.setStyle("""
-                -fx-font-family: 'Roboto Mono';
-                -fx-font-size: 24px;
-                -fx-text-fill: #d1d0c5;
-                -fx-background-color: transparent;
-                -fx-border-color: transparent;
-                -fx-alignment: CENTER_LEFT;""");
-            } else {
-                // Incorrect - red text
-                displayField.setStyle("""
-                -fx-font-family: 'Roboto Mono';
-                -fx-font-size: 24px;
-                -fx-text-fill: #ca4754;
-                -fx-background-color: transparent;
-                -fx-border-color: transparent;
-                -fx-alignment: CENTER_LEFT;""");
-            }
+        // Style the display field based on typing correctness
+        if (currentWordCharIndex == 0) {
+            // No characters typed yet - default style
+            displayField.setStyle("""
+            -fx-font-family: 'Roboto Mono';
+            -fx-font-size: 24px;
+            -fx-text-fill: #646669;
+            -fx-background-color: transparent;
+            -fx-border-color: transparent;
+            -fx-alignment: CENTER_LEFT;""");
+        } else if (wordIsCorrectSoFar) {
+            // Correct so far - green text
+            displayField.setStyle("""
+            -fx-font-family: 'Roboto Mono';
+            -fx-font-size: 24px;
+            -fx-text-fill: #d1d0c5;
+            -fx-background-color: transparent;
+            -fx-border-color: transparent;
+            -fx-alignment: CENTER_LEFT;""");
+        } else {
+            // Incorrect - red text
+            displayField.setStyle("""
+            -fx-font-family: 'Roboto Mono';
+            -fx-font-size: 24px;
+            -fx-text-fill: #ca4754;
+            -fx-background-color: transparent;
+            -fx-border-color: transparent;
+            -fx-alignment: CENTER_LEFT;""");
         }
     }
 
