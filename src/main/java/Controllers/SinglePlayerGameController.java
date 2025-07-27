@@ -102,11 +102,11 @@ public class SinglePlayerGameController {
         addKeysToRow(keyboardRow1, row1Keys);
 
         // Row 2: Caps Lock A S D F G H J K L ; " Enter
-        String[] row2Keys = {"Caps Lock", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "\"", "Enter"};
+        String[] row2Keys = {"Caps Lock", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "Enter"};
         addKeysToRow(keyboardRow2, row2Keys);
 
         // Row 3: Shift Z X C V B N M < > ? Shift
-        String[] row3Keys = {"LShift", "Z", "X", "C", "V", "B", "N", "M", "<", ">", "?", "RShift"};
+        String[] row3Keys = {"LShift", "Z", "X", "C", "V", "B", "N", "M", ",", ".", "?", "RShift"};
         addKeysToRow(keyboardRow3, row3Keys);
 
         // Row 4: Ctrl Alt (space) Alt Ctrl
@@ -147,12 +147,14 @@ public class SinglePlayerGameController {
                 key = "Space";
             } else if (key.equals(",")) {
                 key = "Comma";
-            } else if (key.equals("\"")) {
+            } else if (key.equals("'")) {
                 key = "Quote";
             } else if (key.equals(".")) {
                 key = "Period";
             } else if (key.equals("?")) {
                 key = "Slash";
+            } else if (key.equals(";")) {
+                key = "Semicolon";
             }
             keyRectangles.put(key, rect);
             keyTexts.put(key, text);
