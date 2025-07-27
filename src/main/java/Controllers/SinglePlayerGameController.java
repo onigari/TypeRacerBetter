@@ -118,6 +118,7 @@ public class SinglePlayerGameController {
         for (int i = 0; i < keys.length; i++) {
             String key = keys[i];
 
+
             // Create key rectangle
             Rectangle rect = new Rectangle(40, 40);
             if (key.equals(" ")) {
@@ -141,9 +142,11 @@ public class SinglePlayerGameController {
             row.add(container, i, 0);
 
             // Store references for highlighting
-
-                keyRectangles.put(key, rect);
-                keyTexts.put(key, text);
+            if (key.equals(" ")) {
+                key = "Space";
+            }
+            keyRectangles.put(key, rect);
+            keyTexts.put(key, text);
         }
     }
 
@@ -162,7 +165,7 @@ public class SinglePlayerGameController {
                     rect.setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-stroke-width: 1;");
                     text.setStyle("-fx-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;");
                 }
-            }
+            } else out.println("null in highlight");
         });
     }
 
@@ -258,23 +261,21 @@ public class SinglePlayerGameController {
             updateDisplayField(newValue);
         });
 
-        // highlight key
         typingField.setOnKeyPressed(e -> {
+            // highlight key
             String typedText = e.getCode().getName();
-            highlightKey(typedText, true);
-            out.println(typedText);
-        });
-
-
-
-        // tab key to restart
-        typingField.setOnKeyPressed(e -> {
+            highlightKey(String.valueOf(typedText), true);
+            out.println("typed: " + typedText);
+            PauseTransition pause = new PauseTransition(Duration.millis(200));
+            pause.setOnFinished(event -> highlightKey(String.valueOf(typedText), false));
+            pause.play();
+            // tab key to restart
             if (e.getCode() == KeyCode.TAB) {
                 resetGame();
             }
+            // enter key to
             if (e.getCode() == KeyCode.ENTER) {
                 typingFinished();
-                resetGame();
             }
         });
 
@@ -430,12 +431,12 @@ public class SinglePlayerGameController {
             }
 
             char typedChar = newValue.charAt(i);
-            out.println(typedChar);
-            highlightKey(String.valueOf(typedChar), true);
-
-            PauseTransition pause = new PauseTransition(Duration.millis(200));
-            pause.setOnFinished(e -> highlightKey(String.valueOf(typedChar), false));
-            pause.play();
+//            out.println(typedChar);
+//            highlightKey(String.valueOf(typedChar), true);
+//
+//            PauseTransition pause = new PauseTransition(Duration.millis(200));
+//            pause.setOnFinished(e -> highlightKey(String.valueOf(typedChar), false));
+//            pause.play();
 
             char expectedChar = paragraphText.charAt(currentIndex);
             Text current = textNodes.get(currentIndex);
@@ -445,7 +446,7 @@ public class SinglePlayerGameController {
                 if(accuracyChecker[currentIndex] == 'B') {
                     accuracyChecker[currentIndex] = 'T';
                     correctCharCount++;
-                    out.println(correctCharCount);
+//                    out.println(correctCharCount);
                 }
                 correctWordCheker[currentIndex] = 'T';
                 current.setStyle("-fx-fill: #d1d0c5;"); // MonkeyType's correct color
