@@ -21,9 +21,10 @@ public class Server {
     private static List<String> inputStrings = new ArrayList<>() ;
     private static String selectedParagraph; //= PARAGRAPHS[new Random().nextInt(PARAGRAPHS.length)];
 
-    private static void selectParagraph() {
+    private static void selectParagraph(int gameTime) {
+        String filePath = "src/main/resources/txtFiles/input" + gameTime + ".txt";
         try {
-            File file = new File("src/main/resources/txtFiles/input.txt");
+            File file = new File(filePath);
             Scanner takeIn = new Scanner(file);
             while (takeIn.hasNextLine()) {
                 inputStrings.add(takeIn.nextLine());
@@ -60,8 +61,8 @@ public class Server {
         }
     }
 
-    public static void broadcastStartGame() {
-        selectParagraph();
+    public static void broadcastStartGame(int gameTime) {
+        selectParagraph(gameTime);
         synchronized (clients) {
             for (ClientHandler client : clients) {
                 client.sendMessage("START_GAME");
@@ -86,7 +87,7 @@ public class Server {
                 String[] parts = entry.split(";");
                 if (parts.length == 4) {
                     count++;
-                    sb.append(String.format("%s - %.2fs - %.2f WPM - %.2f %% |",
+                    sb.append(String.format("%s - %.0fs - %.2f WPM - %.2f %% |",
                             parts[0], Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3])));
                 }
             }

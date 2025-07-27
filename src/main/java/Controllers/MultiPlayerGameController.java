@@ -53,7 +53,7 @@ public class MultiPlayerGameController {
     @FXML private Button restartButton;
 
     private final int waitTime = 3;
-    private final int gameTime = 30;
+    private int gameTime;
 
     private Client client;
     private String playerName;
@@ -157,7 +157,7 @@ public class MultiPlayerGameController {
         });
     }
 
-    public void initialize(Client client, String name, boolean isHost) {
+    public void initialize(Client client, String name, boolean isHost, int time) {
         this.client = client;
         this.playerName = name;
         playerNameLabel.setText(playerName);
@@ -165,6 +165,7 @@ public class MultiPlayerGameController {
         this.isHost = isHost;
         restartButton.setDisable(true);
         gameRunning = true;
+        gameTime = time;
         // Initialize with empty progress bar for current player
         addPlayerProgress(playerName);
         setupUI();
@@ -642,7 +643,7 @@ public class MultiPlayerGameController {
         double time = (System.currentTimeMillis() - startTime) / 1000.0;
         double wpm = calculateWPM();
         double accuracy = calculateAccuracy();
-        client.sendResult(String.format("%s;%.2f;%d;%.2f", playerName, time, (int) wpm, accuracy));
+        client.sendResult(String.format("%s;%.0f;%d;%.2f", playerName, time, (int) wpm, accuracy));
         rootPane.requestFocus();
         accuracyChecker = new char[paragraphText.length() + 1000];
         correctWordChecker = new char[paragraphText.length() + 1000];

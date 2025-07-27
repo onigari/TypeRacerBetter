@@ -17,8 +17,27 @@
       </HBox>
 
       <ListView fx:id="playerListView" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #3a3d42; -fx-text-fill: #d1d0c5; -fx-control-inner-background: #3a3d42; -fx-pref-height: 200; -fx-min-width: 300;" />
-
-      <Button fx:id="startButton" onAction="#handleStartGame" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-weight: bold; -fx-font-size: 16px; -fx-min-width: 150;" text="START RACE" />
+      <HBox prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <VBox prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Button fx:id="fortySecondButton" mnemonicParsing="false" onAction="#onFortyClick" text="40s" />
+               </children>
+            </VBox>
+            <VBox prefHeight="79.0" prefWidth="100.0">
+               <children>
+                  <Button fx:id="sixtySecondButton" mnemonicParsing="false" onAction="#onSixtyClick" text="60s" />
+               </children>
+            </VBox>
+            <VBox prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Button fx:id="ninetySecondButton" mnemonicParsing="false" onAction="#onNinetyClick" text="90s" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
    </VBox>
+
+   <Button fx:id="startButton" onAction="#handleStartGame" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-weight: bold; -fx-font-size: 16px; -fx-min-width: 150;" text="START RACE" />
    <Label fx:id="escText" alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="217.0" text="Press esc to go back to main menu" />
 </VBox>

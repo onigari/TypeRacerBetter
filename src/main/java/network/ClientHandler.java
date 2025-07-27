@@ -13,6 +13,7 @@ public class ClientHandler implements Runnable {
     private String paragraph;
     private String playerName;
     private String playersList;
+    private static int gameTime;
     private static final CopyOnWriteArrayList<String> leaderboard = new CopyOnWriteArrayList<>();
 
     public ClientHandler(Socket socket, List<ClientHandler> clients) throws IOException {
@@ -40,7 +41,7 @@ public class ClientHandler implements Runnable {
                     handleProgress(inputLine.substring(9));
                 } else if (inputLine.equals("START_GAME") && clients.get(0) == this) {
                     System.out.println("Host (" + playerName + ") initiated game start");
-                    Server.broadcastStartGame();
+                    Server.broadcastStartGame(gameTime);
                     initiatePlayerList();
                     leaderboard.clear();
                 } else if (inputLine.equals("CLOSE")){
@@ -55,6 +56,9 @@ public class ClientHandler implements Runnable {
                     out.println("PARAGRAPH:" + paragraph);
                 } else if (inputLine.equals("GET_PLAYERS")) {
                     out.println(playersList);
+                } else if (inputLine.startsWith("TIME:")) {
+                    gameTime = Integer.parseInt(inputLine.substring(5).trim());
+                    broadcastTime(inputLine);
                 }
             }
         } catch (IOException e) {
@@ -187,6 +191,14 @@ public class ClientHandler implements Runnable {
         synchronized (clients) {
             for (ClientHandler client : clients) {
                 client.sendMessage(playersList);
+            }
+        }
+    }
+
+    private void broadcastTime(String time) {
+        synchronized (clients) {
+            for (ClientHandler client : clients) {
+                client.sendMessage(time);
             }
         }
     }

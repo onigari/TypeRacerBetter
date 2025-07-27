@@ -23,7 +23,11 @@ public class MultiPlayerLobbyController {
     @FXML private Button startButton;
     @FXML private Label hostIndicator; // Now properly linked to FXML
     @FXML private Label escText;
+    @FXML private Button fortySecondButton;
+    @FXML private Button sixtySecondButton;
+    @FXML private Button ninetySecondButton;
 
+    private int time;
     private Client client;
     private String playerName;
     private ObservableList<String> players = FXCollections.observableArrayList();
@@ -42,6 +46,10 @@ public class MultiPlayerLobbyController {
             rootPane.requestFocus();
             setupEventHandlers();
         });
+
+        fortySecondButton.setDisable(!isHost);
+        sixtySecondButton.setDisable(!isHost);
+        ninetySecondButton.setDisable(!isHost);
     }
 
     private void setupUI() {
@@ -71,6 +79,8 @@ public class MultiPlayerLobbyController {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            } else if (message.startsWith("TIME:")) {
+                time = Integer.parseInt(message.substring(5));
             }
         });
     }
@@ -93,6 +103,21 @@ public class MultiPlayerLobbyController {
         if (isHost) {
             client.sendStartGame();
         }
+    }
+
+    @FXML
+    private void onFortyClick(){
+        client.sendMessage("TIME:" + 40);
+    }
+
+    @FXML
+    private void onSixtyClick(){
+        client.sendMessage("TIME:" + 60);
+    }
+
+    @FXML
+    private void onNinetyClick(){
+        client.sendMessage("TIME:" + 90);
     }
 
     private void loadMainMenu() throws IOException {
@@ -120,7 +145,7 @@ public class MultiPlayerLobbyController {
             Parent root = loader.load();
 
             MultiPlayerGameController controller = loader.getController();
-            controller.initialize(client, playerName, isHost);
+            controller.initialize(client, playerName, isHost, time);
 
             Stage stage = (Stage) playerListView.getScene().getWindow();
             stage.setScene(new Scene(root, 1420, 800));
