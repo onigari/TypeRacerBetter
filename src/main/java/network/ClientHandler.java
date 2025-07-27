@@ -15,10 +15,9 @@ public class ClientHandler implements Runnable {
     private String playersList;
     private static final CopyOnWriteArrayList<String> leaderboard = new CopyOnWriteArrayList<>();
 
-    public ClientHandler(Socket socket, List<ClientHandler> clients, String paragraph) throws IOException {
+    public ClientHandler(Socket socket, List<ClientHandler> clients) throws IOException {
         this.socket = socket;
         this.clients = clients;
-        //this.paragraph = paragraph;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(socket.getOutputStream(), true);
         System.out.println("ClientHandler created for: " + socket.getRemoteSocketAddress());
@@ -184,24 +183,6 @@ public class ClientHandler implements Runnable {
         }
     }
 
-//    private void broadcastLeaderboard() {
-//        StringBuffer sb = new StringBuffer("LEADERBOARD:");
-//        synchronized (leaderboard) {
-//            for (String entry : leaderboard) {
-//                String[] parts = entry.split(";");
-//                if (parts.length == 3) {
-//                    sb.append(String.format("%s - %.2fs - %.2f WPM)|",
-//                            parts[0], Double.parseDouble(parts[1]), Double.parseDouble(parts[2])));
-//                }
-//            }
-//        }
-//        synchronized (clients) {
-//            for (ClientHandler client : clients) {
-//                client.sendMessage(sb.toString());
-//            }
-//        }
-//    }
-
     private void broadcastPlayerList() {
         synchronized (clients) {
             for (ClientHandler client : clients) {
@@ -230,7 +211,6 @@ public class ClientHandler implements Runnable {
 
     private void cleanup() {
         try {
-            //out.println("CLOSE:" + playerName);
             if (in != null) in.close();
             if (out != null) out.close();
             if (socket != null && !socket.isClosed()) socket.close();

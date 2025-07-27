@@ -37,7 +37,7 @@ public class Server {
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             out.println("Server started on port " + PORT);
-            selectParagraph();
+            //selectParagraph();
 
             out.println("Selected paragraph: " + selectedParagraph);
 
@@ -49,7 +49,7 @@ public class Server {
                     continue;
                 }
                 out.println("New client connected: " + socket.getRemoteSocketAddress());
-                ClientHandler handler = new ClientHandler(socket, clients, selectedParagraph);
+                ClientHandler handler = new ClientHandler(socket, clients);
                 synchronized (clients) {
                     clients.add(handler);
                 }
@@ -67,14 +67,6 @@ public class Server {
                 client.sendMessage("START_GAME");
                 client.setParagraph(selectedParagraph);
             }
-//            try{
-//                Thread.sleep(100);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            for (ClientHandler client : clients) {
-//                client.sendMessage("PARAGRAPH:" + selectedParagraph);
-//            }
         }
     }
 
