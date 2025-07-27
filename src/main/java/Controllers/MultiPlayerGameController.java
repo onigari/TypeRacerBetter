@@ -589,7 +589,8 @@ public class MultiPlayerGameController {
             -fx-text-fill: #646669;
             -fx-background-color: transparent;
             -fx-border-color: transparent;
-            -fx-alignment: CENTER_LEFT;""");
+            -fx-alignment: CENTER_LEFT;
+            -fx-border-width: 0 0 1 0;""");
         } else if (wordIsCorrectSoFar) {
             // Correct so far - green text
             displayField.setStyle("""
@@ -598,7 +599,8 @@ public class MultiPlayerGameController {
             -fx-text-fill: #d1d0c5;
             -fx-background-color: transparent;
             -fx-border-color: transparent;
-            -fx-alignment: CENTER_LEFT;""");
+            -fx-alignment: CENTER_LEFT;
+            -fx-border-width: 0 0 1 0;""");
         } else {
             // Incorrect - red text
             displayField.setStyle("""
@@ -607,7 +609,8 @@ public class MultiPlayerGameController {
             -fx-text-fill: #ca4754;
             -fx-background-color: transparent;
             -fx-border-color: transparent;
-            -fx-alignment: CENTER_LEFT;""");
+            -fx-alignment: CENTER_LEFT;
+            -fx-border-width: 0 0 1 0;""");
         }
     }
 
