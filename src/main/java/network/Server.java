@@ -61,18 +61,20 @@ public class Server {
     }
 
     public static void broadcastStartGame() {
+        selectParagraph();
         synchronized (clients) {
             for (ClientHandler client : clients) {
                 client.sendMessage("START_GAME");
+                client.setParagraph(selectedParagraph);
             }
-            try{
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            for (ClientHandler client : clients) {
-                client.sendMessage("PARAGRAPH:" + selectedParagraph);
-            }
+//            try{
+//                Thread.sleep(100);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            for (ClientHandler client : clients) {
+//                client.sendMessage("PARAGRAPH:" + selectedParagraph);
+//            }
         }
     }
 

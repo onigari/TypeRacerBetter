@@ -10,6 +10,7 @@ public class ClientHandler implements Runnable {
     private BufferedReader in;
     private PrintWriter out;
     private List<ClientHandler> clients;
+    private String paragraph;
     private String playerName;
     private static final CopyOnWriteArrayList<String> leaderboard = new CopyOnWriteArrayList<>();
 
@@ -49,6 +50,8 @@ public class ClientHandler implements Runnable {
                     }
                 } else if (inputLine.equals("RESTART")) {
                     Server.broadcastRestart();
+                } else if (inputLine.equals("GET_PARAGRAPH")) {
+                    out.println("PARAGRAPH:" + paragraph);
                 }
             }
         } catch (IOException e) {
@@ -117,6 +120,10 @@ public class ClientHandler implements Runnable {
             }
         }
         return false;
+    }
+
+    public void setParagraph(String paragraph) {
+        this.paragraph = paragraph;
     }
 
     private void updateResult(String result) {

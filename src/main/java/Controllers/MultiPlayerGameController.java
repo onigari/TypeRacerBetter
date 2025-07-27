@@ -175,6 +175,7 @@ public class MultiPlayerGameController {
         setupGlobalHandlers();
         waitingQueue();
         initializeKeyboard();
+        client.sendMessage("GET_PARAGRAPH");
     }
 
     private void waitingQueue() {
