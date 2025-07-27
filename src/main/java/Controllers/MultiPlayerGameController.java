@@ -1,5 +1,6 @@
 package Controllers;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
@@ -156,6 +157,13 @@ public class MultiPlayerGameController {
             } else out.println("null in highlight");
         });
     }
+    private void leaderBoardPopUp() {
+        FadeTransition ft = new FadeTransition(Duration.millis(200), leaderboardList);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        leaderboardList.setVisible(true);
+        ft.play();
+    }
 
     public void initialize(Client client, String name, boolean isHost, int time) {
         this.client = client;
@@ -209,7 +217,7 @@ public class MultiPlayerGameController {
                 int seconds = (int) timeLeft[0];
                 bigTimerLabel.setText(String.format("Time left: %d seconds", seconds));
                 if(timeLeft[0] < 5) {
-                    // TODO: set color red
+                    bigTimerLabel.setText("-fx-text-fill: #800b0d;");
                 }
                 timeLeft[0]--;
             } else {
@@ -634,6 +642,7 @@ public class MultiPlayerGameController {
         if(typingDone) {
             return;
         }
+        leaderBoardPopUp();
         typingDone = true;
         rootPane.requestFocus();
         if (timer != null) timer.stop();
