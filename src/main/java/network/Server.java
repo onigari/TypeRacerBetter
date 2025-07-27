@@ -40,7 +40,7 @@ public class Server {
             out.println("Server started on port " + PORT);
             //selectParagraph();
 
-            out.println("Selected paragraph: " + selectedParagraph);
+            //out.println("Selected paragraph: " + selectedParagraph);
 
             while (true) {
                 Socket socket = serverSocket.accept();

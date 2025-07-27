@@ -222,7 +222,7 @@ public class SinglePlayerGameController {
                     setGraphic(null);
                 } else {
                     rank.setText((getIndex() + 1) + ".");
-                    entry.setText(item.split(" - ")[0]); // Show only name initially
+                    entry.setText(item);
 
                     // Highlight current player's entry
                     if (item.contains(playerNameField.getText())) {
@@ -236,7 +236,7 @@ public class SinglePlayerGameController {
                     setGraphic(hbox);
 
                     // Tooltip with full details
-                    setTooltip(new Tooltip(item));
+                    //setTooltip(new Tooltip(item));
                 }
             }
         });
