@@ -71,6 +71,14 @@ public class Server {
         }
     }
 
+    public static void broadcastPlayerList(String playersList) {
+        synchronized (clients) {
+            for (ClientHandler client : clients) {
+                client.sendMessage(playersList);
+            }
+        }
+    }
+
     public static void broadcastRestart() {
         synchronized (clients) {
             for (ClientHandler client : clients) {

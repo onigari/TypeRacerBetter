@@ -9,7 +9,7 @@ public class ClientHandler implements Runnable {
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
-    private List<ClientHandler> clients;
+    private static List<ClientHandler> clients;
     private String paragraph;
     private String playerName;
     private String playersList;
@@ -34,7 +34,7 @@ public class ClientHandler implements Runnable {
                     this.playerName = inputLine.substring(5).trim();
                     if (playerName.isEmpty()) playerName = "Anonymous_" + socket.getPort();
                     initiatePlayerList();
-                    broadcastPlayerList();
+                    Server.broadcastPlayerList(playersList);
                 } else if (inputLine.startsWith("RESULT:")) {
                     handleResult(inputLine.substring(7));
                 } else if (inputLine.startsWith("PROGRESS:")) {
@@ -187,13 +187,13 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void broadcastPlayerList() {
-        synchronized (clients) {
-            for (ClientHandler client : clients) {
-                client.sendMessage(playersList);
-            }
-        }
-    }
+//    private void broadcastPlayerList() {
+//        synchronized (clients) {
+//            for (ClientHandler client : clients) {
+//                client.sendMessage(playersList);
+//            }
+//        }
+//    }
 
     private void broadcastTime(String time) {
         synchronized (clients) {
@@ -233,6 +233,6 @@ public class ClientHandler implements Runnable {
             clients.remove(this);
         }
         initiatePlayerList();
-        broadcastPlayerList();
+        Server.broadcastPlayerList(playersList);
     }
 }
