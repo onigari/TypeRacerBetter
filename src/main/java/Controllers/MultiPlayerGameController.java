@@ -135,6 +135,14 @@ public class MultiPlayerGameController {
             // Store references for highlighting
             if (key.equals(" ")) {
                 key = "Space";
+            } else if (key.equals(",")) {
+                key = "Comma";
+            } else if (key.equals("\"")) {
+                key = "Quote";
+            } else if (key.equals(".")) {
+                key = "Period";
+            } else if (key.equals("?")) {
+                key = "Slash";
             }
             keyRectangles.put(key, rect);
             keyTexts.put(key, text);
