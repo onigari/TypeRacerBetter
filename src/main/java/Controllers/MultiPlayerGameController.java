@@ -79,8 +79,8 @@ public class MultiPlayerGameController {
     private final Map<String, ProgressBar> playerProgressBars = new HashMap<>();
     @FXML private VBox progressBarsContainer;
 
-    private final Map<Character, Rectangle> keyRectangles = new HashMap<>();
-    private final Map<Character, Text> keyTexts = new HashMap<>();
+    private final Map<String, Rectangle> keyRectangles = new HashMap<>();
+    private final Map<String, Text> keyTexts = new HashMap<>();
 
     private static boolean gameRunning;
 
@@ -94,11 +94,11 @@ public class MultiPlayerGameController {
         addKeysToRow(keyboardRow2, row2Keys);
 
         // Row 3: Shift Z X C V B N M < > ? Shift
-        String[] row3Keys = {"Shift", "Z", "X", "C", "V", "B", "N", "M", "<", ">", "?", "Shift"};
+        String[] row3Keys = {"LShift", "Z", "X", "C", "V", "B", "N", "M", "<", ">", "?", "RShift"};
         addKeysToRow(keyboardRow3, row3Keys);
 
         // Row 4: Ctrl Alt (space) Alt Ctrl
-        String[] row4Keys = {"Ctrl", "Alt", " ", "Alt", "Ctrl"};
+        String[] row4Keys = {"LCtrl", "LAlt", " ", "RAlt", "RCtrl"};
         addKeysToRow(keyboardRow4, row4Keys);
     }
 
@@ -107,11 +107,12 @@ public class MultiPlayerGameController {
         for (int i = 0; i < keys.length; i++) {
             String key = keys[i];
 
+
             // Create key rectangle
             Rectangle rect = new Rectangle(40, 40);
             if (key.equals(" ")) {
                 rect.setWidth(200); // Make spacebar wider
-            } else if (key.equals("Ctrl") || key.equals("Alt") || key.equals("Tab")) { // For modifier keys
+            } else if (key.endsWith("Ctrl") || key.endsWith("Alt") || key.equals("Tab")) { // For modifier keys
                 rect.setWidth(60);
             } else if (key.length() > 1) rect.setWidth(100);
             rect.setArcWidth(5);
@@ -130,22 +131,19 @@ public class MultiPlayerGameController {
             row.add(container, i, 0);
 
             // Store references for highlighting
-            if (key.length() == 1) {
-                char c = key.charAt(0);
-                keyRectangles.put(c, rect);
-                keyTexts.put(c, text);
-            } else if (key.equals(" ")) {
-                keyRectangles.put(' ', rect);
-                keyTexts.put(' ', text);
+            if (key.equals(" ")) {
+                key = "Space";
             }
+            keyRectangles.put(key, rect);
+            keyTexts.put(key, text);
         }
     }
 
     // Add this method to highlight a key
-    private void highlightKey(char c, boolean highlight) {
+    private void highlightKey(String c, boolean highlight) {
         Platform.runLater(() -> {
-            Rectangle rect = keyRectangles.get(Character.toUpperCase(c));
-            Text text = keyTexts.get(Character.toUpperCase(c));
+            Text text = keyTexts.get(c);
+            Rectangle rect = keyRectangles.get(c);
 
             if (rect != null && text != null) {
                 if (highlight) {
@@ -155,7 +153,7 @@ public class MultiPlayerGameController {
                     rect.setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-stroke-width: 1;");
                     text.setStyle("-fx-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;");
                 }
-            }
+            } else out.println("null in highlight");
         });
     }
 
@@ -386,6 +384,27 @@ public class MultiPlayerGameController {
             updateDisplayField(newValue);
         });
 
+        typingField.setOnKeyPressed(e -> {
+            // highlight key
+            String typedText = e.getCode().getName();
+            out.println("typed: " + typedText);
+            if(typedText.equals("Alt") || typedText.equals("Ctrl") || typedText.equals("Shift")) {
+                highlightKey("L" + typedText, true);
+                PauseTransition pause = new PauseTransition(Duration.millis(200));
+                pause.setOnFinished(event -> highlightKey("L" + typedText, false));
+                pause.play();
+                highlightKey("R" + typedText, true);
+                pause = new PauseTransition(Duration.millis(200));
+                pause.setOnFinished(event -> highlightKey("R" + typedText, false));
+                pause.play();
+            } else {
+                highlightKey(typedText, true);
+                PauseTransition pause = new PauseTransition(Duration.millis(200));
+                pause.setOnFinished(event -> highlightKey(typedText, false));
+                pause.play();
+            }
+        });
+
         // Start typing immediately when typing field gets focus
         typingField.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal && paragraphText != null && !typingDone) {
@@ -432,11 +451,6 @@ public class MultiPlayerGameController {
             }
 
             char typedChar = newValue.charAt(i);
-            highlightKey(typedChar, true);
-
-            PauseTransition pause = new PauseTransition(Duration.millis(200));
-            pause.setOnFinished(e -> highlightKey(typedChar, false));
-            pause.play();
 
             char expectedChar = paragraphText.charAt(currentIndex);
             Text current = textNodes.get(currentIndex);
