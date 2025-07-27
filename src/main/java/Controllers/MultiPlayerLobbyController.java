@@ -17,6 +17,7 @@ import network.Client;
 import java.io.IOException;
 
 public class MultiPlayerLobbyController {
+    @FXML private Label warningLabel;
     @FXML private VBox rootPane;
     @FXML private ListView<String> playerListView;
     @FXML private Label statusLabel;
@@ -100,6 +101,12 @@ public class MultiPlayerLobbyController {
 
     @FXML
     private void handleStartGame() {
+        if(time == 0) {
+//            warningLabel.setStyle("-fx-");
+            warningLabel.setText("You have to select a time");
+            warningLabel.setStyle("-fx-text-fill: #D00515;");
+            return;
+        }
         if (isHost) {
             client.sendStartGame();
         }
