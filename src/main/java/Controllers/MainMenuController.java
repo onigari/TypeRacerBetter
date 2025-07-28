@@ -13,15 +13,9 @@ import java.io.IOException;
 
 
 public class MainMenuController {
-
-    @FXML
-    private Button singlePlayerButton;
-
-    @FXML
-    private Button multiPlayerButton;
-
-    @FXML
-    private Button exitButton;
+    @FXML private Button singlePlayerButton;
+    @FXML private Button multiPlayerButton;
+    @FXML private Button exitButton;
 
     @FXML
     private void onSinglePlayerClick(ActionEvent event) throws IOException {

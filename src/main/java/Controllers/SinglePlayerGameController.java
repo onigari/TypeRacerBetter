@@ -29,49 +29,24 @@ import java.util.*;
 import static java.lang.System.out;
 
 public class SinglePlayerGameController {
-
     public GridPane keyboardRow1;
     public GridPane keyboardRow2;
     public GridPane keyboardRow3;
     public GridPane keyboardRow4;
-    @FXML
-    private VBox rootPane;
 
-    @FXML
-    private Label titleLabel;
-
-    @FXML
-    private TextField playerNameField;
-
-    @FXML
-    private TextFlow paragraphFlow;
-
-    @FXML
-    private ProgressBar progressBar;
-
-    @FXML
-    private Button startButton;
-
-    @FXML
-    private ListView<String> leaderboardList;
-
-    @FXML
-    private Label timeLabel;
-
-    @FXML
-    private TextField typingField;
-
-    @FXML
-    private TextField displayField;  // New field to show one word at a time
-
-    @FXML
-    private Label wpmLabel;
-
-    @FXML
-    private Label accuracyLabel;
-
-    @FXML
-    private Label escText;
+    @FXML private VBox rootPane;
+    @FXML private Label titleLabel;
+    @FXML private TextField playerNameField;
+    @FXML private TextFlow paragraphFlow;
+    @FXML private ProgressBar progressBar;
+    @FXML private Button startButton;
+    @FXML private ListView<String> leaderboardList;
+    @FXML private Label timeLabel;
+    @FXML private TextField typingField;
+    @FXML private TextField displayField;  // New field to show one word at a time
+    @FXML private Label wpmLabel;
+    @FXML private Label accuracyLabel;
+    @FXML private Label escText;
 
     // Game state fields
     private final List<String> inputStrings = new ArrayList<>();

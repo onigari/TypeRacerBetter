@@ -856,37 +856,7 @@ public class MultiPlayerGameController {
     private void updateLeaderboard(String data) {
         String[] entries = data.split("\\|");
         leaderboard.setAll(entries);
-//        leaderboard.sort((a,b) -> {
-//            double t1 = Double.parseDouble(a.split(" - ")[1].replace("s", ""));
-//            double t2 = Double.parseDouble(b.split(" - ")[1].replace("s", ""));
-//            int toReturn = Double.compare(t1, t2);
-//            if (toReturn == 0) {
-//                double t3 = Double.parseDouble(a.split(" - ")[2].replace(" WPM", ""));
-//                double t4 = Double.parseDouble(b.split(" - ")[2].replace(" WPM", ""));
-//                int toReturn2 = Double.compare(t3, t4);
-//                if (toReturn2 == 0) {
-//                    return a.split(" - ")[0].compareTo(b.split(" - ")[0]);
-//                }
-//                return toReturn2;
-//            }
-//            return toReturn;
-//        });
-        //leaderboardList.getItems().clear();
-        //leaderboardList.setItems(leaderboard);
     }
-
-//    private void removePlayerProgress(String playerName) {
-//        ProgressBar pb = playerProgressBars.remove(playerName);
-//        if (pb != null) {
-//            // Find the HBox in the VBox and remove it
-//            progressBarsContainer.getChildren().removeIf(node -> {
-//                if (node instanceof HBox hbox) {
-//                    return hbox.getChildren().contains(pb);
-//                }
-//                return false;
-//            });
-//        }
-//    }
 
     // variable progress bar
     private void addPlayerProgress(String playerName) {
@@ -939,13 +909,5 @@ public class MultiPlayerGameController {
                 }
             }
         }
-    }
-
-    private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("TypeRacer");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

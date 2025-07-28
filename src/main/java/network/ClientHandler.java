@@ -119,30 +119,8 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private boolean checkClient(String name) {
-        for (String client : leaderboard) {
-            String[] clientParts = client.split(";");
-            if (clientParts[0].equals(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void setParagraph(String paragraph) {
         this.paragraph = paragraph;
-    }
-
-    private void updateResult(String result) {
-        String[] parts = result.split(";");
-        for (String client : leaderboard) {
-            String[] clientParts = client.split(";");
-            if(clientParts[0].equals(parts[0])) {
-                leaderboard.remove(client);
-                leaderboard.add(result);
-                return;
-            }
-        }
     }
 
     private void handleResult(String result) {
@@ -186,14 +164,6 @@ public class ClientHandler implements Runnable {
             System.err.println("Error processing result: " + e.getMessage());
         }
     }
-
-//    private void broadcastPlayerList() {
-//        synchronized (clients) {
-//            for (ClientHandler client : clients) {
-//                client.sendMessage(playersList);
-//            }
-//        }
-//    }
 
     private void broadcastTime(String time) {
         synchronized (clients) {

@@ -4,8 +4,6 @@ import java.io.*;
 import java.net.Socket;
 import java.util.function.Consumer;
 
-import static java.lang.System.out;
-
 public class Client {
     private Socket socket;
     private BufferedReader in;
@@ -82,10 +80,6 @@ public class Client {
         if (progress >= 0 && progress <= 1) {
             out.println("PROGRESS:" + progress);
         }
-    }
-
-    public void sendDebugMessage(String s) {
-        out.println(s);
     }
 
     public void sendMessage(String s) {
