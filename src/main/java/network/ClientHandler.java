@@ -55,6 +55,7 @@ public class ClientHandler implements Runnable {
                 } else if (inputLine.equals("GET_PARAGRAPH")) {
                     out.println("PARAGRAPH:" + paragraph);
                 } else if (inputLine.equals("GET_PLAYERS")) {
+                    initiatePlayerList();
                     out.println(playersList);
                 } else if (inputLine.startsWith("TIME:")) {
                     gameTime = Integer.parseInt(inputLine.substring(5).trim());
