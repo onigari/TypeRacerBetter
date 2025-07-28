@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 import network.Client;
 import java.io.IOException;
 
+import static java.lang.System.out;
+
 public class MultiPlayerChoiceController {
     @FXML private VBox rootPane;
     @FXML private TextField nameField;
@@ -56,6 +58,23 @@ public class MultiPlayerChoiceController {
                     throw new RuntimeException(e);
                 }
             }
+            else if (message.startsWith("NUMBER:")){
+                int number = Integer.parseInt(message.substring(7));
+                out.println(number);
+                if(number > 0){
+                    Platform.runLater(() -> {
+                        statusLabel.setText("Server is Taken!");
+                        statusLabel.setStyle("-fx-text-fill: #da0112;");
+                        client.close();
+                    });
+                    return;
+                }
+                try {
+                    loadLobby(client, name, true);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         });
     }
 
@@ -76,7 +95,7 @@ public class MultiPlayerChoiceController {
 
     @FXML
     private void handleHostGame() {
-        String name = nameField.getText().trim();
+        name = nameField.getText().trim();
         if (name.isEmpty()) {
             statusLabel.setText("Please enter your name");
             return;
@@ -84,14 +103,15 @@ public class MultiPlayerChoiceController {
 
         try {
             // Start server in a new thread
-            new Thread(() -> network.Server.main(new String[]{})).start();
+            //new Thread(() -> network.Server.main(new String[]{})).start();
             // Give the server a moment to start
-            Thread fineThread = new Thread();
-            fineThread.sleep(1000);
+//            Thread fineThread = new Thread();
+//            fineThread.sleep(1000);
             // Connect to localhost as host
             client = new Client("localhost", 5000);
             setupNetworkHandlers();
-            loadLobby(client, name, true);
+            client.sendMessage("IS_AVAILABLE");
+            //loadLobby(client, name, true);
         } catch (Exception e) {
             statusLabel.setText("Failed to host game: " + e.getMessage());
             e.printStackTrace();

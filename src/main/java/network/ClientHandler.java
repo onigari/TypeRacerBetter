@@ -2,8 +2,11 @@ package network;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static java.lang.System.out;
 
 public class ClientHandler implements Runnable {
     private Socket socket;
@@ -60,6 +63,17 @@ public class ClientHandler implements Runnable {
                 } else if (inputLine.startsWith("TIME:")) {
                     gameTime = Integer.parseInt(inputLine.substring(5).trim());
                     broadcastTime(inputLine);
+                } else if (inputLine.equals("IS_AVAILABLE")) {
+                    initiatePlayerList();
+                    String[] players = playersList.substring(8).split(",");
+                    int count;
+                    if(players.length == 1 && players[0].isEmpty()){
+                        count = 0;
+                    }
+                    else{
+                        count = players.length;
+                    }
+                    out.println("NUMBER:" + count);
                 }
             }
         } catch (IOException e) {
@@ -174,7 +188,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private static void initiatePlayerList() {
+    private static synchronized void initiatePlayerList() {
         if(clients.isEmpty()) return;
         StringBuffer sb = new StringBuffer("PLAYERS:");
         synchronized (clients) {
