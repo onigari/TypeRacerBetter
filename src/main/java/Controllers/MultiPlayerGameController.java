@@ -88,6 +88,7 @@ public class MultiPlayerGameController {
     private final Map<String, Text> keyTexts = new HashMap<>();
 
     private static boolean gameRunning;
+    private boolean isLeaderBoardOn;
 
     private void initializeKeyboard() {
         // Row 1: Tab Q W E R T Y U I O P { }
@@ -287,6 +288,7 @@ public class MultiPlayerGameController {
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
+                isLeaderBoardOn = false;
                 leaderboardStage.close();
             }
         });
@@ -301,6 +303,7 @@ public class MultiPlayerGameController {
         restartButton.setDisable(true);
         gameRunning = true;
         gameTime = time;
+        isLeaderBoardOn = false;
         // Initialize with empty progress bar for current player
         addPlayerProgress(playerName);
         setupUI();
@@ -344,12 +347,20 @@ public class MultiPlayerGameController {
                 int seconds = (int) timeLeft[0];
                 bigTimerLabel.setText(String.format("Time left: %d seconds", seconds));
                 if(timeLeft[0] < 5) {
-                    bigTimerLabel.setStyle("-fx-text-fill: #800b0d;");
+                    bigTimerLabel.setStyle("-fx-text-fill: #f20909;");
                 }
                 timeLeft[0]--;
             } else {
                 bigTimerLabel.setText("TIMES UP!");
+                if(!typingDone) {
+                    warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono'; -fx-text-fill: #f20909;");
+                    warningText.setText("TYPING UNFINISHED");
+                }
                 typingFinished();
+            }
+            if(typingDone && timeLeft[0] > 0) {
+                warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono'; -fx-text-fill: #66993C;");
+                warningText.setText("TYPING FINISHED");
             }
         }));
 
@@ -407,6 +418,12 @@ public class MultiPlayerGameController {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
+                }
+                if (e.getCode() == KeyCode.TAB) {
+                   if(!isLeaderBoardOn && typingDone) {
+                       isLeaderBoardOn = true;
+                       leaderBoardPopUp();
+                   }
                 }
             });
         });
@@ -657,10 +674,6 @@ public class MultiPlayerGameController {
             totalTyped++;
 
             updateStats();
-            if (currentIndex >= paragraphText.length() && !new String(correctWordChecker).contains("F") && !typingDone) {
-                typingFinished();
-            }
-//            } else showAlert("You have to type the correct word!!!!");
             if (currentIndex > 0 && new String(correctWordChecker).contains("F")) {
                 warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono';");
             } else warningText.setStyle("-fx-opacity: 0;-fx-font-family: 'Roboto Mono';");
@@ -795,7 +808,7 @@ public class MultiPlayerGameController {
             wpmLabel.setText(String.format("%d", (int) calculateWPM()));
             accuracyLabel.setText(String.format("%.0f%%", calculateAccuracy()));
             double progress = (double) currentIndex / paragraphText.length();
-            client.sendProgress(progress); // Send progress update to server
+            client.sendProgress(progress);// Send progress update to server
 
 //            double time = (System.currentTimeMillis() - startTime) / 1000.0;
 //            double wpm = calculateWPM();
@@ -830,6 +843,8 @@ public class MultiPlayerGameController {
         double accuracy = calculateAccuracy();
         client.sendResult(String.format("%s;%.0f;%d;%.2f", playerName, time, (int) wpm, accuracy));
         rootPane.requestFocus();
+//        warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono'; -fx-text-fill: #66993C;");
+//        warningText.setText("TYPING FINISHED");
         accuracyChecker = new char[paragraphText.length() + 1000];
         correctWordChecker = new char[paragraphText.length() + 1000];
         Arrays.fill(accuracyChecker, 'B');
