@@ -538,7 +538,8 @@ public class SinglePlayerGameController {
     }
 
     private void updateDisplayField(String typedText) {
-        if (paragraphWords == null || paragraphWords.length == 0 || typedText == null || typedText.isEmpty()) {
+        if (paragraphWords == null || paragraphWords.length == 0 || typedText == null) {
+            displayField.setText("");
             return;
         }
 
@@ -581,25 +582,30 @@ public class SinglePlayerGameController {
             if (typedText.length() > wordStartPosition) {
                 // Ensure we don't go out of bounds
                 int endIndex = Math.min(typedText.length(), wordStartPosition + currentWord.length());
-                String typedPortionOfWord = typedText.substring(wordStartPosition, endIndex);
+                // Check if we can safely extract the substring
+                if (wordStartPosition <= typedText.length() && wordStartPosition <= endIndex) {
+                    String typedPortionOfWord = typedText.substring(wordStartPosition, endIndex);
 
-                // Check if typed portion matches the expected word portion
-                for (int i = 0; i < typedPortionOfWord.length(); i++) {
-                    if (i >= currentWord.length() || typedPortionOfWord.charAt(i) != currentWord.charAt(i)) {
-                        wordIsCorrectSoFar = false;
-                        break;
+                    // Check if typed portion matches the expected word portion
+                    for (int i = 0; i < typedPortionOfWord.length(); i++) {
+                        if (i >= currentWord.length() || typedPortionOfWord.charAt(i) != currentWord.charAt(i)) {
+                            wordIsCorrectSoFar = false;
+                            break;
+                        }
                     }
+                } else {
+                    wordIsCorrectSoFar = false; // Handle case where indices are invalid
                 }
             }
 
             // Style the display field based on typing correctness
             String style = """
-            -fx-font-family: 'Roboto Mono';
-            -fx-font-size: 24px;
-            -fx-background-color: transparent;
-            -fx-border-color: transparent;
-            -fx-alignment: CENTER_LEFT;
-            """;
+        -fx-font-family: 'Roboto Mono';
+        -fx-font-size: 24px;
+        -fx-background-color: transparent;
+        -fx-border-color: transparent;
+        -fx-alignment: CENTER_LEFT;
+        """;
 
             if (currentWordCharIndex == 0) {
                 style += "-fx-text-fill: #646669;"; // Untyped color
@@ -613,6 +619,7 @@ public class SinglePlayerGameController {
         } catch (Exception e) {
             System.err.println("Error updating display field: " + e.getMessage());
             e.printStackTrace();
+            displayField.setText(""); // Fallback to clear the field
         }
     }
 
@@ -684,8 +691,8 @@ public class SinglePlayerGameController {
                     currentWordIndex = 0;
                     currentWordCharIndex = 0;
                     progressBar.setProgress(0);
-                    typingField.clear();
-                    displayField.clear();
+//                    typingField.clear(); // causes error
+//                    displayField.clear();
                     accuracyChecker = new char[paragraphText.length() + 1000];
                     correctWordChecker = new char[paragraphText.length() + 1000];
                     Arrays.fill(accuracyChecker, 'B');
