@@ -218,6 +218,7 @@ public class MultiPlayerGameController {
         });
         Label escText = new Label();
         escText.setText("Press esc to close");
+        escText.setStyle("-fx-font-size: 14px; -fx-text-fill: #d1d0c5;");
         // Header
         Label header = new Label("LEADERBOARD");
         header.setStyle("-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-weight: bold;");
@@ -268,6 +269,9 @@ public class MultiPlayerGameController {
             leaderboardStage.setX(event.getScreenX() - xOffset[0]);
             leaderboardStage.setY(event.getScreenY() - yOffset[0]);
         });
+
+        root.getChildren().add(escText);
+        escText.setTranslateX(140);
 
         // Configure stage
         Scene scene = new Scene(root, 400, 500);
