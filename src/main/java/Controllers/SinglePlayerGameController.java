@@ -72,6 +72,83 @@ public class SinglePlayerGameController {
     private final Map<String, Rectangle> keyRectangles = new HashMap<>();
     private final Map<String, Text> keyTexts = new HashMap<>();
 
+    // Add these to your controller fields
+    private enum GameMode { TIMED, FIXED_PARAGRAPH }
+    private GameMode currentMode = GameMode.TIMED; // Default mode
+    private final int TIMED_MODE_DURATION = 60; // 60 seconds for timed mode
+    private final int FIXED_PARAGRAPH_LENGTH = 100; // 100 chars for fixed mode
+    private Label modeInstructionLabel;
+
+    // Add mode selection UI (call this from initialize())
+    private void setupModeSelection() {
+        modeInstructionLabel = new Label();
+        modeInstructionLabel.setStyle("-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono';");
+        updateModeInstructions();
+        HBox modeContainer = new HBox(10);
+        modeContainer.setAlignment(Pos.CENTER);
+        modeContainer.setPadding(new Insets(10));
+
+        ToggleGroup modeGroup = new ToggleGroup();
+
+        RadioButton timedMode = new RadioButton("Timed Mode (60s)");
+        timedMode.setToggleGroup(modeGroup);
+        timedMode.setSelected(true);
+        timedMode.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+
+        RadioButton fixedMode = new RadioButton("Fixed Paragraph");
+        fixedMode.setToggleGroup(modeGroup);
+        fixedMode.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+
+        modeGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal == timedMode) {
+                currentMode = GameMode.TIMED;
+            } else {
+                currentMode = GameMode.FIXED_PARAGRAPH;
+            }
+        });
+
+        modeContainer.getChildren().addAll(timedMode, fixedMode);
+        rootPane.getChildren().add(1, modeContainer); // Add below title
+    }
+
+    private void prepareParagraph() {
+        if (currentMode == GameMode.FIXED_PARAGRAPH) {
+            // Get a paragraph of fixed length
+            paragraphText = getFixedLengthParagraph(FIXED_PARAGRAPH_LENGTH);
+        } else {
+            // Original random selection
+            paragraphText = inputStrings.get(new Random().nextInt(inputStrings.size()));
+        }
+        displayParagraph(paragraphText);
+    }
+
+    private String getFixedLengthParagraph(int length) {
+        StringBuilder sb = new StringBuilder();
+        Random rand = new Random();
+
+        while (sb.length() < length) {
+            String randomLine = inputStrings.get(rand.nextInt(inputStrings.size()));
+            if (sb.length() + randomLine.length() > length) {
+                // Take just what we need
+                int remaining = length - sb.length();
+                sb.append(randomLine, 0, remaining);
+                sb.append(" "); // Add space if needed
+            } else {
+                sb.append(randomLine).append(" ");
+            }
+        }
+
+        return sb.toString().trim();
+    }
+
+    private void updateModeInstructions() {
+        if (currentMode == GameMode.TIMED) {
+            modeInstructionLabel.setText("Type as much as you can in 60 seconds!");
+        } else {
+            modeInstructionLabel.setText("Complete the entire paragraph as fast as you can!");
+        }
+    }
+
     // Add this method to initialize the keyboard
     private void initializeKeyboard() {
         // Row 1: Tab Q W E R T Y U I O P { }
@@ -278,6 +355,7 @@ public class SinglePlayerGameController {
         setupUI();
         setupEventHandlers();
         initializeKeyboard();
+        setupModeSelection();
     }
 
     private void loadWords() {
@@ -635,7 +713,14 @@ public class SinglePlayerGameController {
         double timeInSeconds = finishTime / 1000.0;
         double wpm = calculateWPM();
         double accuracy = calculateAccuracy();
-        String entry = String.format("%s - %.2fs - %d wpm - %.0f%%", playerName, timeInSeconds, (int) wpm, accuracy);
+        String entry;
+        if (currentMode == GameMode.TIMED) {
+            entry = String.format("%s - Timed: %d WPM - %.0f%%",
+                    playerName, (int) wpm, accuracy);
+        } else {
+            entry = String.format("%s - Fixed: %.2fs - %d WPM - %.0f%%",
+                    playerName, timeInSeconds, (int) wpm, accuracy);
+        }
         leaderboard.add(entry);
 
         leaderboard.sort((a, b) -> {
@@ -672,10 +757,14 @@ public class SinglePlayerGameController {
             return;
         }
 
-        // Setup UI
-        titleLabel.setText("type racer - go!");
-        startButton.setText("restart");
-        playerNameField.setEditable(false);
+        // Setup UI based on mode
+        if (currentMode == GameMode.TIMED) {
+            titleLabel.setText("Timed Mode - 60s Challenge!");
+            timeLabel.setText("60s");
+        } else {
+            titleLabel.setText("Fixed Paragraph Challenge!");
+            timeLabel.setText("0s");
+        }
 
         // Select random paragraph
         paragraphText = inputStrings.get(new Random().nextInt(inputStrings.size()));
@@ -709,7 +798,26 @@ public class SinglePlayerGameController {
     private void startTimer() {
         startTime = System.currentTimeMillis();
         if (timer != null) timer.stop();
-        timer = new Timeline(new KeyFrame(Duration.millis(100), e -> updateStats()));
+        if (currentMode == GameMode.TIMED) {
+            // Timed mode countdown
+            timer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+                long elapsed = (System.currentTimeMillis() - startTime) / 1000;
+                long remaining = TIMED_MODE_DURATION - elapsed;
+
+                timeLabel.setText(remaining + "s");
+                progressBar.setProgress((double) elapsed / TIMED_MODE_DURATION);
+
+                if (remaining <= 0) {
+                    typingFinished();
+                }
+            }));
+        } else {
+            // Fixed paragraph mode - track progress
+            timer = new Timeline(new KeyFrame(Duration.millis(100), e -> {
+                updateStats();
+            }));
+        }
+
         timer.setCycleCount(Timeline.INDEFINITE);
         timer.play();
     }
