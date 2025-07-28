@@ -3,23 +3,25 @@ package Controllers;
 import javafx.collections.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.application.Platform;
 import javafx.animation.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
+import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import network.Server;
 
 import java.io.*;
 import java.util.*;
@@ -74,7 +76,7 @@ public class SinglePlayerGameController {
     // Game state fields
     private final List<String> inputStrings = new ArrayList<>();
     private final ObservableList<String> leaderboard = FXCollections.observableArrayList();
-    private String name;
+    private String playerName;
     private long startTime;
     private Timeline timer;
     private boolean typingDone = false;
@@ -101,11 +103,11 @@ public class SinglePlayerGameController {
         String[] row1Keys = {"Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "{", "}"};
         addKeysToRow(keyboardRow1, row1Keys);
 
-        // Row 2: Caps Lock A S D F G H J K L ; " Enter
+        // Row 2: Caps Lock A S D F G H J K L ; ' Enter
         String[] row2Keys = {"Caps Lock", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "Enter"};
         addKeysToRow(keyboardRow2, row2Keys);
 
-        // Row 3: Shift Z X C V B N M < > ? Shift
+        // Row 3: Shift Z X C V B N M , . ? Shift
         String[] row3Keys = {"LShift", "Z", "X", "C", "V", "B", "N", "M", ",", ".", "?", "RShift"};
         addKeysToRow(keyboardRow3, row3Keys);
 
@@ -119,30 +121,24 @@ public class SinglePlayerGameController {
         for (int i = 0; i < keys.length; i++) {
             String key = keys[i];
 
-
-            // Create key rectangle
             Rectangle rect = new Rectangle(40, 40);
             if (key.equals(" ")) {
-                rect.setWidth(200); // Make spacebar wider
-            } else if (key.endsWith("Ctrl") || key.endsWith("Alt") || key.equals("Tab")) { // For modifier keys
+                rect.setWidth(200);
+            } else if (key.endsWith("Ctrl") || key.endsWith("Alt") || key.equals("Tab")) { // modifier keys
                 rect.setWidth(60);
-            } else if (key.length() > 1) rect.setWidth(100);
+            } else if (key.length() > 1) rect.setWidth(100); // modifier keys
             rect.setArcWidth(5);
             rect.setArcHeight(5);
             rect.setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-stroke-width: 1;");
 
-            // Create key text
             Text text = new Text(key);
             text.setStyle("-fx-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;");
 
-            // Create container and add both
             StackPane container = new StackPane();
             container.getChildren().addAll(rect, text);
 
-            // Add to grid
             row.add(container, i, 0);
 
-            // Store references for highlighting
             if (key.equals(" ")) {
                 key = "Space";
             } else if (key.equals(",")) {
@@ -161,7 +157,127 @@ public class SinglePlayerGameController {
         }
     }
 
-    // Add this method to highlight a key
+    private void leaderBoardPopUp() {
+        // Create the stage
+        Stage leaderboardStage = new Stage();
+        leaderboardStage.initModality(Modality.APPLICATION_MODAL);
+        leaderboardStage.initOwner(rootPane.getScene().getWindow());
+        leaderboardStage.initStyle(StageStyle.TRANSPARENT); // Borderless
+
+        // Create ListView with custom cells
+        ListView<String> leaderboardList = new ListView<>();
+        leaderboardList.setItems(leaderboard);
+
+        // Apply your custom cell factory
+        leaderboardList.setCellFactory(lv -> new ListCell<String>() {
+            private final HBox hbox = new HBox(10);
+            private final Text rank = new Text();
+            private final Text entry = new Text();
+
+
+            {
+                hbox.setAlignment(Pos.CENTER_LEFT);
+                rank.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
+                hbox.getChildren().addAll(rank, entry);
+                setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;");
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    rank.setText((getIndex() + 1) + ".");
+                    entry.setText(item);
+                    if (item.contains(playerName)) {
+                        setStyle("-fx-background-color: #3a3d42; -fx-text-fill: #e2b714;");
+                        entry.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
+                    } else {
+                        setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#2c2e31" : "#323437") + ";");
+                        entry.setStyle("-fx-fill: #d1d0c5;");
+                    }
+                    setGraphic(hbox);
+                }
+            }
+        });
+        Label escText = new Label();
+        escText.setText("Press esc to close");
+        // Header
+        Label header = new Label("LEADERBOARD");
+        header.setStyle("-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-weight: bold;");
+
+        // Close button
+        Button closeBtn = new Button("✕");
+        closeBtn.setStyle("""
+        -fx-background-color: transparent;
+        -fx-text-fill: #d1d0c5;
+        -fx-font-size: 16px;
+        -fx-font-weight: bold;
+        -fx-padding: 0 8 0 8;
+        -fx-cursor: hand;
+        """);
+        closeBtn.setOnAction(e -> leaderboardStage.close());
+        closeBtn.hoverProperty().addListener((obs, oldVal, isHovering) -> {
+            closeBtn.setStyle(isHovering ?
+                    "-fx-text-fill: #ca4754;" :
+                    "-fx-text-fill: #d1d0c5;");
+        });
+
+        // Title bar
+        HBox titleBar = new HBox(header, new Region(), closeBtn);
+        titleBar.setAlignment(Pos.CENTER_RIGHT);
+        titleBar.setPadding(new Insets(10, 10, 10, 20));
+        titleBar.setStyle("-fx-background-color: #2c2e31;");
+        HBox.setHgrow(titleBar.getChildren().get(1), Priority.ALWAYS);
+
+        // Main container
+        VBox root = new VBox(titleBar, leaderboardList);
+        root.setStyle("""
+        -fx-background-color: #323437;
+        -fx-border-color: #e2b714;
+        -fx-border-width: 2px;
+        -fx-border-radius: 5;
+        -fx-background-radius: 5;
+        -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0, 0, 0);
+        """);
+
+        // Make draggable
+        final double[] xOffset = new double[1];
+        final double[] yOffset = new double[1];
+        titleBar.setOnMousePressed(event -> {
+            xOffset[0] = event.getSceneX();
+            yOffset[0] = event.getSceneY();
+        });
+        titleBar.setOnMouseDragged(event -> {
+            leaderboardStage.setX(event.getScreenX() - xOffset[0]);
+            leaderboardStage.setY(event.getScreenY() - yOffset[0]);
+        });
+
+        // Configure stage
+        Scene scene = new Scene(root, 400, 500);
+        scene.setFill(Color.TRANSPARENT); // For rounded corners
+        leaderboardStage.setScene(scene);
+
+        // Center on screen
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        leaderboardStage.setX((screenBounds.getWidth() - scene.getWidth()) / 2);
+        leaderboardStage.setY((screenBounds.getHeight() - scene.getHeight()) / 2);
+
+        // Show with animation
+        root.setOpacity(0);
+        leaderboardStage.show();
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), root);
+        fadeIn.setToValue(1);
+        fadeIn.play();
+
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                leaderboardStage.close();
+            }
+        });
+    }
+
     private void highlightKey(String c, boolean highlight) {
         Platform.runLater(() -> {
             Text text = keyTexts.get(c);
@@ -535,7 +651,7 @@ public class SinglePlayerGameController {
         if (typingDone) return;
         typingDone = true;
         if (timer != null) timer.stop();
-
+        leaderBoardPopUp();
         titleLabel.setText("type racer - finished!");
         startButton.setText("restart");
         typingField.setDisable(true);
@@ -546,7 +662,7 @@ public class SinglePlayerGameController {
         double timeInSeconds = finishTime / 1000.0;
         double wpm = calculateWPM();
         double accuracy = calculateAccuracy();
-        String entry = String.format("%s - %.2fs - %d wpm - %.0f%%", name, timeInSeconds, (int) wpm, accuracy);
+        String entry = String.format("%s - %.2fs - %d wpm - %.0f%%", playerName, timeInSeconds, (int) wpm, accuracy);
         leaderboard.add(entry);
 
         leaderboard.sort((a, b) -> {
@@ -577,8 +693,8 @@ public class SinglePlayerGameController {
             return;
         }
 
-        name = playerNameField.getText().trim();
-        if (name.isEmpty()) {
+        playerName = playerNameField.getText().trim();
+        if (playerName.isEmpty()) {
             showAlert("Please enter your name before starting!");
             return;
         }

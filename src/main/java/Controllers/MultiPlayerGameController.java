@@ -9,20 +9,23 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
+import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import network.Client;
 
@@ -169,11 +172,124 @@ public class MultiPlayerGameController {
         });
     }
     private void leaderBoardPopUp() {
-        FadeTransition ft = new FadeTransition(Duration.millis(200), leaderboardList);
-        ft.setFromValue(0);
-        ft.setToValue(1);
-        leaderboardList.setVisible(true);
-        ft.play();
+        // Create the stage
+        Stage leaderboardStage = new Stage();
+        leaderboardStage.initModality(Modality.APPLICATION_MODAL);
+        leaderboardStage.initOwner(rootPane.getScene().getWindow());
+        leaderboardStage.initStyle(StageStyle.TRANSPARENT); // Borderless
+
+        // Create ListView with custom cells
+        ListView<String> leaderboardList = new ListView<>();
+        leaderboardList.setItems(leaderboard);
+
+        // Apply your custom cell factory
+        leaderboardList.setCellFactory(lv -> new ListCell<String>() {
+            private final HBox hbox = new HBox(10);
+            private final Text rank = new Text();
+            private final Text entry = new Text();
+
+
+            {
+                hbox.setAlignment(Pos.CENTER_LEFT);
+                rank.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
+                hbox.getChildren().addAll(rank, entry);
+                setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;");
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    rank.setText((getIndex() + 1) + ".");
+                    entry.setText(item);
+                    if (item.contains(playerName)) {
+                        setStyle("-fx-background-color: #3a3d42; -fx-text-fill: #e2b714;");
+                        entry.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
+                    } else {
+                        setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#2c2e31" : "#323437") + ";");
+                        entry.setStyle("-fx-fill: #d1d0c5;");
+                    }
+                    setGraphic(hbox);
+                }
+            }
+        });
+        Label escText = new Label();
+        escText.setText("Press esc to close");
+        // Header
+        Label header = new Label("LEADERBOARD");
+        header.setStyle("-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-weight: bold;");
+
+        // Close button
+        Button closeBtn = new Button("✕");
+        closeBtn.setStyle("""
+        -fx-background-color: transparent;
+        -fx-text-fill: #d1d0c5;
+        -fx-font-size: 16px;
+        -fx-font-weight: bold;
+        -fx-padding: 0 8 0 8;
+        -fx-cursor: hand;
+        """);
+        closeBtn.setOnAction(e -> leaderboardStage.close());
+        closeBtn.hoverProperty().addListener((obs, oldVal, isHovering) -> {
+            closeBtn.setStyle(isHovering ?
+                    "-fx-text-fill: #ca4754;" :
+                    "-fx-text-fill: #d1d0c5;");
+        });
+
+        // Title bar
+        HBox titleBar = new HBox(header, new Region(), closeBtn);
+        titleBar.setAlignment(Pos.CENTER_RIGHT);
+        titleBar.setPadding(new Insets(10, 10, 10, 20));
+        titleBar.setStyle("-fx-background-color: #2c2e31;");
+        HBox.setHgrow(titleBar.getChildren().get(1), Priority.ALWAYS);
+
+        // Main container
+        VBox root = new VBox(titleBar, leaderboardList);
+        root.setStyle("""
+        -fx-background-color: #323437;
+        -fx-border-color: #e2b714;
+        -fx-border-width: 2px;
+        -fx-border-radius: 5;
+        -fx-background-radius: 5;
+        -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0, 0, 0);
+        """);
+
+        // Make draggable
+        final double[] xOffset = new double[1];
+        final double[] yOffset = new double[1];
+        titleBar.setOnMousePressed(event -> {
+            xOffset[0] = event.getSceneX();
+            yOffset[0] = event.getSceneY();
+        });
+        titleBar.setOnMouseDragged(event -> {
+            leaderboardStage.setX(event.getScreenX() - xOffset[0]);
+            leaderboardStage.setY(event.getScreenY() - yOffset[0]);
+        });
+
+        // Configure stage
+        Scene scene = new Scene(root, 400, 500);
+        scene.setFill(Color.TRANSPARENT); // For rounded corners
+        leaderboardStage.setScene(scene);
+
+        // Center on screen
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        leaderboardStage.setX((screenBounds.getWidth() - scene.getWidth()) / 2);
+        leaderboardStage.setY((screenBounds.getHeight() - scene.getHeight()) / 2);
+
+        // Show with animation
+        root.setOpacity(0);
+        leaderboardStage.show();
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), root);
+        fadeIn.setToValue(1);
+        fadeIn.play();
+
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                leaderboardStage.close();
+            }
+        });
     }
 
     public void initialize(Client client, String name, boolean isHost, int time) {
@@ -464,6 +580,10 @@ public class MultiPlayerGameController {
                 PauseTransition pause = new PauseTransition(Duration.millis(200));
                 pause.setOnFinished(event -> highlightKey(typedText, false));
                 pause.play();
+            }
+
+            if (e.getCode() == KeyCode.TAB) {
+                leaderBoardPopUp();
             }
         });
 
