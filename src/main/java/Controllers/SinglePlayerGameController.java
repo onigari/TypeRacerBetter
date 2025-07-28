@@ -78,6 +78,7 @@ public class SinglePlayerGameController {
     private final int TIMED_MODE_DURATION = 60; // 60 seconds for timed mode
     private final int FIXED_PARAGRAPH_LENGTH = 100; // 100 chars for fixed mode
     private Label modeInstructionLabel;
+    private String oldPara = "";
 
     // Add mode selection UI (call this from initialize())
     private void setupModeSelection() {
@@ -479,7 +480,13 @@ public class SinglePlayerGameController {
             handleNewCharacters(oldValue, newValue);
 
             // Update display field
-            updateDisplayField(newValue);
+            out.println(newValue);
+            if (oldPara.isEmpty()) {
+                updateDisplayField(newValue);
+            } else {
+                String typedText = newValue.substring(oldPara.length());
+                updateDisplayField(typedText);
+            }
         });
 
         typingField.setOnKeyPressed(e -> {
@@ -538,6 +545,7 @@ public class SinglePlayerGameController {
     }
 
     private void updateDisplayField(String typedText) {
+        out.println("in updateDisplayField with argument : " + typedText);
         if (paragraphWords == null || paragraphWords.length == 0 || typedText == null) {
             displayField.setText("");
             return;
@@ -571,6 +579,8 @@ public class SinglePlayerGameController {
 
             // Build display text for current word
             String currentWord = paragraphWords[currentWordIndex];
+            out.println("Current word index is " + currentWordIndex);
+            out.println("Current word is " + currentWord);
             displayField.setText(currentWord);
 
             int wordStartPosition = 0;
@@ -647,7 +657,13 @@ public class SinglePlayerGameController {
         updateStats();
 
         // Update display field after backspace
-        updateDisplayField(newValue);
+        out.println(newValue);
+        if (oldPara.isEmpty()) {
+            updateDisplayField(newValue);
+        } else {
+            String typedText = newValue.substring(oldPara.length());
+            updateDisplayField(typedText);
+        }
     }
 
     private void handleNewCharacters(String oldValue, String newValue) {
@@ -686,13 +702,15 @@ public class SinglePlayerGameController {
                 if (currentMode.equals(GameMode.FIXED_PARAGRAPH)) {
                     typingFinished();
                 } else {
+                    oldPara = newValue;
+                    out.println(oldPara);
                     prepareParagraph();
                     currentIndex = 0;
                     currentWordIndex = 0;
                     currentWordCharIndex = 0;
-                    progressBar.setProgress(0);
 //                    typingField.clear(); // causes error
-//                    displayField.clear();
+                    displayField.clear();
+//                    updateDisplayField();
                     accuracyChecker = new char[paragraphText.length() + 1000];
                     correctWordChecker = new char[paragraphText.length() + 1000];
                     Arrays.fill(accuracyChecker, 'B');
