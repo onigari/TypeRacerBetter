@@ -73,7 +73,13 @@ public class MultiPlayerLobbyController {
                     statusLabel.setText(players.size() + " players connected");
                 });
             } else if (message.equals("START_GAME")) {
-                Platform.runLater(this::startGame);
+                if(players.size() < 2){
+                    warningLabel.setText("You need to have at least two players");
+                    warningLabel.setStyle("-fx-text-fill: #D00515; -fx-font-size: 14;");
+                }
+                else {
+                    Platform.runLater(this::startGame);
+                }
             } else if (message.equals("CLOSE_ALL")){
                 try{
                     loadMainMenu((Stage) rootPane.getScene().getWindow());
@@ -104,7 +110,7 @@ public class MultiPlayerLobbyController {
         if(time == 0) {
 //            warningLabel.setStyle("-fx-");
             warningLabel.setText("You have to select a time");
-            warningLabel.setStyle("-fx-text-fill: #D00515;");
+            warningLabel.setStyle("-fx-text-fill: #D00515; -fx-font-size: 14;");
             return;
         }
         if (isHost) {

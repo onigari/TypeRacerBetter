@@ -16,8 +16,8 @@
    <HBox alignment="CENTER" spacing="20">
       <Label fx:id="titleLabel" style="-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold;" text="TypeRacer MultiPlayer" />
    </HBox>
-   <Label fx:id="warningText" alignment="CENTER" contentDisplay="CENTER" prefHeight="36.0" prefWidth="217.0" style="-fx-background-color: transparent; -fx-opacity: 0; -fx-border-color: transparent;" text="You have to type all the words correctly" textFill="#f20909" />
-   <Label fx:id="bigTimerLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="447.0" text="Label" textFill="WHITE" />
+   <Label fx:id="warningText" alignment="CENTER" contentDisplay="CENTER" prefHeight="22.0" prefWidth="497.0" style="-fx-background-color: transparent; -fx-opacity: 0; -fx-border-color: transparent;" text="You have to type all the words correctly" textFill="#f20909" />
+   <Label fx:id="bigTimerLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="507.0" text="Label" textFill="WHITE" />
 
    <!-- Main Content Area -->
    <VBox alignment="TOP_CENTER" prefWidth="760.0" spacing="15" style="-fx-background-color: #2c2e31; -fx-padding: 20; -fx-border-radius: 5; -fx-background-radius: 5;">

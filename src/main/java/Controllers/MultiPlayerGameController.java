@@ -317,6 +317,7 @@ public class MultiPlayerGameController {
 
     private void waitingQueue() {
         final int[] timeLeft = {waitTime}; // 3, 2, 1
+        bigTimerLabel.setStyle("-fx-font-size: 14;");
 
         Timeline countdown = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             if (timeLeft[0] > 0) {
@@ -347,19 +348,19 @@ public class MultiPlayerGameController {
                 int seconds = (int) timeLeft[0];
                 bigTimerLabel.setText(String.format("Time left: %d seconds", seconds));
                 if(timeLeft[0] < 5) {
-                    bigTimerLabel.setStyle("-fx-text-fill: #f20909;");
+                    bigTimerLabel.setStyle("-fx-text-fill: #f20909; -fx-font-size: 14;");
                 }
                 timeLeft[0]--;
             } else {
                 bigTimerLabel.setText("TIMES UP!");
                 if(!typingDone) {
-                    warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono'; -fx-text-fill: #f20909;");
+                    warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono'; -fx-font-size: 14; -fx-text-fill: #f20909;");
                     warningText.setText("TYPING UNFINISHED");
                 }
                 typingFinished();
             }
             if(typingDone && timeLeft[0] > 0) {
-                warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono'; -fx-text-fill: #66993C;");
+                warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono'; -fx-font-size: 14; -fx-text-fill: #66993C;");
                 warningText.setText("TYPING FINISHED");
             }
         }));
@@ -573,6 +574,7 @@ public class MultiPlayerGameController {
 
             if(currentIndex > 5 && IntStream.range(0, 5).allMatch(j -> correctWordChecker[currentIndex - j] == 'F')) {
                 warningText.setText("All words have to be correct!!!");
+                warningText.setStyle("-fx-font-size: 14");
             }
             handleNewCharacters(oldValue, newValue);
 
@@ -644,11 +646,6 @@ public class MultiPlayerGameController {
     @FXML
     private void handleNewCharacters(String oldValue, String newValue) {
         for (int i = oldValue.length(); i < newValue.length(); i++) {
-            if (currentIndex >= paragraphText.length() && !new String(correctWordChecker).contains("F") && !typingDone) {
-                typingFinished();
-                return;
-            }
-
             char typedChar = newValue.charAt(i);
 
             char expectedChar = paragraphText.charAt(currentIndex);
@@ -677,6 +674,11 @@ public class MultiPlayerGameController {
             if (currentIndex > 0 && new String(correctWordChecker).contains("F")) {
                 warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono';");
             } else warningText.setStyle("-fx-opacity: 0;-fx-font-family: 'Roboto Mono';");
+
+            if (currentIndex >= paragraphText.length() && !new String(correctWordChecker).contains("F")) {
+                typingFinished();
+                return;
+            }
         }
     }
 

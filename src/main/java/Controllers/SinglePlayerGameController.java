@@ -562,11 +562,6 @@ public class SinglePlayerGameController {
 
     private void handleNewCharacters(String oldValue, String newValue) {
         for (int i = oldValue.length(); i < newValue.length(); i++) {
-            if (currentIndex >= paragraphText.length()) {
-                typingFinished();
-                return;
-            }
-
             char typedChar = newValue.charAt(i);
 //            out.println(typedChar);
 //            highlightKey(String.valueOf(typedChar), true);
@@ -600,6 +595,7 @@ public class SinglePlayerGameController {
 
             if (currentIndex >= paragraphText.length()) {
                 typingFinished();
+                return;
             }
         }
     }
