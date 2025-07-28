@@ -219,17 +219,33 @@ public class SinglePlayerGameController {
         // Create ListView with custom cells
         ListView<String> leaderboardList = new ListView<>();
         leaderboardList.setItems(leaderboard);
+        leaderboardList.setStyle("""
+            -fx-control-inner-background: #2c2e31;
+            -fx-padding: 0;
+            -fx-background-insets: 0;
+            -fx-border-width: 0;
+        """);
 
         // Apply your custom cell factory
         leaderboardList.setCellFactory(lv -> new ListCell<String>() {
             private final HBox hbox = new HBox(10);
             private final Text rank = new Text();
             private final Text entry = new Text();
+
             {
                 hbox.setAlignment(Pos.CENTER_LEFT);
-                rank.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
+                hbox.setPadding(new Insets(5)); // Consistent spacing
+                rank.setStyle("""
+            -fx-fill: #e2b714;
+            -fx-font-weight: bold;
+            -fx-font-family: 'Roboto Mono';
+        """);
+                entry.setStyle("""
+            -fx-fill: #d1d0c5;
+            -fx-font-family: 'Roboto Mono';
+        """);
                 hbox.getChildren().addAll(rank, entry);
-                setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;");
+                setPrefHeight(36); // Consistent height for all cells
             }
 
             @Override
@@ -240,17 +256,39 @@ public class SinglePlayerGameController {
                 } else {
                     rank.setText((getIndex() + 1) + ".");
                     entry.setText(item);
+
+                    // Highlight current player
                     if (item.contains(playerName)) {
-                        setStyle("-fx-background-color: #3a3d42; -fx-text-fill: #e2b714;");
-                        entry.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
+                        hbox.setStyle("-fx-background-color: #3a3d42;");
+                        rank.setStyle("""
+                    -fx-fill: #e2b714;
+                    -fx-font-weight: bold;
+                    -fx-font-family: 'Roboto Mono';
+                """);
+                        entry.setStyle("""
+                    -fx-fill: #e2b714;
+                    -fx-font-weight: bold;
+                    -fx-font-family: 'Roboto Mono';
+                """);
                     } else {
-                        setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#2c2e31" : "#323437") + ";");
-                        entry.setStyle("-fx-fill: #d1d0c5;");
+                        hbox.setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#2c2e31;" : "#323437;"));
+                        rank.setStyle("""
+                    -fx-fill: #d1d0c5;
+                    -fx-font-weight: bold;
+                    -fx-font-family: 'Roboto Mono';
+                """);
+                        entry.setStyle("""
+                    -fx-fill: #d1d0c5;
+                    -fx-font-family: 'Roboto Mono';
+                """);
                     }
+
+                    setStyle("-fx-background-insets: 0; -fx-padding: 0;");
                     setGraphic(hbox);
                 }
             }
         });
+
         Label escText = new Label();
         escText.setText("Press esc to close");
         escText.setStyle("-fx-font-size: 14px; -fx-text-fill: #d1d0c5;");
@@ -310,6 +348,8 @@ public class SinglePlayerGameController {
 
         // Configure stage
         Scene scene = new Scene(root, 400, 500);
+        leaderboardList.setFocusTraversable(false); // Avoid focus ring glitches
+        leaderboardList.setMouseTransparent(false); // Ensure hover works correctly
         scene.setFill(Color.TRANSPARENT); // For rounded corners
         leaderboardStage.setScene(scene);
 
