@@ -60,7 +60,6 @@ public class MultiPlayerChoiceController {
             }
             else if (message.startsWith("NUMBER:")){
                 int number = Integer.parseInt(message.substring(7));
-                out.println(number);
                 if(number > 0){
                     Platform.runLater(() -> {
                         statusLabel.setText("Server is Taken!");
@@ -111,7 +110,6 @@ public class MultiPlayerChoiceController {
             client = new Client("localhost", 5000);
             setupNetworkHandlers();
             client.sendMessage("IS_AVAILABLE");
-            //loadLobby(client, name, true);
         } catch (Exception e) {
             statusLabel.setText("Failed to host game: " + e.getMessage());
             e.printStackTrace();
