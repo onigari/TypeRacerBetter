@@ -5,14 +5,12 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.shape.Rectangle?>
-<?import javafx.scene.text.Text?>
 
-<?import javafx.scene.layout.ColumnConstraints?>
 <VBox fx:id="rootPane" alignment="TOP_CENTER" prefHeight="600.0" prefWidth="800.0" spacing="20" style="-fx-background-color: #323437; -fx-padding: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.SinglePlayerGameController">
    <!-- Header Section -->
    <HBox alignment="CENTER" spacing="20">
@@ -23,8 +21,8 @@
    <VBox alignment="TOP_CENTER" spacing="15" style="-fx-background-color: #2c2e31; -fx-padding: 20; -fx-border-radius: 5; -fx-background-radius: 5;">
       <!-- Stats Bar -->
       <HBox alignment="CENTER_LEFT" spacing="30">
-         <Label style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="time:" />
-         <Label fx:id="timeLabel" style="-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="0.00s" />
+         <Label fx:id="timeTitle" style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="time:" />
+         <Label fx:id="timeLabel" style="-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="0s" />
 
          <Label style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="wpm:" />
          <Label fx:id="wpmLabel" style="-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="0" />
@@ -37,7 +35,7 @@
       <ProgressBar fx:id="progressBar" prefWidth="1000" progress="0.0" style="-fx-accent: #e2b714; -fx-background-color: #3a3d42;" />
 
       <!-- Paragraph Display -->
-      <TextFlow fx:id="paragraphFlow" style="-fx-background-color: #2c2e31; -fx-padding: 15; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 22px; -fx-line-spacing: 10;"  />
+      <TextFlow fx:id="paragraphFlow" style="-fx-background-color: #2c2e31; -fx-padding: 15; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 22px; -fx-line-spacing: 10;" />
 
       <!-- Typing Input -->
       <TextField fx:id="typingField" promptText="click here or press enter to start" style="-fx-background-color: transparent; -fx-opacity: 0; -fx-border-color: transparent; -fx-font-family: 'Roboto Mono'; -fx-font-size: 22px; -fx-text-fill: #d1d0c5;-fx-opacity: 0;s-fx-background-color: transparent; -fx-border-color: transparent; -fx-border-color: #e2b714; -fx-border-width: 0 0 2 0; -fx-prompt-text-fill: #646669;" />
@@ -51,7 +49,7 @@
    <!-- Keyboard Visualization -->
    <VBox alignment="CENTER" spacing="5" style="-fx-padding: 10;">
       <!-- Row 1: Tab Q W E R T Y U I O P { } -->
-      <GridPane fx:id="keyboardRow1" hgap="3" vgap="3" alignment="CENTER">
+      <GridPane fx:id="keyboardRow1" alignment="CENTER" hgap="3" vgap="3">
          <columnConstraints>
             <ColumnConstraints hgrow="NEVER" minWidth="60.0" prefWidth="60.0" /> <!-- Tab -->
             <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- Q -->
@@ -70,7 +68,7 @@
       </GridPane>
 
       <!-- Row 2: Caps Lock A S D F G H J K L ; " Enter -->
-      <GridPane fx:id="keyboardRow2" hgap="3" vgap="3" alignment="CENTER">
+      <GridPane fx:id="keyboardRow2" alignment="CENTER" hgap="3" vgap="3">
          <columnConstraints>
             <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="100.0" /> <!-- Caps Lock -->
             <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- A -->
@@ -89,7 +87,7 @@
       </GridPane>
 
       <!-- Row 3: Shift Z X C V B N M < > ? Shift -->
-      <GridPane fx:id="keyboardRow3" hgap="3" vgap="3" alignment="CENTER">
+      <GridPane fx:id="keyboardRow3" alignment="CENTER" hgap="3" vgap="3">
          <columnConstraints>
             <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="100.0" /> <!-- Shift -->
             <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- Z -->
@@ -107,7 +105,7 @@
       </GridPane>
 
       <!-- Row 4: Ctrl Alt (space) Alt Ctrl -->
-      <GridPane fx:id="keyboardRow4" hgap="3" vgap="3" alignment="CENTER">
+      <GridPane fx:id="keyboardRow4" alignment="CENTER" hgap="3" vgap="3">
          <columnConstraints>
             <ColumnConstraints hgrow="NEVER" minWidth="60.0" prefWidth="60.0" /> <!-- Ctrl -->
             <ColumnConstraints hgrow="NEVER" minWidth="60.0" prefWidth="60.0" /> <!-- Alt -->
@@ -131,10 +129,7 @@
 
       <!-- Leaderboard -->
       <VBox alignment="CENTER_LEFT" spacing="5" style="-fx-padding: 10;">
-         <ListView fx:id="leaderboardList"
-                   prefHeight="200"
-                   prefWidth="300"
-                   style="-fx-background-color: #2c2e31; -fx-border-color: #e2b714; -fx-border-width: 1; -fx-opacity: 0; -fx-border-radius: 5;">
+         <ListView fx:id="leaderboardList" prefHeight="200" prefWidth="300" style="-fx-background-color: #2c2e31; -fx-border-color: #e2b714; -fx-border-width: 1; -fx-opacity: 0; -fx-border-radius: 5;">
             <!-- Custom cell factory will be set in controller -->
          </ListView>
       </VBox>
