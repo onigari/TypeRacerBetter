@@ -92,7 +92,7 @@ public class MultiPlayerGameController {
 
     private void initializeKeyboard() {
         // Row 1: Tab Q W E R T Y U I O P { }
-        String[] row1Keys = {"Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "{", "}"};
+        String[] row1Keys = {"Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "{", "}", "Backspace"};
         addKeysToRow(keyboardRow1, row1Keys);
 
         // Row 2: Caps Lock A S D F G H J K L ; " Enter
@@ -120,7 +120,10 @@ public class MultiPlayerGameController {
                 rect.setWidth(200); // Make spacebar wider
             } else if (key.endsWith("Ctrl") || key.endsWith("Alt") || key.equals("Tab")) { // For modifier keys
                 rect.setWidth(60);
-            } else if (key.length() > 1) rect.setWidth(100);
+            } else if (key.equals("Backspace")) {
+                rect.setWidth(120);
+            }
+            else if (key.length() > 1) rect.setWidth(100);
             rect.setArcWidth(5);
             rect.setArcHeight(5);
             rect.setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-stroke-width: 1;");
