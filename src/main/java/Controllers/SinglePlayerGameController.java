@@ -766,10 +766,10 @@ public class SinglePlayerGameController {
             timeLabel.setText("0s");
         }
 
-        // Select random paragraph
-        paragraphText = inputStrings.get(new Random().nextInt(inputStrings.size()));
+        startButton.setText("restart");
+        playerNameField.setEditable(false);
 
-        // Reset game state
+        prepareParagraph();
         resetGame();
     }
 

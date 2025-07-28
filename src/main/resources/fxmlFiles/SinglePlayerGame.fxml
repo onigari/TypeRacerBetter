@@ -131,13 +131,10 @@
 
       <!-- Leaderboard -->
       <VBox alignment="CENTER_LEFT" spacing="5" style="-fx-padding: 10;">
-         <Label text="LEADERBOARD"
-                style="-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 16px; -fx-font-weight: bold;"/>
-
          <ListView fx:id="leaderboardList"
                    prefHeight="200"
                    prefWidth="300"
-                   style="-fx-background-color: #2c2e31; -fx-border-color: #e2b714; -fx-border-width: 1; -fx-border-radius: 5;">
+                   style="-fx-background-color: #2c2e31; -fx-border-color: #e2b714; -fx-border-width: 1; -fx-opacity: 0; -fx-border-radius: 5;">
             <!-- Custom cell factory will be set in controller -->
          </ListView>
       </VBox>
