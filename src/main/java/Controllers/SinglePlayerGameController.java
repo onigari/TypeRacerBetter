@@ -664,8 +664,10 @@ public class SinglePlayerGameController {
         if (oldPara.isEmpty()) {
             updateDisplayField(newValue);
         } else {
-            String typedText = newValue.substring(oldPara.length());
-            updateDisplayField(typedText);
+            if (oldPara.length() <= newValue.length()) {
+                String typedText = newValue.substring(oldPara.length());
+                updateDisplayField(typedText);
+            } else oldPara = newValue;
         }
     }
 
@@ -855,6 +857,7 @@ public class SinglePlayerGameController {
         currentIndex = 0;
         correctCharCount = 0;
         totalTyped = 0;
+        oldPara = "";
         currentWordIndex = 0;
         currentWordCharIndex = 0;
         progressBar.setProgress(0);
