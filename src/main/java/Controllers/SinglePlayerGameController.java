@@ -486,6 +486,8 @@ public class SinglePlayerGameController {
         wpmChart.setMouseTransparent(false); // Ensure hover works correctly
         scene.setFill(Color.TRANSPARENT); // For rounded corners
         leaderboardStage.setScene(scene);
+        root.setFocusTraversable(true);
+        Platform.runLater(root::requestFocus);
 
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         leaderboardStage.setX((screenBounds.getWidth() - scene.getWidth()) / 2);
