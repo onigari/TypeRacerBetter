@@ -89,6 +89,7 @@ public class SinglePlayerGameController {
     private String oldPara = "";
     private final List<Double> wpmDataPoints = new ArrayList<>();
     private long lastWpmUpdateTime = 0;
+    private Set<String> wrongWords = new HashSet<>();
 
     private void setupModeSelection() {
         modeInstructionLabel = new Label();
@@ -387,7 +388,6 @@ public class SinglePlayerGameController {
 
         // Header
         Label header = new Label("PLAYER PERFORMANCE");
-        header.setAlignment(Pos.CENTER);
         header.setStyle("-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-weight: bold; -fx-font-family: 'Roboto Mono';");
 
         Button closeBtn = new Button("✕");
@@ -407,16 +407,58 @@ public class SinglePlayerGameController {
                     "-fx-background-color: transparent; -fx-text-fill: #d1d0c5; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';");
         });
 
-        HBox titleBar = new HBox(header, new Region(), closeBtn);
-        titleBar.setAlignment(Pos.CENTER_RIGHT);
+        HBox closebtn = new HBox(closeBtn);
+        closebtn.setAlignment(Pos.CENTER_RIGHT);
+        HBox titleName = new HBox(header, closebtn);
+        titleName.setAlignment(Pos.TOP_CENTER);
+        HBox titleBar = new HBox(titleName);
+        titleBar.setAlignment(Pos.TOP_CENTER);
         titleBar.setPadding(new Insets(10, 10, 10, 20));
+        closebtn.setTranslateX(230);
         titleBar.setStyle("-fx-background-color: #2c2e31;");
 
         // Esc instruction
         Label escText = new Label("Press esc to close");
         escText.setStyle("-fx-font-size: 14px; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+        // Wrong words section
+        Label wrongWordsLabel = new Label("Incorrect Words:");
+        wrongWordsLabel.setStyle("-fx-font-family: 'Roboto Mono'; -fx-font-size: 16px; -fx-text-fill: #e2b714; -fx-font-weight: bold;");
+        ListView<String> wrongWordsList = new ListView<>(FXCollections.observableArrayList(wrongWords));
+        wrongWordsList.setStyle("""
+        -fx-control-inner-background: #2c2e31;
+        -fx-background-color: #2c2e31;
+        -fx-border-color: #646669;
+        -fx-border-width: 1;
+        -fx-font-family: 'Roboto Mono';
+        -fx-font-size: 14px;
+        -fx-text-fill: #d1d0c5;
+        """);
+        wrongWordsList.setMaxHeight(400); // Limit height to keep popup compact
+        wrongWordsList.setMaxHeight(300); // Limit height to keep popup compact
+        wrongWordsList.setFocusTraversable(false);
+        wrongWordsList.setCellFactory(lv -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;");
+                } else {
+                    setText(item);
+                    setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #ca4754;"); // Red for incorrect words
+                }
+            }
+        });
+        VBox wrongWordsBox = new VBox(5, wrongWordsLabel, wrongWordsList);
+        wrongWordsBox.setPadding(new Insets(10, 10, 0, 10));
 
-        VBox root = new VBox(titleBar, statsBox, wpmChart, escText);
+        VBox title = new VBox(titleBar, statsBox);
+        title.setAlignment(Pos.TOP_CENTER);
+        VBox graph  = new VBox(wpmChart);
+        VBox words = new VBox(wrongWordsBox);
+        HBox esc = new HBox(escText);
+        esc.setAlignment(Pos.TOP_CENTER);
+        VBox root = new VBox(title, new HBox(graph, words), esc);
         root.setStyle("""
         -fx-background-color: #323437;
         -fx-border-color: #e2b714;
@@ -425,7 +467,6 @@ public class SinglePlayerGameController {
         -fx-background-radius: 5;
         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0, 0, 0);
         """);
-        escText.setTranslateX(140);
         VBox.setVgrow(wpmChart, Priority.ALWAYS);
 
         final double[] xOffset = new double[1];
@@ -440,7 +481,7 @@ public class SinglePlayerGameController {
         });
 
         // Configure stage
-        Scene scene = new Scene(root, 400, 500);
+        Scene scene = new Scene(root, 800, 500);
         wpmChart.setFocusTraversable(false); // Avoid focus ring glitches
         wpmChart.setMouseTransparent(false); // Ensure hover works correctly
         scene.setFill(Color.TRANSPARENT); // For rounded corners
@@ -597,7 +638,7 @@ public class SinglePlayerGameController {
         rootPane.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
                 try {
-                    timer.stop();
+                    if (isTimerRunning) timer.stop();
                     loadMainMenu();
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -689,6 +730,7 @@ public class SinglePlayerGameController {
             } else if (wordIsCorrectSoFar) {
                 style += "-fx-text-fill: #d1d0c5;";
             } else {
+                wrongWords.add(currentWord.replace(",", "").replace(".", "").trim());
                 style += "-fx-text-fill: #ca4754;";
             }
 
@@ -878,6 +920,7 @@ public class SinglePlayerGameController {
     }
 
     private void typingFinished() {
+        for(String s : wrongWords) out.println(s);
         if (typingDone) return;
         updateStats();
         leaderBoardPopUp();
@@ -1018,6 +1061,7 @@ public class SinglePlayerGameController {
         currentWordCharIndex = 0;
         wpmDataPoints.clear();
         lastWpmUpdateTime = 0;
+        wrongWords.clear();
         progressBar.setProgress(0);
         typingField.clear();
         typingField.setDisable(false);
