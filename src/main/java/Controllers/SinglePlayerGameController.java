@@ -674,6 +674,7 @@ public class SinglePlayerGameController {
 
         // Allow pressing Enter in name field to start the game
         playerNameField.setOnKeyPressed(e -> {
+            modeContainer.setStyle("-fx-opacity: 0;");
             if (e.getCode() == KeyCode.ENTER) {
                 onStartButtonClick();
             }
@@ -953,6 +954,7 @@ public class SinglePlayerGameController {
         playerNameField.setVisible(true);
         nameTitle.setVisible(true);
         titleLabel.setText("type racer - finished!");
+        modeContainer.setStyle("-fx-opacity: 1;");
         startButton.setText("restart");
         typingField.setDisable(true);
         displayField.clear();
@@ -1035,7 +1037,8 @@ public class SinglePlayerGameController {
         playerNameField.setEditable(false);
         playerNameField.setVisible(false);
         nameTitle.setVisible(false);
-        modeContainer.setVisible(false); // Hide mode selection when typing starts
+        modeContainer.setVisible(false);
+        modeContainer.setStyle("-fx-opacity: 0;");// Hide mode selection when typing starts
 
         prepareParagraph();
         if (paragraphText == null || paragraphText.isEmpty()) {
