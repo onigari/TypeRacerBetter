@@ -952,6 +952,7 @@ public class SinglePlayerGameController {
         if (timer != null) timer.stop();
         leaderBoardPopUp();
         playerNameField.setVisible(true);
+        playerNameField.setEditable(true);
         nameTitle.setVisible(true);
         titleLabel.setText("type racer - finished!");
         modeContainer.setStyle("-fx-opacity: 1;");
