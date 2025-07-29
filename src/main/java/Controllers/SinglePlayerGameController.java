@@ -795,12 +795,6 @@ public class SinglePlayerGameController {
             } else {
                 progressBar.setProgress((double) currentIndex / paragraphText.length());
             }
-
-            // Collect WPM data every second
-//            if (System.currentTimeMillis() - lastWpmUpdateTime >= 1000) {
-//                wpmDataPoints.add(wpm);
-//                lastWpmUpdateTime = System.currentTimeMillis();
-//            }
         });
     }
 
