@@ -24,15 +24,17 @@ public class Server {
         inputStrings.clear();
         String resourcePath = "/data/input" + gameTime + ".txt";
 
-        try (InputStream input = Server.class.getResourceAsStream(resourcePath);
-             Scanner takeIn = new Scanner(input)) {
+        try (InputStream input = Server.class.getResourceAsStream(resourcePath)) {
+            assert input != null;
+            try (Scanner takeIn = new Scanner(input)) {
 
-            while (takeIn.hasNextLine()) {
-                inputStrings.add(takeIn.nextLine());
+                while (takeIn.hasNextLine()) {
+                    inputStrings.add(takeIn.nextLine());
+                }
+
+                selectedParagraph = inputStrings.get(new Random().nextInt(inputStrings.size()));
+
             }
-
-            selectedParagraph = inputStrings.get(new Random().nextInt(inputStrings.size()));
-
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -74,11 +74,15 @@ public class MultiPlayerLobbyController {
                 });
             } else if (message.equals("START_GAME")) {
                 if(players.size() < 2){
-                    warningLabel.setText("You need to have at least two players");
-                    warningLabel.setStyle("-fx-text-fill: #D00515; -fx-font-size: 14;");
+                    Platform.runLater(() -> {
+                        warningLabel.setText("You need to have at least two players");
+                        warningLabel.setStyle("-fx-text-fill: #D00515; -fx-font-size: 14;");
+                    });
                 } else if(time == 0) {
-                    warningLabel.setText("You have to select a time");
-                    warningLabel.setStyle("-fx-text-fill: #D00515; -fx-font-size: 14;");
+                    Platform.runLater(() -> {
+                        warningLabel.setText("You have to select a time");
+                        warningLabel.setStyle("-fx-text-fill: #D00515; -fx-font-size: 14;");
+                    });
                 }
                 else {
                     Platform.runLater(this::startGame);
