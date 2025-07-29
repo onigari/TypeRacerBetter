@@ -347,14 +347,17 @@ public class SinglePlayerGameController {
         // Create LineChart for WPM vs Time
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Time (seconds)");
+        xAxis.lookup(".axis-label").setStyle("-fx-text-fill: #d1d0c5;");
         xAxis.setStyle("-fx-font-family: 'Roboto Mono'; -fx-text-fill: #d1d0c5; -fx-tick-label-fill: #d1d0c5;");
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("WPM");
+        yAxis.lookup(".axis-label").setStyle("-fx-text-fill: #d1d0c5;");
         yAxis.setStyle("-fx-font-family: 'Roboto Mono'; -fx-text-fill: #d1d0c5; -fx-tick-label-fill: #d1d0c5;");
 
         LineChart<Number, Number> wpmChart = new LineChart<>(xAxis, yAxis);
         wpmChart.setTitle("WPM vs Time");
-        wpmChart.setStyle("-fx-background-color: #2c2e31; -fx-title-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 16px; -fx-background-radius: 5;");
+        wpmChart.lookup(".chart-title").setStyle("-fx-text-fill: #d1d0c5;");
+        wpmChart.setStyle("-fx-background-color: #2c2e31; -fx-font-family: 'Roboto Mono'; -fx-font-size: 16px; -fx-background-radius: 5;");
         wpmChart.lookupAll(".chart-plot-background").forEach(node ->
                 node.setStyle("-fx-background-color: #323437;"));
 
@@ -383,7 +386,8 @@ public class SinglePlayerGameController {
         statsBox.setPadding(new Insets(10));
 
         // Header
-        Label header = new Label("WPM PERFORMANCE");
+        Label header = new Label("PLAYER PERFORMANCE");
+        header.setAlignment(Pos.CENTER);
         header.setStyle("-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-weight: bold; -fx-font-family: 'Roboto Mono';");
 
         Button closeBtn = new Button("✕");
