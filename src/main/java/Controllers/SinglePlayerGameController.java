@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -34,6 +35,9 @@ public class SinglePlayerGameController {
     public GridPane keyboardRow3;
     public GridPane keyboardRow4;
     public Label timeTitle;
+    public Label wpmTitle;
+    public Label accuracyTitle;
+    public Label nameTitle;
 
     @FXML private VBox rootPane;
     @FXML private Label titleLabel;
@@ -73,69 +77,191 @@ public class SinglePlayerGameController {
     private final Map<String, Text> keyTexts = new HashMap<>();
 
     // Add these to your controller fields
-    private enum GameMode { TIMED, FIXED_PARAGRAPH }
-    private GameMode currentMode = GameMode.TIMED; // Default mode
+    private enum GameMode {
+        TIME_15, TIME_30, TIME_60, WORDS_10, WORDS_25, WORDS_50, WORDS_100
+    }
+    private GameMode currentMode = GameMode.TIME_60; // Default mode
+    private HBox modeContainer; // Moved to class level for visibility control
+    private Label modeInstructionLabel;
     private final int TIMED_MODE_DURATION = 60; // 60 seconds for timed mode
     private final int FIXED_PARAGRAPH_LENGTH = 100; // 100 chars for fixed mode
-    private Label modeInstructionLabel;
     private String oldPara = "";
 
     // Add mode selection UI (call this from initialize())
     private void setupModeSelection() {
         modeInstructionLabel = new Label();
-        modeInstructionLabel.setStyle("-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono';");
+        modeInstructionLabel.setStyle("-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 16px;");
         updateModeInstructions();
-        HBox modeContainer = new HBox(10);
+
+        modeContainer = new HBox(10);
         modeContainer.setAlignment(Pos.CENTER);
         modeContainer.setPadding(new Insets(10));
+        modeContainer.setStyle("-fx-background-color: #2c2e31; -fx-border-radius: 5; -fx-background-radius: 5;");
 
-        ToggleGroup modeGroup = new ToggleGroup();
+        // Time mode button
+        Button timeButton = new Button("Time");
+        styleModeButton(timeButton, currentMode.toString().startsWith("TIME"));
+        timeButton.setOnAction(e -> showTimeOptions());
 
-        RadioButton timedMode = new RadioButton("Timed Mode (60s)");
-        timedMode.setToggleGroup(modeGroup);
-        timedMode.setSelected(true);
-        timedMode.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+        // Words mode button
+        Button wordsButton = new Button("Words");
+        styleModeButton(wordsButton, currentMode.toString().startsWith("WORDS"));
+        wordsButton.setOnAction(e -> showWordsOptions());
 
-        RadioButton fixedMode = new RadioButton("Fixed Paragraph");
-        fixedMode.setToggleGroup(modeGroup);
-        fixedMode.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+        modeContainer.getChildren().addAll(timeButton, wordsButton, modeInstructionLabel);
+        rootPane.getChildren().add(1, modeContainer); // Add below title
+        showTimeOptions(); // Show default time options
+    }
 
-        modeGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal == timedMode) {
-                currentMode = GameMode.TIMED;
-            } else {
-                currentMode = GameMode.FIXED_PARAGRAPH;
+    private void styleModeButton(Button button, boolean selected) {
+        button.setStyle(selected ?
+                "-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;" :
+                "-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        button.setOnMouseEntered(e -> {
+            if (!button.getStyle().contains("-fx-background-color: #e2b714")) {
+                button.setStyle("-fx-background-color: #3a3d42; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
             }
         });
+        button.setOnMouseExited(e -> {
+            if (!button.getStyle().contains("-fx-background-color: #e2b714")) {
+                button.setStyle("-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+            }
+        });
+    }
 
-        modeContainer.getChildren().addAll(timedMode, fixedMode);
-        rootPane.getChildren().add(1, modeContainer); // Add below title
+    private void showTimeOptions() {
+        modeContainer.getChildren().clear();
+        Button timeButton = new Button("Time");
+        styleModeButton(timeButton, true);
+        Button wordsButton = new Button("Words");
+        styleModeButton(wordsButton, false);
+        wordsButton.setOnAction(e -> showWordsOptions());
+
+        Button time15 = new Button("15s");
+        styleOptionButton(time15, currentMode == GameMode.TIME_15);
+        time15.setOnAction(e -> setMode(GameMode.TIME_15));
+
+        Button time30 = new Button("30s");
+        styleOptionButton(time30, currentMode == GameMode.TIME_30);
+        time30.setOnAction(e -> setMode(GameMode.TIME_30));
+
+        Button time60 = new Button("60s");
+        styleOptionButton(time60, currentMode == GameMode.TIME_60);
+        time60.setOnAction(e -> setMode(GameMode.TIME_60));
+
+        modeContainer.getChildren().addAll(timeButton, wordsButton, time15, time30, time60, modeInstructionLabel);
+    }
+
+    private void showWordsOptions() {
+        modeContainer.getChildren().clear();
+        Button timeButton = new Button("Time");
+        styleModeButton(timeButton, false);
+        timeButton.setOnAction(e -> showTimeOptions());
+        Button wordsButton = new Button("Words");
+        styleModeButton(wordsButton, true);
+
+        Button words10 = new Button("10");
+        styleOptionButton(words10, currentMode == GameMode.WORDS_10);
+        words10.setOnAction(e -> setMode(GameMode.WORDS_10));
+
+        Button words25 = new Button("25");
+        styleOptionButton(words25, currentMode == GameMode.WORDS_25);
+        words25.setOnAction(e -> setMode(GameMode.WORDS_25));
+
+        Button words50 = new Button("50");
+        styleOptionButton(words50, currentMode == GameMode.WORDS_50);
+        words50.setOnAction(e -> setMode(GameMode.WORDS_50));
+
+        Button words100 = new Button("100");
+        styleOptionButton(words100, currentMode == GameMode.WORDS_100);
+        words100.setOnAction(e -> setMode(GameMode.WORDS_100));
+
+        modeContainer.getChildren().addAll(timeButton, wordsButton, words10, words25, words50, words100, modeInstructionLabel);
+    }
+
+    private void styleOptionButton(Button button, boolean selected) {
+        button.setStyle(selected ?
+                "-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;" :
+                "-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        button.setOnMouseEntered(e -> {
+            if (!button.getStyle().contains("-fx-background-color: #e2b714")) {
+                button.setStyle("-fx-background-color: #3a3d42; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+            }
+        });
+        button.setOnMouseExited(e -> {
+            if (!button.getStyle().contains("-fx-background-color: #e2b714")) {
+                button.setStyle("-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+            }
+        });
+    }
+
+    private void setMode(GameMode mode) {
+        currentMode = mode;
+        updateModeInstructions();
+        updateModeButtonStyles();
+    }
+
+    private void updateModeButtonStyles() {
+        if (modeContainer != null) {
+            for (Node node : modeContainer.getChildren()) {
+                if (node instanceof Button button) {
+                    if (button.getText().equals("Time")) {
+                        styleModeButton(button, currentMode.toString().startsWith("TIME"));
+                    } else if (button.getText().equals("Words")) {
+                        styleModeButton(button, currentMode.toString().startsWith("WORDS"));
+                    } else if (button.getText().equals("15s")) {
+                        styleOptionButton(button, currentMode == GameMode.TIME_15);
+                    } else if (button.getText().equals("30s")) {
+                        styleOptionButton(button, currentMode == GameMode.TIME_30);
+                    } else if (button.getText().equals("60s")) {
+                        styleOptionButton(button, currentMode == GameMode.TIME_60);
+                    } else if (button.getText().equals("10")) {
+                        styleOptionButton(button, currentMode == GameMode.WORDS_10);
+                    } else if (button.getText().equals("25")) {
+                        styleOptionButton(button, currentMode == GameMode.WORDS_25);
+                    } else if (button.getText().equals("50")) {
+                        styleOptionButton(button, currentMode == GameMode.WORDS_50);
+                    } else if (button.getText().equals("100")) {
+                        styleOptionButton(button, currentMode == GameMode.WORDS_100);
+                    }
+                }
+            }
+        }
     }
 
     private void prepareParagraph() {
-        if (currentMode == GameMode.FIXED_PARAGRAPH) {
-            // Get a paragraph of fixed length
-            paragraphText = getFixedLengthParagraph(FIXED_PARAGRAPH_LENGTH);
+        if (currentMode.toString().startsWith("WORDS")) {
+            // Get a paragraph with a specific number of words
+            int wordCount = switch (currentMode) {
+                case WORDS_10 -> 10;
+                case WORDS_25 -> 25;
+                case WORDS_50 -> 50;
+                case WORDS_100 -> 100;
+                default -> 50; // Fallback
+            };
+            paragraphText = getFixedWordCountParagraph(wordCount);
         } else {
-            // Original random selection
+            // Random paragraph for time-based modes
             paragraphText = inputStrings.get(new Random().nextInt(inputStrings.size()));
         }
         displayParagraph(paragraphText);
     }
 
-    private String getFixedLengthParagraph(int length) {
+    private String getFixedWordCountParagraph(int wordCount) {
         StringBuilder sb = new StringBuilder();
         Random rand = new Random();
+        int wordsAdded = 0;
 
-        while (sb.length() < length) {
+        while (wordsAdded < wordCount) {
             String randomLine = inputStrings.get(rand.nextInt(inputStrings.size()));
-            if (sb.length() + randomLine.length() > length) {
-                // Take just what we need
-                int remaining = length - sb.length();
-                sb.append(randomLine, 0, remaining);
-                sb.append(" "); // Add space if needed
-            } else {
-                sb.append(randomLine).append(" ");
+            String[] words = randomLine.split(" ");
+            for (String word : words) {
+                if (wordsAdded < wordCount) {
+                    sb.append(word).append(" ");
+                    wordsAdded++;
+                } else {
+                    break;
+                }
             }
         }
 
@@ -143,11 +269,17 @@ public class SinglePlayerGameController {
     }
 
     private void updateModeInstructions() {
-        if (currentMode == GameMode.TIMED) {
-            modeInstructionLabel.setText("Type as much as you can in 60 seconds!");
-        } else {
-            modeInstructionLabel.setText("Complete the entire paragraph as fast as you can!");
-        }
+        String instruction = switch (currentMode) {
+            case TIME_15 -> "Type as much as you can in 15 seconds!";
+            case TIME_30 -> "Type as much as you can in 30 seconds!";
+            case TIME_60 -> "Type as much as you can in 60 seconds!";
+            case WORDS_10 -> "Type 10 words as fast as you can!";
+            case WORDS_25 -> "Type 25 words as fast as you can!";
+            case WORDS_50 -> "Type 50 words as fast as you can!";
+            case WORDS_100 -> "Type 100 words as fast as you can!";
+            default -> "Select a mode to start typing!";
+        };
+        modeInstructionLabel.setText(instruction);
     }
 
     // Add this method to initialize the keyboard
@@ -704,7 +836,8 @@ public class SinglePlayerGameController {
             updateStats();
 
             if (currentIndex >= paragraphText.length()) {
-                if (currentMode.equals(GameMode.FIXED_PARAGRAPH)) {
+                if (currentMode.equals(GameMode.WORDS_10) || currentMode.equals(GameMode.WORDS_25) ||
+                        currentMode.equals(GameMode.WORDS_50) || currentMode.equals(GameMode.WORDS_100)) {
                     typingFinished();
                 } else {
                     oldPara = newValue;
@@ -732,7 +865,10 @@ public class SinglePlayerGameController {
         Platform.runLater(() -> {
             long elapsed = System.currentTimeMillis() - startTime;
             double seconds = elapsed / 1000.0;
-            if (currentMode.equals(GameMode.FIXED_PARAGRAPH)) timeLabel.setText(String.format("%ds", (int) seconds));
+            if (currentMode.equals(GameMode.WORDS_10) || currentMode.equals(GameMode.WORDS_25) ||
+                    currentMode.equals(GameMode.WORDS_50) || currentMode.equals(GameMode.WORDS_100)) {
+                timeLabel.setText(String.format("%ds", (int) seconds));
+            }
             wpmLabel.setText(String.format("%.0f", calculateWPM()));
             accuracyLabel.setText(String.format("%.0f%%", calculateAccuracy()));
             progressBar.setProgress((double) currentIndex / paragraphText.length());
@@ -771,41 +907,80 @@ public class SinglePlayerGameController {
         }
     }
 
+    private void startTimer() {
+        startTime = System.currentTimeMillis();
+        if (timer != null) timer.stop();
+        if (currentMode.toString().startsWith("TIME")) {
+            // Timed mode countdown
+            int duration = switch (currentMode) {
+                case TIME_15 -> 15;
+                case TIME_30 -> 30;
+                case TIME_60 -> 60;
+                default -> 60;
+            };
+            timeLabel.setText(duration + "s");
+            timer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+                long elapsed = (System.currentTimeMillis() - startTime) / 1000;
+                long remaining = duration - elapsed;
+                timeTitle.setText("time left:");
+                timeLabel.setText(remaining + "s");
+                if (remaining <= 0) {
+                    typingFinished();
+                }
+            }));
+            timer.setCycleCount(Timeline.INDEFINITE);
+            timer.play();
+        } else {
+            // Words mode - track time taken
+            timeLabel.setText("0s");
+            timer = new Timeline(new KeyFrame(Duration.millis(100), e -> {
+                updateStats();
+            }));
+            timer.setCycleCount(Timeline.INDEFINITE);
+            timer.play();
+        }
+    }
+
     private void typingFinished() {
         if (typingDone) return;
         typingDone = true;
         if (timer != null) timer.stop();
         leaderBoardPopUp();
+        playerNameField.setVisible(true);
+        nameTitle.setVisible(true);
         titleLabel.setText("type racer - finished!");
         startButton.setText("restart");
         typingField.setDisable(true);
-        displayField.clear(); // Clear display field when finished
+        displayField.clear();
         updateStats();
+        modeContainer.setVisible(true); // Show mode selection when finished
 
         long finishTime = System.currentTimeMillis() - startTime;
         double timeInSeconds = finishTime / 1000.0;
         double wpm = calculateWPM();
         double accuracy = calculateAccuracy();
         String entry;
-        if (currentMode == GameMode.TIMED) {
+        if (currentMode.toString().startsWith("TIME")) {
             entry = String.format("%s - Timed: %d WPM - %.0f%%",
                     playerName, (int) wpm, accuracy);
         } else {
-            entry = String.format("%s - Fixed: %.2fs - %d WPM - %.0f%%",
+            entry = String.format("%s - Words: %.2fs - %d WPM - %.0f%%",
                     playerName, timeInSeconds, (int) wpm, accuracy);
         }
         leaderboard.add(entry);
 
         leaderboard.sort((a, b) -> {
-            double t1 = Double.parseDouble(a.split(" - ")[1].replace("s", "").trim());
-            double t2 = Double.parseDouble(b.split(" - ")[1].replace("s", "").trim());
+            String[] partsA = a.split(" - ");
+            String[] partsB = b.split(" - ");
+            double t1 = Double.parseDouble(partsA[1].replace("s", "").replace("Timed", "").replace("Words", "").trim());
+            double t2 = Double.parseDouble(partsB[1].replace("s", "").replace("Timed", "").replace("Words", "").trim());
             int toReturn = Double.compare(t1, t2);
             if (toReturn == 0) {
-                double t3 = Double.parseDouble(a.split(" - ")[2].replace(" WPM", "").trim());
-                double t4 = Double.parseDouble(b.split(" - ")[2].replace(" WPM", "").trim());
+                double t3 = Double.parseDouble(partsA[2].replace(" WPM", "").trim());
+                double t4 = Double.parseDouble(partsB[2].replace(" WPM", "").trim());
                 int toReturn2 = Double.compare(t3, t4);
                 if (toReturn2 == 0) {
-                    return a.split(" - ")[0].compareTo(b.split(" - ")[0]);
+                    return partsA[0].compareTo(partsB[0]);
                 }
                 return toReturn2;
             }
@@ -831,18 +1006,33 @@ public class SinglePlayerGameController {
         }
 
         // Setup UI based on mode
-        if (currentMode == GameMode.TIMED) {
-            titleLabel.setText("Timed Mode - 60s Challenge!");
-            timeLabel.setText("60s");
+        if (currentMode.toString().startsWith("TIME")) {
+            int duration = switch (currentMode) {
+                case TIME_15 -> 15;
+                case TIME_30 -> 30;
+                case TIME_60 -> 60;
+                default -> 60;
+            };
+            titleLabel.setText("Timed Mode - " + duration + "s Challenge!");
+            timeLabel.setText(duration + "s");
         } else {
-            titleLabel.setText("Fixed Paragraph Challenge!");
+            int wordCount = switch (currentMode) {
+                case WORDS_10 -> 10;
+                case WORDS_25 -> 25;
+                case WORDS_50 -> 50;
+                case WORDS_100 -> 100;
+                default -> 50;
+            };
+            titleLabel.setText("Words Mode - " + wordCount + " Words Challenge!");
             timeLabel.setText("0s");
         }
 
         startButton.setText("restart");
         playerNameField.setEditable(false);
+        playerNameField.setVisible(false);
+        nameTitle.setVisible(false);
+        modeContainer.setVisible(false); // Hide mode selection when typing starts
 
-        prepareParagraph();
         prepareParagraph();
         if (paragraphText == null || paragraphText.isEmpty()) {
             showAlert("Failed to load paragraph text!");
@@ -869,36 +1059,10 @@ public class SinglePlayerGameController {
         Arrays.fill(accuracyChecker, 'B');
         Arrays.fill(correctWordChecker, 'B');
         displayParagraph(paragraphText);
+        modeContainer.setVisible(true); // Show mode selection when game is reset
 
         startTimer();
         typingField.requestFocus();
-    }
-
-    private void startTimer() {
-        startTime = System.currentTimeMillis();
-        if (timer != null) timer.stop();
-        if (currentMode == GameMode.TIMED) {
-            // Timed mode countdown
-            timer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-                long elapsed = (System.currentTimeMillis() - startTime) / 1000;
-                long remaining = TIMED_MODE_DURATION - elapsed;
-                timeTitle.setText("time left:");
-                timeLabel.setText(remaining + "s");
-//                progressBar.setProgress((double) elapsed / TIMED_MODE_DURATION);
-
-                if (remaining <= 0) {
-                    typingFinished();
-                }
-            }));
-        } else {
-            // Fixed paragraph mode - track progress
-            timer = new Timeline(new KeyFrame(Duration.millis(100), e -> {
-                updateStats();
-            }));
-        }
-
-        timer.setCycleCount(Timeline.INDEFINITE);
-        timer.play();
     }
 
     private void showAlert(String message) {
