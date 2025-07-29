@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 import network.Client;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 import static java.lang.System.out;
 
@@ -21,6 +23,7 @@ public class MultiPlayerChoiceController {
     @FXML private TextField ipField;
     @FXML private Label statusLabel;
     @FXML private Label escText;
+    @FXML private Button joinButton;
 
     private String name;
     private Client client;
@@ -54,7 +57,8 @@ public class MultiPlayerChoiceController {
                     }
                 }
                 try {
-                    loadLobby(client, name, false);
+                    Stage stage = (Stage) joinButton.getScene().getWindow();
+                    loadLobby(stage, client, name, false);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -70,7 +74,8 @@ public class MultiPlayerChoiceController {
                     return;
                 }
                 try {
-                    loadLobby(client, name, true);
+                    Stage stage = (Stage) joinButton.getScene().getWindow();
+                    loadLobby(stage, client, name, true);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -133,6 +138,12 @@ public class MultiPlayerChoiceController {
             return;
         }
 
+        if(!isServerReachable(ip)){
+            statusLabel.setText("No Game available in this server");
+            statusLabel.setStyle("-fx-text-fill: #da0112; -fx-font-size: 14;");
+            return;
+        }
+
         try {
             client = new Client(ip, 5000);
             setupNetworkHandlers();
@@ -143,16 +154,26 @@ public class MultiPlayerChoiceController {
         }
     }
 
+    private static boolean isServerReachable(String ip) {
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(ip, 5000), 1000);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     private static boolean isValidIPAddress(String ip) {
         try {
-            InetAddress.getByName(ip); // No need to really assign stuff. If it cannot return valid value, it'll throw error by itself
+            InetAddress address = InetAddress.getByName(ip); // No need to really assign stuff. If it cannot return valid value, it'll throw error by itself
+            out.println(address.toString());
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
-    private void loadLobby(Client client, String name, boolean isHost) throws IOException {
+    private void loadLobby(Stage stage, Client client, String name, boolean isHost) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MultiPlayerLobby.fxml"));
         Parent root = loader.load();
 
@@ -160,7 +181,6 @@ public class MultiPlayerChoiceController {
             MultiPlayerLobbyController controller = loader.getController();
             controller.initialize(client, name, isHost);
 
-            Stage stage = (Stage) rootPane.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Multiplayer Lobby - " + name);
             stage.setOnCloseRequest(e -> client.close());
