@@ -657,6 +657,7 @@ public class SinglePlayerGameController {
         rootPane.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
                 try {
+                    timer.stop();
                     loadMainMenu();
                 } catch (IOException ex) {
                     ex.printStackTrace();
