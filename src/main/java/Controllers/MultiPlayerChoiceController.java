@@ -56,6 +56,14 @@ public class MultiPlayerChoiceController {
                         return;
                     }
                 }
+                if(players.length == 1 && players[0].isEmpty()){
+                    Platform.runLater(() -> {
+                        statusLabel.setText("Server is offline!");
+                        statusLabel.setStyle("-fx-text-fill: #da0112;");
+                        client.close();
+                    });
+                    return;
+                }
                 try {
                     Stage stage = (Stage) joinButton.getScene().getWindow();
                     loadLobby(stage, client, name, false);
