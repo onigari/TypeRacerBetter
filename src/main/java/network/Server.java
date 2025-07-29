@@ -72,6 +72,15 @@ public class Server {
         }
     }
 
+    public static void broadcastTime(int gameTime) {
+        String gameTimeString = "TIME:" + gameTime;
+        synchronized (clients) {
+            for (ClientHandler client : clients) {
+                client.sendMessage(gameTimeString);
+            }
+        }
+    }
+
     public static void broadcastPlayerList(String playersList) {
         synchronized (clients) {
             for (ClientHandler client : clients) {

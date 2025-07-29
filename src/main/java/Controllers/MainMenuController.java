@@ -42,7 +42,7 @@ public class MainMenuController {
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
-        stage.setTitle("TypeRacer - SinglePlayer");
+        stage.setTitle("TypeRacer - MultiPlayer Choice");
         stage.show();
     }
 

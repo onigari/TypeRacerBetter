@@ -76,6 +76,9 @@ public class MultiPlayerLobbyController {
                 if(players.size() < 2){
                     warningLabel.setText("You need to have at least two players");
                     warningLabel.setStyle("-fx-text-fill: #D00515; -fx-font-size: 14;");
+                } else if(time == 0) {
+                    warningLabel.setText("You have to select a time");
+                    warningLabel.setStyle("-fx-text-fill: #D00515; -fx-font-size: 14;");
                 }
                 else {
                     Platform.runLater(this::startGame);
@@ -107,12 +110,6 @@ public class MultiPlayerLobbyController {
 
     @FXML
     private void handleStartGame() {
-        if(time == 0) {
-//            warningLabel.setStyle("-fx-");
-            warningLabel.setText("You have to select a time");
-            warningLabel.setStyle("-fx-text-fill: #D00515; -fx-font-size: 14;");
-            return;
-        }
         if (isHost) {
             client.sendStartGame();
         }

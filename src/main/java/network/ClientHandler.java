@@ -44,6 +44,7 @@ public class ClientHandler implements Runnable {
                     handleProgress(inputLine.substring(9));
                 } else if (inputLine.equals("START_GAME") && clients.get(0) == this) {
                     System.out.println("Host (" + playerName + ") initiated game start");
+                    Server.broadcastTime(gameTime);
                     Server.broadcastStartGame(gameTime);
                     initiatePlayerList();
                     leaderboard.clear();
@@ -62,7 +63,6 @@ public class ClientHandler implements Runnable {
                     out.println(playersList);
                 } else if (inputLine.startsWith("TIME:")) {
                     gameTime = Integer.parseInt(inputLine.substring(5).trim());
-                    broadcastTime(inputLine);
                 } else if (inputLine.equals("IS_AVAILABLE")) {
                     initiatePlayerList();
                     String[] players = playersList.substring(8).split(",");
@@ -177,14 +177,6 @@ public class ClientHandler implements Runnable {
             }
         } catch (Exception e) {
             System.err.println("Error processing result: " + e.getMessage());
-        }
-    }
-
-    private void broadcastTime(String time) {
-        synchronized (clients) {
-            for (ClientHandler client : clients) {
-                client.sendMessage(time);
-            }
         }
     }
 
