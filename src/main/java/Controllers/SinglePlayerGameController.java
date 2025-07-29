@@ -640,8 +640,10 @@ public class SinglePlayerGameController {
         rootPane.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
                 try {
-                    if (isTimerRunning) timer.stop();
-                    loadMainMenu();
+                    if (isTimerRunning){
+                        typingFinished();
+                    }
+                    else loadMainMenu();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
