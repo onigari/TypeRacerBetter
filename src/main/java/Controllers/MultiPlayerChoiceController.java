@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import network.Client;
 import java.io.IOException;
+import java.net.InetAddress;
 
 import static java.lang.System.out;
 
@@ -126,6 +127,12 @@ public class MultiPlayerChoiceController {
             return;
         }
 
+        if(!isValidIPAddress(ip)){
+            statusLabel.setText("Invalid IP address");
+            statusLabel.setStyle("-fx-text-fill: #da0112; -fx-font-size: 14;");
+            return;
+        }
+
         try {
             client = new Client(ip, 5000);
             setupNetworkHandlers();
@@ -133,6 +140,15 @@ public class MultiPlayerChoiceController {
         } catch (IOException e) {
             statusLabel.setText("Failed to connect to server: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private static boolean isValidIPAddress(String ip) {
+        try {
+            InetAddress.getByName(ip); // No need to really assign stuff. If it cannot return valid value, it'll throw error by itself
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 
