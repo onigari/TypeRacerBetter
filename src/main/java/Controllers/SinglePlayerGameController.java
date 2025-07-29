@@ -48,12 +48,11 @@ public class SinglePlayerGameController {
     @FXML private ListView<String> leaderboardList;
     @FXML private Label timeLabel;
     @FXML private TextField typingField;
-    @FXML private TextField displayField;  // New field to show one word at a time
+    @FXML private TextField displayField;
     @FXML private Label wpmLabel;
     @FXML private Label accuracyLabel;
     @FXML private Label escText;
 
-    // Game state fields
     private final List<String> inputStrings = new ArrayList<>();
     private final ObservableList<String> leaderboard = FXCollections.observableArrayList();
     private String playerName;
@@ -68,7 +67,6 @@ public class SinglePlayerGameController {
     private char[] accuracyChecker;
     private char[] correctWordChecker;
 
-    // New fields for word-by-word display
     private String[] paragraphWords;
     private int currentWordIndex = 0;
     private int currentWordCharIndex = 0;
@@ -76,7 +74,6 @@ public class SinglePlayerGameController {
     private final Map<String, Rectangle> keyRectangles = new HashMap<>();
     private final Map<String, Text> keyTexts = new HashMap<>();
 
-    // Add these to your controller fields
     private enum GameMode {
         TIME_15, TIME_30, TIME_60, WORDS_10, WORDS_25, WORDS_50, WORDS_100
     }
@@ -87,7 +84,6 @@ public class SinglePlayerGameController {
     private int FIXED_PARAGRAPH_LENGTH;
     private String oldPara = "";
 
-    // Add mode selection UI (call this from initialize())
     private void setupModeSelection() {
         modeInstructionLabel = new Label();
         modeInstructionLabel.setStyle("-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 16px;");
@@ -98,19 +94,17 @@ public class SinglePlayerGameController {
         modeContainer.setPadding(new Insets(10));
         modeContainer.setStyle("-fx-background-color: #2c2e31; -fx-border-radius: 5; -fx-background-radius: 5;");
 
-        // Time mode button
         Button timeButton = new Button("Time");
         styleModeButton(timeButton, currentMode.toString().startsWith("TIME"));
         timeButton.setOnAction(e -> showTimeOptions());
 
-        // Words mode button
         Button wordsButton = new Button("Words");
         styleModeButton(wordsButton, currentMode.toString().startsWith("WORDS"));
         wordsButton.setOnAction(e -> showWordsOptions());
 
         modeContainer.getChildren().addAll(timeButton, wordsButton, modeInstructionLabel);
         rootPane.getChildren().add(1, modeContainer); // Add below title
-        showTimeOptions(); // Show default time options
+        showTimeOptions();
     }
 
     private void styleModeButton(Button button, boolean selected) {
@@ -231,17 +225,15 @@ public class SinglePlayerGameController {
 
     private void prepareParagraph() {
         if (currentMode.toString().startsWith("WORDS")) {
-            // Get a paragraph with a specific number of words
             int wordCount = switch (currentMode) {
                 case WORDS_10 -> 10;
                 case WORDS_25 -> 25;
                 case WORDS_50 -> 50;
                 case WORDS_100 -> 100;
-                default -> 50; // Fallback
+                default -> 50;
             };
             paragraphText = getFixedWordCountParagraph(wordCount);
         } else {
-            // Random paragraph for time-based modes
             paragraphText = inputStrings.get(new Random().nextInt(inputStrings.size()));
         }
         displayParagraph(paragraphText);
@@ -282,21 +274,16 @@ public class SinglePlayerGameController {
         modeInstructionLabel.setText(instruction);
     }
 
-    // Add this method to initialize the keyboard
     private void initializeKeyboard() {
-        // Row 1: Tab Q W E R T Y U I O P { }
         String[] row1Keys = {"Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "{", "}", "Backspace"};
         addKeysToRow(keyboardRow1, row1Keys);
 
-        // Row 2: Caps Lock A S D F G H J K L ; ' Enter
         String[] row2Keys = {"Caps Lock", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "Enter"};
         addKeysToRow(keyboardRow2, row2Keys);
 
-        // Row 3: Shift Z X C V B N M , . ? Shift
         String[] row3Keys = {"LShift", "Z", "X", "C", "V", "B", "N", "M", ",", ".", "?", "RShift"};
         addKeysToRow(keyboardRow3, row3Keys);
 
-        // Row 4: Ctrl Alt (space) Alt Ctrl
         String[] row4Keys = {"LCtrl", "LAlt", " ", "RAlt", "RCtrl"};
         addKeysToRow(keyboardRow4, row4Keys);
     }
@@ -346,13 +333,11 @@ public class SinglePlayerGameController {
     }
 
     private void leaderBoardPopUp() {
-        // Create the stage
         Stage leaderboardStage = new Stage();
         leaderboardStage.initModality(Modality.APPLICATION_MODAL);
         leaderboardStage.initOwner(rootPane.getScene().getWindow());
-        leaderboardStage.initStyle(StageStyle.TRANSPARENT); // Borderless
+        leaderboardStage.initStyle(StageStyle.TRANSPARENT);
 
-        // Create ListView with custom cells
         ListView<String> leaderboardList = new ListView<>();
         leaderboardList.setItems(leaderboard);
         leaderboardList.setStyle("""
@@ -362,7 +347,6 @@ public class SinglePlayerGameController {
             -fx-border-width: 0;
         """);
 
-        // Apply your custom cell factory
         leaderboardList.setCellFactory(lv -> new ListCell<String>() {
             private final HBox hbox = new HBox(10);
             private final Text rank = new Text();
@@ -381,7 +365,7 @@ public class SinglePlayerGameController {
             -fx-font-family: 'Roboto Mono';
         """);
                 hbox.getChildren().addAll(rank, entry);
-                setPrefHeight(36); // Consistent height for all cells
+                setPrefHeight(36);
             }
 
             @Override
@@ -393,7 +377,6 @@ public class SinglePlayerGameController {
                     rank.setText((getIndex() + 1) + ".");
                     entry.setText(item);
 
-                    // Highlight current player
                     if (item.contains(playerName)) {
                         hbox.setStyle("-fx-background-color: #3a3d42;");
                         rank.setStyle("""
@@ -428,11 +411,10 @@ public class SinglePlayerGameController {
         Label escText = new Label();
         escText.setText("Press esc to close");
         escText.setStyle("-fx-font-size: 14px; -fx-text-fill: #d1d0c5;");
-        // Header
+
         Label header = new Label("LEADERBOARD");
         header.setStyle("-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-weight: bold;");
 
-        // Close button
         Button closeBtn = new Button("✕");
         closeBtn.setStyle("""
         -fx-background-color: transparent;
@@ -449,14 +431,12 @@ public class SinglePlayerGameController {
                     "-fx-text-fill: #d1d0c5;");
         });
 
-        // Title bar
         HBox titleBar = new HBox(header, new Region(), closeBtn);
         titleBar.setAlignment(Pos.CENTER_RIGHT);
         titleBar.setPadding(new Insets(10, 10, 10, 20));
         titleBar.setStyle("-fx-background-color: #2c2e31;");
         HBox.setHgrow(titleBar.getChildren().get(1), Priority.ALWAYS);
 
-        // Main container
         VBox root = new VBox(titleBar, leaderboardList);
         root.setStyle("""
         -fx-background-color: #323437;
@@ -467,7 +447,6 @@ public class SinglePlayerGameController {
         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0, 0, 0);
         """);
 
-        // Make draggable
         final double[] xOffset = new double[1];
         final double[] yOffset = new double[1];
         titleBar.setOnMousePressed(event -> {
@@ -482,19 +461,16 @@ public class SinglePlayerGameController {
         root.getChildren().add(escText);
         escText.setTranslateX(140);
 
-        // Configure stage
         Scene scene = new Scene(root, 400, 500);
         leaderboardList.setFocusTraversable(false); // Avoid focus ring glitches
         leaderboardList.setMouseTransparent(false); // Ensure hover works correctly
         scene.setFill(Color.TRANSPARENT); // For rounded corners
         leaderboardStage.setScene(scene);
 
-        // Center on screen
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         leaderboardStage.setX((screenBounds.getWidth() - scene.getWidth()) / 2);
         leaderboardStage.setY((screenBounds.getHeight() - scene.getHeight()) / 2);
 
-        // Show with animation
         root.setOpacity(0);
         leaderboardStage.show();
         FadeTransition fadeIn = new FadeTransition(Duration.millis(300), root);
@@ -555,7 +531,6 @@ public class SinglePlayerGameController {
         progressBar.setProgress(0);
         typingField.setDisable(true);
 
-        // Setup displayField
         displayField.setDisable(true);
         displayField.setEditable(false);
 
@@ -976,23 +951,49 @@ public class SinglePlayerGameController {
         }
         leaderboard.add(entry);
 
-        leaderboard.sort((a, b) -> {
-            String[] partsA = a.split(" - ");
-            String[] partsB = b.split(" - ");
-            double t1 = Double.parseDouble(partsA[1].replace("s", "").replace("Timed", "").replace("Words", "").trim());
-            double t2 = Double.parseDouble(partsB[1].replace("s", "").replace("Timed", "").replace("Words", "").trim());
-            int toReturn = Double.compare(t1, t2);
-            if (toReturn == 0) {
-                double t3 = Double.parseDouble(partsA[2].replace(" WPM", "").trim());
-                double t4 = Double.parseDouble(partsB[2].replace(" WPM", "").trim());
-                int toReturn2 = Double.compare(t3, t4);
-                if (toReturn2 == 0) {
-                    return partsA[0].compareTo(partsB[0]);
+        if(currentMode.toString().startsWith("TIME")) {
+            leaderboard.sort((a, b) -> {
+                String[] partsA = a.split(" - ");
+                String[] partsB = b.split(" - ");
+                int t1 = Integer.parseInt(partsA[1].replace(" WPM", "").replace("Timed: ", "").trim());
+                int t2 = Integer.parseInt(partsB[1].replace(" WPM", "").replace("Timed: ", "").trim());
+                int toReturn = Integer.compare(t1, t2);
+                if (toReturn == 0) {
+                    double t3 = Double.parseDouble(partsA[2].replace("%", "").trim());
+                    double t4 = Double.parseDouble(partsB[2].replace("%", "").trim());
+                    int toReturn2 = Double.compare(t3, t4);
+                    if (toReturn2 == 0) {
+                        return partsA[0].compareTo(partsB[0]);
+                    }
+                    return toReturn2;
                 }
-                return toReturn2;
-            }
-            return toReturn;
-        });
+                return toReturn;
+            });
+        } else{
+            leaderboard.sort((a, b) -> {
+                String[] partsA = a.split(" - ");
+                String[] partsB = b.split(" - ");
+                double t1 = Double.parseDouble(partsA[1].replace("s", "").replace("Words: ", "").trim());
+                double t2 = Double.parseDouble(partsB[1].replace("s", "").replace("Words: ", "").trim());
+                int toReturn = Double.compare(t1, t2);
+                if (toReturn == 0) {
+                    int t3 = Integer.parseInt(partsA[1].replace(" WPM", "").trim());
+                    int t4 = Integer.parseInt(partsB[1].replace(" WPM", "").trim());
+                    int toReturn2 = Integer.compare(t3, t4);
+                    if (toReturn2 == 0) {
+                        double t5 = Double.parseDouble(partsA[2].replace("%", "").trim());
+                        double t6 = Double.parseDouble(partsB[2].replace("%", "").trim());
+                        int toReturn3 = Double.compare(t5, t6);
+                        if(toReturn3 == 0) {
+                            return partsA[0].compareTo(partsB[0]);
+                        }
+                        return toReturn3;
+                    }
+                    return toReturn2;
+                }
+                return toReturn;
+            });
+        }
         leaderboardList.setItems(leaderboard);
 
         playerNameField.setEditable(true);
