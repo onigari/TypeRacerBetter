@@ -544,7 +544,6 @@ public class SinglePlayerGameController {
                 rank.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
                 hbox.getChildren().addAll(rank, entry);
 
-                // Default style
                 setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;");
             }
 
@@ -557,7 +556,6 @@ public class SinglePlayerGameController {
                     rank.setText((getIndex() + 1) + ".");
                     entry.setText(item);
 
-                    // Highlight current player's entry
                     if (item.contains(playerNameField.getText())) {
                         setStyle("-fx-background-color: #3a3d42; -fx-text-fill: #e2b714;");
                         entry.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
@@ -567,9 +565,6 @@ public class SinglePlayerGameController {
                     }
 
                     setGraphic(hbox);
-
-                    // Tooltip with full details
-                    //setTooltip(new Tooltip(item));
                 }
             }
         });
@@ -581,15 +576,12 @@ public class SinglePlayerGameController {
         typingField.textProperty().addListener((obs, oldValue, newValue) -> {
             if (paragraphText == null || paragraphText.isEmpty() || typingDone) return;
 
-            // Handle backspace
             if (newValue.length() < oldValue.length()) {
                 handleBackspace(oldValue, newValue);
                 return;
             }
-            // Handle new characters
             handleNewCharacters(oldValue, newValue);
 
-            // Update display field
             out.println(newValue);
             if (oldPara.isEmpty()) {
                 updateDisplayField(newValue);
@@ -600,7 +592,6 @@ public class SinglePlayerGameController {
         });
 
         typingField.setOnKeyPressed(e -> {
-            // highlight key
             String typedText = e.getCode().getName();
             out.println("typed: " + typedText);
             if(typedText.equals("Alt") || typedText.equals("Ctrl") || typedText.equals("Shift")) {
@@ -618,17 +609,12 @@ public class SinglePlayerGameController {
                 pause.setOnFinished(event -> highlightKey(typedText, false));
                 pause.play();
             }
-            // tab key to restart
-//            if (e.getCode() == KeyCode.TAB) {
-//                resetGame();
-//            }
-            // enter key to
+
             if (e.getCode() == KeyCode.TAB) {
                 leaderBoardPopUp();
             }
         });
 
-        // esc to go to main menu
         rootPane.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
                 try {
@@ -640,14 +626,12 @@ public class SinglePlayerGameController {
             }
         });
 
-        // Start typing immediately when typing field gets focus
         typingField.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal && paragraphText != null && !typingDone) {
                 typingField.requestFocus();
             }
         });
 
-        // Allow pressing Enter in name field to start the game
         playerNameField.setOnKeyPressed(e -> {
             modeContainer.setStyle("-fx-opacity: 0;");
             if (e.getCode() == KeyCode.ENTER) {
@@ -664,19 +648,17 @@ public class SinglePlayerGameController {
         }
 
         try {
-            // Find current word and position based on typed characters
             int charCount = 0;
             int wordIndex = 0;
             int wordCharIndex = 0;
 
-            // Calculate which word we're currently typing
             for (int i = 0; i < paragraphWords.length; i++) {
                 if (charCount + paragraphWords[i].length() >= typedText.length()) {
                     wordIndex = i;
                     wordCharIndex = typedText.length() - charCount;
                     break;
                 }
-                charCount += paragraphWords[i].length() + 1; // +1 for space
+                charCount += paragraphWords[i].length() + 1;
                 if (charCount > typedText.length()) {
                     wordIndex = i;
                     wordCharIndex = 0;
@@ -684,12 +666,10 @@ public class SinglePlayerGameController {
                 }
             }
 
-            // Ensure wordIndex is within bounds
             wordIndex = Math.min(wordIndex, paragraphWords.length - 1);
             currentWordIndex = wordIndex;
             currentWordCharIndex = Math.max(0, Math.min(wordCharIndex, paragraphWords[wordIndex].length()));
 
-            // Build display text for current word
             String currentWord = paragraphWords[currentWordIndex];
             out.println("Current word index is " + currentWordIndex);
             out.println("Current word is " + currentWord);
@@ -697,18 +677,15 @@ public class SinglePlayerGameController {
 
             int wordStartPosition = 0;
             for (int i = 0; i < currentWordIndex; i++) {
-                wordStartPosition += paragraphWords[i].length() + 1; // +1 for space
+                wordStartPosition += paragraphWords[i].length() + 1;
             }
 
             boolean wordIsCorrectSoFar = true;
             if (typedText.length() > wordStartPosition) {
-                // Ensure we don't go out of bounds
                 int endIndex = Math.min(typedText.length(), wordStartPosition + currentWord.length());
-                // Check if we can safely extract the substring
                 if (wordStartPosition <= typedText.length() && wordStartPosition <= endIndex) {
                     String typedPortionOfWord = typedText.substring(wordStartPosition, endIndex);
 
-                    // Check if typed portion matches the expected word portion
                     for (int i = 0; i < typedPortionOfWord.length(); i++) {
                         if (i >= currentWord.length() || typedPortionOfWord.charAt(i) != currentWord.charAt(i)) {
                             wordIsCorrectSoFar = false;
@@ -716,11 +693,10 @@ public class SinglePlayerGameController {
                         }
                     }
                 } else {
-                    wordIsCorrectSoFar = false; // Handle case where indices are invalid
+                    wordIsCorrectSoFar = false;
                 }
             }
 
-            // Style the display field based on typing correctness
             String style = """
         -fx-font-family: 'Roboto Mono';
         -fx-font-size: 24px;
@@ -730,18 +706,18 @@ public class SinglePlayerGameController {
         """;
 
             if (currentWordCharIndex == 0) {
-                style += "-fx-text-fill: #646669;"; // Untyped color
+                style += "-fx-text-fill: #646669;";
             } else if (wordIsCorrectSoFar) {
-                style += "-fx-text-fill: #d1d0c5;"; // Correct color
+                style += "-fx-text-fill: #d1d0c5;";
             } else {
-                style += "-fx-text-fill: #ca4754;"; // Incorrect color
+                style += "-fx-text-fill: #ca4754;";
             }
 
             displayField.setStyle(style);
         } catch (Exception e) {
             System.err.println("Error updating display field: " + e.getMessage());
             e.printStackTrace();
-            displayField.setText(""); // Fallback to clear the field
+            displayField.setText("");
         }
     }
 
@@ -752,7 +728,7 @@ public class SinglePlayerGameController {
             if (currentIndex > 0) {
                 currentIndex--;
                 Text previous = textNodes.get(currentIndex);
-                previous.setStyle("-fx-fill: #646669;"); // MonkeyType's untyped color
+                previous.setStyle("-fx-fill: #646669;");
                 previous.setUnderline(false); // underline
                 totalTyped = Math.max(0, totalTyped - 1);
 
@@ -768,7 +744,6 @@ public class SinglePlayerGameController {
         }
         updateStats();
 
-        // Update display field after backspace
         out.println(newValue);
         if (oldPara.isEmpty()) {
             updateDisplayField(newValue);
@@ -783,12 +758,6 @@ public class SinglePlayerGameController {
     private void handleNewCharacters(String oldValue, String newValue) {
         for (int i = oldValue.length(); i < newValue.length(); i++) {
             char typedChar = newValue.charAt(i);
-//            out.println(typedChar);
-//            highlightKey(String.valueOf(typedChar), true);
-//
-//            PauseTransition pause = new PauseTransition(Duration.millis(200));
-//            pause.setOnFinished(e -> highlightKey(String.valueOf(typedChar), false));
-//            pause.play();
 
             char expectedChar = paragraphText.charAt(currentIndex);
             Text current = textNodes.get(currentIndex);
@@ -798,14 +767,13 @@ public class SinglePlayerGameController {
                 if(accuracyChecker[currentIndex] == 'B') {
                     accuracyChecker[currentIndex] = 'T';
                     correctCharCount++;
-//                    out.println(correctCharCount);
                 }
                 correctWordChecker[currentIndex] = 'T';
-                current.setStyle("-fx-fill: #d1d0c5;"); // MonkeyType's correct color
+                current.setStyle("-fx-fill: #d1d0c5;");
             } else {
                 accuracyChecker[currentIndex] = 'F';
                 correctWordChecker[currentIndex] = 'F';
-                current.setStyle("-fx-fill: #ca4754;"); // MonkeyType's incorrect color
+                current.setStyle("-fx-fill: #ca4754;");
             }
 
             currentIndex++;
@@ -823,9 +791,8 @@ public class SinglePlayerGameController {
                     currentIndex = 0;
                     currentWordIndex = 0;
                     currentWordCharIndex = 0;
-//                    typingField.clear(); // causes error
                     displayField.clear();
-//                    updateDisplayField();
+
                     accuracyChecker = new char[paragraphText.length() + 1000];
                     correctWordChecker = new char[paragraphText.length() + 1000];
                     Arrays.fill(accuracyChecker, 'B');
@@ -868,18 +835,16 @@ public class SinglePlayerGameController {
         textNodes.clear();
         paragraphText = text;
 
-        // Split paragraph into words for the display field
         paragraphWords = text.split(" ");
 
         for (char c : text.toCharArray()) {
             Text t = new Text(String.valueOf(c));
-            t.setStyle("-fx-fill: #646669;"); // MonkeyType's untyped color
+            t.setStyle("-fx-fill: #646669;");
             textNodes.add(t);
         }
 
         paragraphFlow.getChildren().addAll(textNodes);
 
-        // Initialize display field with first word
         if (paragraphWords.length > 0) {
             displayField.setText(paragraphWords[0]);
         }
@@ -889,7 +854,6 @@ public class SinglePlayerGameController {
         startTime = System.currentTimeMillis();
         if (timer != null) timer.stop();
         if (currentMode.toString().startsWith("TIME")) {
-            // Timed mode countdown
             TIMED_MODE_DURATION = switch (currentMode) {
                 case TIME_15 -> 15;
                 case TIME_30 -> 30;
@@ -911,7 +875,6 @@ public class SinglePlayerGameController {
             timer.setCycleCount(Timeline.INDEFINITE);
             timer.play();
         } else {
-            // Words mode - track time taken
             timeLabel.setText("0s");
             timer = new Timeline(new KeyFrame(Duration.millis(100), e -> {
                 updateStats();
@@ -935,7 +898,7 @@ public class SinglePlayerGameController {
         typingField.setDisable(true);
         displayField.clear();
         updateStats();
-        modeContainer.setVisible(true); // Show mode selection when finished
+        modeContainer.setVisible(true);
 
         long finishTime = System.currentTimeMillis() - startTime;
         double timeInSeconds = finishTime / 1000.0;
@@ -1013,7 +976,6 @@ public class SinglePlayerGameController {
             return;
         }
 
-        // Setup UI based on mode
         if (currentMode.toString().startsWith("TIME")) {
             int duration = switch (currentMode) {
                 case TIME_15 -> 15;
@@ -1040,7 +1002,7 @@ public class SinglePlayerGameController {
         playerNameField.setVisible(false);
         nameTitle.setVisible(false);
         modeContainer.setVisible(false);
-        modeContainer.setStyle("-fx-opacity: 0;");// Hide mode selection when typing starts
+        modeContainer.setStyle("-fx-opacity: 0;");
 
         prepareParagraph();
         if (paragraphText == null || paragraphText.isEmpty()) {
@@ -1068,7 +1030,7 @@ public class SinglePlayerGameController {
         Arrays.fill(accuracyChecker, 'B');
         Arrays.fill(correctWordChecker, 'B');
         displayParagraph(paragraphText);
-        modeContainer.setVisible(true); // Show mode selection when game is reset
+        modeContainer.setVisible(true);
 
         startTimer();
         typingField.requestFocus();

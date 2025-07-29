@@ -107,12 +107,9 @@ public class MultiPlayerChoiceController {
         }
 
         try {
-            // Start server in a new thread
-            //new Thread(() -> network.Server.main(new String[]{})).start();
-            // Give the server a moment to start
+//            new Thread(() -> network.Server.main(new String[]{})).start();
 //            Thread fineThread = new Thread();
 //            fineThread.sleep(1000);
-            // Connect to localhost as host
             client = new Client("localhost", 5000);
             setupNetworkHandlers();
             client.sendMessage("IS_AVAILABLE");
@@ -165,7 +162,7 @@ public class MultiPlayerChoiceController {
 
     private static boolean isValidIPAddress(String ip) {
         try {
-            InetAddress address = InetAddress.getByName(ip); // No need to really assign stuff. If it cannot return valid value, it'll throw error by itself
+            InetAddress address = InetAddress.getByName(ip);
             out.println(address.toString());
             return true;
         } catch (Exception e) {

@@ -43,7 +43,6 @@ public class MultiPlayerGameController {
     public GridPane keyboardRow4;
 
     @FXML public Label warningText;
-    @FXML private Label titleLabel;
     @FXML private Label bigTimerLabel;
     @FXML private VBox rootPane;
     @FXML private TextFlow paragraphFlow;
@@ -91,19 +90,15 @@ public class MultiPlayerGameController {
     private boolean isLeaderBoardOn;
 
     private void initializeKeyboard() {
-        // Row 1: Tab Q W E R T Y U I O P { }
         String[] row1Keys = {"Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "{", "}", "Backspace"};
         addKeysToRow(keyboardRow1, row1Keys);
 
-        // Row 2: Caps Lock A S D F G H J K L ; " Enter
         String[] row2Keys = {"Caps Lock", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "Enter"};
         addKeysToRow(keyboardRow2, row2Keys);
 
-        // Row 3: Shift Z X C V B N M < > ? Shift
         String[] row3Keys = {"LShift", "Z", "X", "C", "V", "B", "N", "M", ",", ".", "?", "RShift"};
         addKeysToRow(keyboardRow3, row3Keys);
 
-        // Row 4: Ctrl Alt (space) Alt Ctrl
         String[] row4Keys = {"LCtrl", "LAlt", " ", "RAlt", "RCtrl"};
         addKeysToRow(keyboardRow4, row4Keys);
     }
@@ -113,8 +108,6 @@ public class MultiPlayerGameController {
         for (int i = 0; i < keys.length; i++) {
             String key = keys[i];
 
-
-            // Create key rectangle
             Rectangle rect = new Rectangle(40, 40);
             if (key.equals(" ")) {
                 rect.setWidth(200); // Make spacebar wider
@@ -128,18 +121,14 @@ public class MultiPlayerGameController {
             rect.setArcHeight(5);
             rect.setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-stroke-width: 1;");
 
-            // Create key text
             Text text = new Text(key);
             text.setStyle("-fx-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;");
 
-            // Create container and add both
             StackPane container = new StackPane();
             container.getChildren().addAll(rect, text);
 
-            // Add to grid
             row.add(container, i, 0);
 
-            // Store references for highlighting
             if (key.equals(" ")) {
                 key = "Space";
             } else if (key.equals(",")) {
@@ -158,7 +147,6 @@ public class MultiPlayerGameController {
         }
     }
 
-    // Add this method to highlight a key
     private void highlightKey(String c, boolean highlight) {
         Platform.runLater(() -> {
             Text text = keyTexts.get(c);
@@ -176,13 +164,11 @@ public class MultiPlayerGameController {
         });
     }
     private void leaderBoardPopUp() {
-        // Create the stage
         Stage leaderboardStage = new Stage();
         leaderboardStage.initModality(Modality.APPLICATION_MODAL);
         leaderboardStage.initOwner(rootPane.getScene().getWindow());
         leaderboardStage.initStyle(StageStyle.TRANSPARENT); // Borderless
 
-        // Create ListView with custom cells
         ListView<String> leaderboardList = new ListView<>();
         leaderboardList.setItems(leaderboard);
         leaderboardList.setStyle("""
@@ -192,15 +178,14 @@ public class MultiPlayerGameController {
             -fx-border-width: 0;
         """);
 
-        // Apply your custom cell factory
-        leaderboardList.setCellFactory(lv -> new ListCell<String>() {
+        leaderboardList.setCellFactory(lv -> new ListCell<>() {
             private final HBox hbox = new HBox(10);
             private final Text rank = new Text();
             private final Text entry = new Text();
 
             {
                 hbox.setAlignment(Pos.CENTER_LEFT);
-                hbox.setPadding(new Insets(5)); // Consistent spacing
+                hbox.setPadding(new Insets(5));
                 rank.setStyle("""
             -fx-fill: #e2b714;
             -fx-font-weight: bold;
@@ -211,7 +196,7 @@ public class MultiPlayerGameController {
             -fx-font-family: 'Roboto Mono';
         """);
                 hbox.getChildren().addAll(rank, entry);
-                setPrefHeight(36); // Consistent height for all cells
+                setPrefHeight(36);
             }
 
             @Override
@@ -223,7 +208,6 @@ public class MultiPlayerGameController {
                     rank.setText((getIndex() + 1) + ".");
                     entry.setText(item);
 
-                    // Highlight current player
                     if (item.contains(playerName)) {
                         hbox.setStyle("-fx-background-color: #3a3d42;");
                         rank.setStyle("""
@@ -261,7 +245,6 @@ public class MultiPlayerGameController {
         Label header = new Label("LEADERBOARD");
         header.setStyle("-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-weight: bold;");
 
-        // Close button
         Button closeBtn = new Button("✕");
         closeBtn.setStyle("""
         -fx-background-color: transparent;
@@ -278,14 +261,12 @@ public class MultiPlayerGameController {
                     "-fx-text-fill: #d1d0c5;");
         });
 
-        // Title bar
         HBox titleBar = new HBox(header, new Region(), closeBtn);
         titleBar.setAlignment(Pos.CENTER_RIGHT);
         titleBar.setPadding(new Insets(10, 10, 10, 20));
         titleBar.setStyle("-fx-background-color: #2c2e31;");
         HBox.setHgrow(titleBar.getChildren().get(1), Priority.ALWAYS);
 
-        // Main container
         VBox root = new VBox(titleBar, leaderboardList);
         root.setStyle("""
         -fx-background-color: #323437;
@@ -311,19 +292,16 @@ public class MultiPlayerGameController {
         root.getChildren().add(escText);
         escText.setTranslateX(140);
 
-        // Configure stage
         Scene scene = new Scene(root, 400, 500);
-        leaderboardList.setFocusTraversable(false); // Avoid focus ring glitches
-        leaderboardList.setMouseTransparent(false); // Ensure hover works correctly
+        leaderboardList.setFocusTraversable(false);
+        leaderboardList.setMouseTransparent(false);
         scene.setFill(Color.TRANSPARENT); // For rounded corners
         leaderboardStage.setScene(scene);
 
-        // Center on screen
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         leaderboardStage.setX((screenBounds.getWidth() - scene.getWidth()) / 2);
         leaderboardStage.setY((screenBounds.getHeight() - scene.getHeight()) / 2);
 
-        // Show with animation
         root.setOpacity(0);
         leaderboardStage.show();
         FadeTransition fadeIn = new FadeTransition(Duration.millis(300), root);
@@ -368,7 +346,6 @@ public class MultiPlayerGameController {
                 bigTimerLabel.setText("Starting in " + timeLeft[0]);
                 timeLeft[0]--;
             } else {
-                // Countdown done - run your game logic here
                 bigTimerLabel.setText("GO!");
                 startTimer();
                 countDownTimer();
@@ -380,7 +357,6 @@ public class MultiPlayerGameController {
         countdown.setCycleCount(waitTime + 1); // Run 4 times: show 3, show 2, show 1, then start game
         countdown.play();
 
-        // Show initial countdown
         bigTimerLabel.setText("Starting in 3");
     }
 
@@ -519,10 +495,6 @@ public class MultiPlayerGameController {
                     throw new RuntimeException(e);
                 }
             }
-//            else if (message.startsWith("CLOSE:")){
-//                String removePlayer = message.substring(6);
-//                if(!removePlayer.equals(playerName)) removePlayerProgress(removePlayer);
-//            }
         });
     }
 
@@ -559,7 +531,6 @@ public class MultiPlayerGameController {
                 rank.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
                 hbox.getChildren().addAll(rank, entry);
 
-                // Default style
                 setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;");
             }
 
@@ -572,9 +543,8 @@ public class MultiPlayerGameController {
                     rank.setText((getIndex() + 1) + ".");
                     entry.setText(item);
 
-                    // Highlight current player's entry
                     if (item.contains(playerNameLabel.getText())) {
-                        setStyle("-fx-background-color: #3a3d42; -fx-text-fill: #e2b714;");
+                        setStyle("-fx-background-color: #3a3d42; -fx-text-fill: #e2b714;"); // Highlight current client's entry
                         entry.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
                     } else {
                         setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#2c2e31" : "#323437") + ";");
@@ -582,9 +552,6 @@ public class MultiPlayerGameController {
                     }
 
                     setGraphic(hbox);
-
-                    // Tooltip with full details
-                    //setTooltip(new Tooltip(item));
                 }
             }
         });
@@ -606,11 +573,9 @@ public class MultiPlayerGameController {
     }
 
     private void setupEventHandlers() {
-        // Typing field listener for character-by-character comparison
         typingField.textProperty().addListener((obs, oldValue, newValue) -> {
             if (paragraphText == null || paragraphText.isEmpty() || typingDone) return;
 
-            // Handle backspace
             if (newValue.length() < oldValue.length()) {
                 handleBackspace(oldValue, newValue);
                 return;
@@ -626,7 +591,6 @@ public class MultiPlayerGameController {
         });
 
         typingField.setOnKeyPressed(e -> {
-            // highlight key
             String typedText = e.getCode().getName();
             out.println("typed: " + typedText);
             if(typedText.equals("Alt") || typedText.equals("Ctrl") || typedText.equals("Shift")) {
@@ -650,7 +614,6 @@ public class MultiPlayerGameController {
             }
         });
 
-        // Start typing immediately when typing field gets focus
         typingField.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal && paragraphText != null && !typingDone) {
                 typingField.requestFocus();
@@ -670,22 +633,7 @@ public class MultiPlayerGameController {
         timer = new Timeline(new KeyFrame(Duration.millis(100), e -> updateStats()));
         timer.setCycleCount(Timeline.INDEFINITE);
         timer.play();
-//        new Thread(() -> {
-//            while (true){
-//                boolean check = checkTimer();
-//                if(check) break;
-//            }
-//        }).start();
     }
-
-//    private boolean checkTimer() {
-//        long elapsed = System.currentTimeMillis() - startTime;
-//        if(elapsed > 10000) {
-//            typingFinished();
-//            return true;
-//        }
-//        return false;
-//    }
 
     @FXML
     private void handleNewCharacters(String oldValue, String newValue) {
@@ -702,12 +650,12 @@ public class MultiPlayerGameController {
                     correctCharCount++;
                 }
                 correctWordChecker[currentIndex] = 'T';
-                current.setStyle("-fx-fill: #d1d0c5;"); // MonkeyType's correct color
+                current.setStyle("-fx-fill: #d1d0c5;");
             } else {
                 accuracyChecker[currentIndex] = 'F';
                 correctWordChecker[currentIndex] = 'F';
 
-                current.setStyle("-fx-fill: #ca4754;"); // MonkeyType's incorrect color
+                current.setStyle("-fx-fill: #ca4754;");
                 currentWordCorrect = false;
             }
 
@@ -732,7 +680,7 @@ public class MultiPlayerGameController {
             if (currentIndex > 0) {
                 currentIndex--;
                 Text previous = textNodes.get(currentIndex);
-                previous.setStyle("-fx-fill: #646669;"); // MonkeyType's untyped color
+                previous.setStyle("-fx-fill: #646669;");
                 previous.setUnderline(false); // underline
                 totalTyped = Math.max(0, totalTyped - 1);
 
@@ -758,12 +706,10 @@ public class MultiPlayerGameController {
             return;
         }
 
-        // Find current word and position based on typed characters
         int charCount = 0;
         int wordIndex = 0;
         int wordCharIndex = 0;
 
-        // Calculate which word we're currently typing
         for (int i = 0; i < paragraphWords.length; i++) {
             if (charCount + paragraphWords[i].length() >= typedText.length()) {
                 wordIndex = i;
@@ -781,11 +727,9 @@ public class MultiPlayerGameController {
         currentWordIndex = wordIndex;
         currentWordCharIndex = Math.max(0, Math.min(wordCharIndex, paragraphWords[wordIndex].length()));
 
-        // Build display text for current word
         String currentWord = paragraphWords[currentWordIndex];
         StringBuilder displayText = new StringBuilder();
 
-        // Add typed characters with appropriate styling
         for (int i = 0; i < currentWord.length(); i++) {
             displayText.append(currentWord.charAt(i));
         }
@@ -802,7 +746,6 @@ public class MultiPlayerGameController {
             String typedPortionOfWord = typedText.substring(wordStartPosition,
                     Math.min(typedText.length(), wordStartPosition + currentWord.length()));
 
-            // Check if typed portion matches the expected word portion
             for (int i = 0; i < typedPortionOfWord.length(); i++) {
                 if (i >= currentWord.length() || typedPortionOfWord.charAt(i) != currentWord.charAt(i)) {
                     wordIsCorrectSoFar = false;
@@ -811,9 +754,7 @@ public class MultiPlayerGameController {
             }
         }
 
-        // Style the display field based on typing correctness
         if (currentWordCharIndex == 0) {
-            // No characters typed yet - default style
             displayField.setStyle("""
             -fx-font-family: 'Roboto Mono';
             -fx-font-size: 24px;
@@ -823,7 +764,6 @@ public class MultiPlayerGameController {
             -fx-alignment: CENTER_LEFT;
             -fx-border-width: 0 0 1 0;""");
         } else if (wordIsCorrectSoFar) {
-            // Correct so far - green text
             displayField.setStyle("""
             -fx-font-family: 'Roboto Mono';
             -fx-font-size: 24px;
@@ -833,7 +773,6 @@ public class MultiPlayerGameController {
             -fx-alignment: CENTER_LEFT;
             -fx-border-width: 0 0 1 0;""");
         } else {
-            // Incorrect - red text
             displayField.setStyle("""
             -fx-font-family: 'Roboto Mono';
             -fx-font-size: 24px;
@@ -855,11 +794,6 @@ public class MultiPlayerGameController {
             accuracyLabel.setText(String.format("%.0f%%", calculateAccuracy()));
             double progress = (double) currentIndex / paragraphText.length();
             client.sendProgress(progress);// Send progress update to server
-
-//            double time = (System.currentTimeMillis() - startTime) / 1000.0;
-//            double wpm = calculateWPM();
-//            double accuracy = calculateAccuracy();
-//            client.sendResult(String.format("%s;%.2f;%d;%.2f", playerName, time, (int) wpm, accuracy));
         });
     }
 
@@ -882,15 +816,14 @@ public class MultiPlayerGameController {
         rootPane.requestFocus();
         if (timer != null) timer.stop();
         typingField.setDisable(true);
-        displayField.clear(); // Clear display field when finished
+        displayField.clear();
         updateStats();
         double time = (System.currentTimeMillis() - startTime) / 1000.0;
         double wpm = calculateWPM();
         double accuracy = calculateAccuracy();
         client.sendResult(String.format("%s;%.0f;%d;%.2f", playerName, time, (int) wpm, accuracy));
         rootPane.requestFocus();
-//        warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono'; -fx-text-fill: #66993C;");
-//        warningText.setText("TYPING FINISHED");
+
         accuracyChecker = new char[paragraphText.length() + 1000];
         correctWordChecker = new char[paragraphText.length() + 1000];
         Arrays.fill(accuracyChecker, 'B');
@@ -902,7 +835,6 @@ public class MultiPlayerGameController {
         leaderboard.setAll(entries);
     }
 
-    // variable progress bar
     private void addPlayerProgress(String playerName) {
         if (!playerProgressBars.containsKey(playerName)) {
             ProgressBar pb = new ProgressBar(0);
@@ -920,7 +852,6 @@ public class MultiPlayerGameController {
     }
 
     private String getColorForPlayer(String playerName) {
-        // Simple hash-based color assignment
         int hash = playerName.hashCode();
         String[] colors = {"#e2b714", "#d1d0c5", "#ca4754", "#7e57c2", "#26a69a"};
         return colors[Math.abs(hash) % colors.length];

@@ -6,17 +6,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 
 public class MainMenuController {
-    @FXML private Button singlePlayerButton;
-    @FXML private Button multiPlayerButton;
-    @FXML private Button exitButton;
-
     @FXML
     private void onSinglePlayerClick(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/SinglePlayerGame.fxml"));
@@ -48,7 +43,6 @@ public class MainMenuController {
 
     @FXML
     private void onExitClick(ActionEvent event) {
-
         System.exit(0);
     }
 }

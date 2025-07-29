@@ -22,7 +22,7 @@ public class MultiPlayerLobbyController {
     @FXML private ListView<String> playerListView;
     @FXML private Label statusLabel;
     @FXML private Button startButton;
-    @FXML private Label hostIndicator; // Now properly linked to FXML
+    @FXML private Label hostIndicator;
     @FXML private Label escText;
     @FXML private Button fortySecondButton;
     @FXML private Button sixtySecondButton;
@@ -57,7 +57,6 @@ public class MultiPlayerLobbyController {
         playerListView.setItems(players);
         startButton.setDisable(!isHost);
 
-        // Safe null check
         if (hostIndicator != null) {
             hostIndicator.setText(isHost ? "(Host)" : "(Player)");
         }
@@ -143,7 +142,6 @@ public class MultiPlayerLobbyController {
         Parent root = loader.load();
 
         Platform.runLater(() -> {
-            //Stage stage = (Stage) statusLabel.getScene().getWindow();
             Scene scene = new Scene(root, 1420, 800);
 
             stage.setTitle("TypeRacer");
