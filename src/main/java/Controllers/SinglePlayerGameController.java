@@ -83,8 +83,8 @@ public class SinglePlayerGameController {
     private GameMode currentMode = GameMode.TIME_60; // Default mode
     private HBox modeContainer; // Moved to class level for visibility control
     private Label modeInstructionLabel;
-    private final int TIMED_MODE_DURATION = 60; // 60 seconds for timed mode
-    private final int FIXED_PARAGRAPH_LENGTH = 100; // 100 chars for fixed mode
+    private int TIMED_MODE_DURATION;
+    private int FIXED_PARAGRAPH_LENGTH;
     private String oldPara = "";
 
     // Add mode selection UI (call this from initialize())
@@ -863,15 +863,16 @@ public class SinglePlayerGameController {
 
     private void updateStats() {
         Platform.runLater(() -> {
-            long elapsed = System.currentTimeMillis() - startTime;
-            double seconds = elapsed / 1000.0;
+            long elapsed = (System.currentTimeMillis() - startTime) / 1000;
             if (currentMode.equals(GameMode.WORDS_10) || currentMode.equals(GameMode.WORDS_25) ||
                     currentMode.equals(GameMode.WORDS_50) || currentMode.equals(GameMode.WORDS_100)) {
-                timeLabel.setText(String.format("%ds", (int) seconds));
+                timeLabel.setText(String.format("%ds", (int) elapsed));
             }
             wpmLabel.setText(String.format("%.0f", calculateWPM()));
             accuracyLabel.setText(String.format("%.0f%%", calculateAccuracy()));
-            progressBar.setProgress((double) currentIndex / paragraphText.length());
+            if (currentMode.toString().startsWith("TIME")) {
+                progressBar.setProgress((double) elapsed / TIMED_MODE_DURATION);
+            } else progressBar.setProgress((double) currentIndex / paragraphText.length());
         });
     }
 
@@ -912,14 +913,16 @@ public class SinglePlayerGameController {
         if (timer != null) timer.stop();
         if (currentMode.toString().startsWith("TIME")) {
             // Timed mode countdown
-            int duration = switch (currentMode) {
+            TIMED_MODE_DURATION = switch (currentMode) {
                 case TIME_15 -> 15;
                 case TIME_30 -> 30;
                 case TIME_60 -> 60;
                 default -> 60;
             };
+            int duration = TIMED_MODE_DURATION;
             timeLabel.setText(duration + "s");
             timer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+                updateStats();
                 long elapsed = (System.currentTimeMillis() - startTime) / 1000;
                 long remaining = duration - elapsed;
                 timeTitle.setText("time left:");
