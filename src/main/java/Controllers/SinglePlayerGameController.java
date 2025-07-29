@@ -9,6 +9,9 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.application.Platform;
 import javafx.animation.*;
@@ -83,6 +86,8 @@ public class SinglePlayerGameController {
     private int TIMED_MODE_DURATION;
     private int FIXED_PARAGRAPH_LENGTH;
     private String oldPara = "";
+    private final List<Double> wpmDataPoints = new ArrayList<>();
+    private long lastWpmUpdateTime = 0;
 
     private void setupModeSelection() {
         modeInstructionLabel = new Label();
@@ -338,82 +343,47 @@ public class SinglePlayerGameController {
         leaderboardStage.initOwner(rootPane.getScene().getWindow());
         leaderboardStage.initStyle(StageStyle.TRANSPARENT);
 
-        ListView<String> leaderboardList = new ListView<>();
-        leaderboardList.setItems(leaderboard);
-        leaderboardList.setStyle("""
-            -fx-control-inner-background: #2c2e31;
-            -fx-padding: 0;
-            -fx-background-insets: 0;
-            -fx-border-width: 0;
-        """);
+        // Create LineChart for WPM vs Time
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Time (seconds)");
+        xAxis.setStyle("-fx-font-family: 'Roboto Mono'; -fx-text-fill: #d1d0c5; -fx-tick-label-fill: #d1d0c5;");
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("WPM");
+        yAxis.setStyle("-fx-font-family: 'Roboto Mono'; -fx-text-fill: #d1d0c5; -fx-tick-label-fill: #d1d0c5;");
 
-        leaderboardList.setCellFactory(lv -> new ListCell<String>() {
-            private final HBox hbox = new HBox(10);
-            private final Text rank = new Text();
-            private final Text entry = new Text();
+        LineChart<Number, Number> wpmChart = new LineChart<>(xAxis, yAxis);
+        wpmChart.setTitle("WPM vs Time");
+        wpmChart.setStyle("-fx-background-color: #2c2e31; -fx-title-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 16px; -fx-background-radius: 5;");
+        wpmChart.lookupAll(".chart-plot-background").forEach(node ->
+                node.setStyle("-fx-background-color: #323437;"));
 
-            {
-                hbox.setAlignment(Pos.CENTER_LEFT);
-                hbox.setPadding(new Insets(5)); // Consistent spacing
-                rank.setStyle("""
-            -fx-fill: #e2b714;
-            -fx-font-weight: bold;
-            -fx-font-family: 'Roboto Mono';
-        """);
-                entry.setStyle("""
-            -fx-fill: #d1d0c5;
-            -fx-font-family: 'Roboto Mono';
-        """);
-                hbox.getChildren().addAll(rank, entry);
-                setPrefHeight(36);
-            }
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        series.setName("WPM Over Time");
+        for (int i = 0; i < wpmDataPoints.size(); i++) {
+            series.getData().add(new XYChart.Data<>(i, wpmDataPoints.get(i)));
+        }
+        wpmChart.getData().add(series);
 
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                } else {
-                    rank.setText((getIndex() + 1) + ".");
-                    entry.setText(item);
+        // Style the chart
+        wpmChart.setCreateSymbols(true); // Show data points
+        wpmChart.setLegendVisible(false); // Hide legend
+        wpmChart.lookup(".chart-series-line").setStyle("-fx-stroke: #e2b714;");
+        wpmChart.lookupAll(".chart-line-symbol").forEach(node ->
+                node.setStyle("-fx-background-color: #e2b714, #323437;"));
 
-                    if (item.contains(playerName)) {
-                        hbox.setStyle("-fx-background-color: #3a3d42;");
-                        rank.setStyle("""
-                    -fx-fill: #e2b714;
-                    -fx-font-weight: bold;
-                    -fx-font-family: 'Roboto Mono';
-                """);
-                        entry.setStyle("""
-                    -fx-fill: #e2b714;
-                    -fx-font-weight: bold;
-                    -fx-font-family: 'Roboto Mono';
-                """);
-                    } else {
-                        hbox.setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#2c2e31;" : "#323437;"));
-                        rank.setStyle("""
-                    -fx-fill: #d1d0c5;
-                    -fx-font-weight: bold;
-                    -fx-font-family: 'Roboto Mono';
-                """);
-                        entry.setStyle("""
-                    -fx-fill: #d1d0c5;
-                    -fx-font-family: 'Roboto Mono';
-                """);
-                    }
+        // WPM and Accuracy labels
+        Label wpmLabelDisplay = new Label(String.format("WPM: %.0f", calculateWPM()));
+        wpmLabelDisplay.setStyle("-fx-font-family: 'Roboto Mono'; -fx-font-size: 28px; -fx-text-fill: #e2b714; -fx-font-weight: bold;");
+        Label accuracyLabelDisplay = new Label(String.format("Accuracy: %.0f%%", calculateAccuracy()));
+        accuracyLabelDisplay.setStyle("-fx-font-family: 'Roboto Mono'; -fx-font-size: 28px; -fx-text-fill: #e2b714; -fx-font-weight: bold;");
 
-                    setStyle("-fx-background-insets: 0; -fx-padding: 0;");
-                    setGraphic(hbox);
-                }
-            }
-        });
+        HBox statsBox = new HBox(20, wpmLabelDisplay, accuracyLabelDisplay);
+        statsBox.setAlignment(Pos.CENTER);
+        statsBox.setPadding(new Insets(10));
 
-        Label escText = new Label();
-        escText.setText("Press esc to close");
-        escText.setStyle("-fx-font-size: 14px; -fx-text-fill: #d1d0c5;");
-
-        Label header = new Label("LEADERBOARD");
-        header.setStyle("-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-weight: bold;");
+        // Header
+        Label header = new Label("WPM PERFORMANCE");
+        header.setStyle("-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-weight: bold; -fx-font-family: 'Roboto Mono';");
 
         Button closeBtn = new Button("✕");
         closeBtn.setStyle("""
@@ -423,21 +393,25 @@ public class SinglePlayerGameController {
         -fx-font-weight: bold;
         -fx-padding: 0 8 0 8;
         -fx-cursor: hand;
+        -fx-font-family: 'Roboto Mono';
         """);
         closeBtn.setOnAction(e -> leaderboardStage.close());
         closeBtn.hoverProperty().addListener((obs, oldVal, isHovering) -> {
             closeBtn.setStyle(isHovering ?
-                    "-fx-text-fill: #ca4754;" :
-                    "-fx-text-fill: #d1d0c5;");
+                    "-fx-background-color: transparent; -fx-text-fill: #ca4754; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';" :
+                    "-fx-background-color: transparent; -fx-text-fill: #d1d0c5; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';");
         });
 
         HBox titleBar = new HBox(header, new Region(), closeBtn);
         titleBar.setAlignment(Pos.CENTER_RIGHT);
         titleBar.setPadding(new Insets(10, 10, 10, 20));
         titleBar.setStyle("-fx-background-color: #2c2e31;");
-        HBox.setHgrow(titleBar.getChildren().get(1), Priority.ALWAYS);
 
-        VBox root = new VBox(titleBar, leaderboardList);
+        // Esc instruction
+        Label escText = new Label("Press esc to close");
+        escText.setStyle("-fx-font-size: 14px; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+
+        VBox root = new VBox(titleBar, statsBox, wpmChart, escText);
         root.setStyle("""
         -fx-background-color: #323437;
         -fx-border-color: #e2b714;
@@ -446,6 +420,8 @@ public class SinglePlayerGameController {
         -fx-background-radius: 5;
         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0, 0, 0);
         """);
+        escText.setTranslateX(140);
+        VBox.setVgrow(wpmChart, Priority.ALWAYS);
 
         final double[] xOffset = new double[1];
         final double[] yOffset = new double[1];
@@ -458,12 +434,10 @@ public class SinglePlayerGameController {
             leaderboardStage.setY(event.getScreenY() - yOffset[0]);
         });
 
-        root.getChildren().add(escText);
-        escText.setTranslateX(140);
-
+        // Configure stage
         Scene scene = new Scene(root, 400, 500);
-        leaderboardList.setFocusTraversable(false); // Avoid focus ring glitches
-        leaderboardList.setMouseTransparent(false); // Ensure hover works correctly
+        wpmChart.setFocusTraversable(false); // Avoid focus ring glitches
+        wpmChart.setMouseTransparent(false); // Ensure hover works correctly
         scene.setFill(Color.TRANSPARENT); // For rounded corners
         leaderboardStage.setScene(scene);
 
@@ -594,7 +568,7 @@ public class SinglePlayerGameController {
         typingField.setOnKeyPressed(e -> {
             String typedText = e.getCode().getName();
             out.println("typed: " + typedText);
-            if(typedText.equals("Alt") || typedText.equals("Ctrl") || typedText.equals("Shift")) {
+            if (typedText.equals("Alt") || typedText.equals("Ctrl") || typedText.equals("Shift")) {
                 highlightKey("L" + typedText, true);
                 PauseTransition pause = new PauseTransition(Duration.millis(200));
                 pause.setOnFinished(event -> highlightKey("L" + typedText, false));
@@ -610,7 +584,7 @@ public class SinglePlayerGameController {
                 pause.play();
             }
 
-            if (e.getCode() == KeyCode.TAB) {
+            if (e.getCode() == KeyCode.CONTROL) {
                 leaderBoardPopUp();
             }
         });
@@ -812,11 +786,20 @@ public class SinglePlayerGameController {
                     currentMode.equals(GameMode.WORDS_50) || currentMode.equals(GameMode.WORDS_100)) {
                 timeLabel.setText(String.format("%ds", (int) elapsed));
             }
-            wpmLabel.setText(String.format("%.0f", calculateWPM()));
+            double wpm = calculateWPM();
+            wpmLabel.setText(String.format("%.0f", wpm));
             accuracyLabel.setText(String.format("%.0f%%", calculateAccuracy()));
             if (currentMode.toString().startsWith("TIME")) {
                 progressBar.setProgress((double) elapsed / TIMED_MODE_DURATION);
-            } else progressBar.setProgress((double) currentIndex / paragraphText.length());
+            } else {
+                progressBar.setProgress((double) currentIndex / paragraphText.length());
+            }
+
+            // Collect WPM data every second
+            if (System.currentTimeMillis() - lastWpmUpdateTime >= 1000) {
+                wpmDataPoints.add(wpm);
+                lastWpmUpdateTime = System.currentTimeMillis();
+            }
         });
     }
 
@@ -875,6 +858,7 @@ public class SinglePlayerGameController {
             timer.setCycleCount(Timeline.INDEFINITE);
             timer.play();
         } else {
+            timeTitle.setText("time :");
             timeLabel.setText("0s");
             timer = new Timeline(new KeyFrame(Duration.millis(100), e -> {
                 updateStats();
@@ -886,9 +870,10 @@ public class SinglePlayerGameController {
 
     private void typingFinished() {
         if (typingDone) return;
+        updateStats();
+        leaderBoardPopUp();
         typingDone = true;
         if (timer != null) timer.stop();
-        leaderBoardPopUp();
         playerNameField.setVisible(true);
         playerNameField.setEditable(true);
         nameTitle.setVisible(true);
@@ -897,7 +882,6 @@ public class SinglePlayerGameController {
         startButton.setText("restart");
         typingField.setDisable(true);
         displayField.clear();
-        updateStats();
         modeContainer.setVisible(true);
 
         long finishTime = System.currentTimeMillis() - startTime;
@@ -965,6 +949,7 @@ public class SinglePlayerGameController {
 
     @FXML
     private void onStartButtonClick() {
+        typingField.setFocusTraversable(false);
         if (inputStrings.isEmpty()) {
             showAlert("No paragraphs available to type!");
             return;
@@ -1021,6 +1006,8 @@ public class SinglePlayerGameController {
         oldPara = "";
         currentWordIndex = 0;
         currentWordCharIndex = 0;
+        wpmDataPoints.clear();
+        lastWpmUpdateTime = 0;
         progressBar.setProgress(0);
         typingField.clear();
         typingField.setDisable(false);
