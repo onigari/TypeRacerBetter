@@ -69,6 +69,7 @@ public class SinglePlayerGameController {
     private int totalTyped;
     private char[] accuracyChecker;
     private char[] correctWordChecker;
+    private boolean isTimerRunning = false;
 
     private String[] paragraphWords;
     private int currentWordIndex = 0;
@@ -796,10 +797,10 @@ public class SinglePlayerGameController {
             }
 
             // Collect WPM data every second
-            if (System.currentTimeMillis() - lastWpmUpdateTime >= 1000) {
-                wpmDataPoints.add(wpm);
-                lastWpmUpdateTime = System.currentTimeMillis();
-            }
+//            if (System.currentTimeMillis() - lastWpmUpdateTime >= 1000) {
+//                wpmDataPoints.add(wpm);
+//                lastWpmUpdateTime = System.currentTimeMillis();
+//            }
         });
     }
 
@@ -857,6 +858,7 @@ public class SinglePlayerGameController {
             }));
             timer.setCycleCount(Timeline.INDEFINITE);
             timer.play();
+            isTimerRunning = true;
         } else {
             timeTitle.setText("time :");
             timeLabel.setText("0s");
@@ -865,7 +867,16 @@ public class SinglePlayerGameController {
             }));
             timer.setCycleCount(Timeline.INDEFINITE);
             timer.play();
+            isTimerRunning = true;
         }
+        new Thread(() -> {
+            while (isTimerRunning) {
+                if (System.currentTimeMillis() - lastWpmUpdateTime >= 1000) {
+                    wpmDataPoints.add(calculateWPM());
+                    lastWpmUpdateTime = System.currentTimeMillis();
+                }
+            }
+        }).start();
     }
 
     private void typingFinished() {
@@ -874,6 +885,7 @@ public class SinglePlayerGameController {
         leaderBoardPopUp();
         typingDone = true;
         if (timer != null) timer.stop();
+        isTimerRunning = false;
         playerNameField.setVisible(true);
         playerNameField.setEditable(true);
         nameTitle.setVisible(true);
