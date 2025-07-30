@@ -30,16 +30,16 @@
          <Label fx:id="accuracyTitle" style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="accuracy:" />
          <Label fx:id="accuracyLabel" style="-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="0%" />
       </HBox>
-      <HBox alignment="TOP_CENTER" prefHeight="36.0" prefWidth="720.0">
+      <HBox alignment="TOP_CENTER" maxHeight="36.0" maxWidth="720.0" prefHeight="36.0" prefWidth="720.0">
          <children>
       
                   <!-- Progress Bar -->
-            <ProgressBar fx:id="progressBar" prefWidth="1000" progress="0.0" style="-fx-accent: #e2b714; -fx-background-color: #3a3d42;" />
+            <ProgressBar fx:id="progressBar" maxHeight="20.0" prefHeight="20.0" prefWidth="1000.0" progress="0.0" style="-fx-accent: #e2b714; -fx-background-color: #3a3d42;" />
          </children>
       </HBox>
 
-      <!-- Paragraph Display -->
-      <TextFlow fx:id="paragraphFlow" prefHeight="97.0" prefWidth="720.0" style="-fx-background-color: #2c2e31; -fx-padding: 15; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 22px; -fx-line-spacing: 10;" />
+         <!-- Paragraph Display -->
+      <TextFlow fx:id="paragraphFlow" maxHeight="150.0" prefHeight="119.0" prefWidth="720.0" style="-fx-background-color: #2c2e31; -fx-padding: 15; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 22px; -fx-line-spacing: 10;" />
    </VBox>
    <HBox prefHeight="51.0" prefWidth="760.0">
       <children>

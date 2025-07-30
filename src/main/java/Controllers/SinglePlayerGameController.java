@@ -1099,6 +1099,7 @@ public class SinglePlayerGameController {
         stage.setTitle("TypeRacer");
         stage.setResizable(true);
         stage.setScene(scene);
+        stage.centerOnScreen();
         stage.show();
     }
 }

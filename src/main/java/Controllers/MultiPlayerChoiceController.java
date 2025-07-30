@@ -18,6 +18,7 @@ import java.net.Socket;
 import static java.lang.System.out;
 
 public class MultiPlayerChoiceController {
+    public Button hostButton;
     @FXML private VBox rootPane;
     @FXML private TextField nameField;
     @FXML private TextField ipField;
@@ -102,6 +103,7 @@ public class MultiPlayerChoiceController {
             stage.setTitle("TypeRacer");
             stage.setResizable(true);
             stage.setScene(scene);
+            stage.centerOnScreen();
             stage.show();
         });
     }
@@ -188,6 +190,7 @@ public class MultiPlayerChoiceController {
 
             stage.setScene(new Scene(root));
             stage.setTitle("Multiplayer Lobby - " + name);
+            stage.centerOnScreen();
             stage.setOnCloseRequest(e -> client.close());
         });
     }

@@ -253,12 +253,13 @@ public class MultiPlayerGameController {
         -fx-font-weight: bold;
         -fx-padding: 0 8 0 8;
         -fx-cursor: hand;
+        -fx-font-family: 'Roboto Mono';
         """);
         closeBtn.setOnAction(e -> leaderboardStage.close());
         closeBtn.hoverProperty().addListener((obs, oldVal, isHovering) -> {
             closeBtn.setStyle(isHovering ?
-                    "-fx-text-fill: #ca4754;" :
-                    "-fx-text-fill: #d1d0c5;");
+                    "-fx-background-color: transparent; -fx-text-fill: #ca4754; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';" :
+                    "-fx-background-color: transparent; -fx-text-fill: #d1d0c5; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';");
         });
 
         HBox titleBar = new HBox(header, new Region(), closeBtn);
@@ -407,6 +408,7 @@ public class MultiPlayerGameController {
             stage.setTitle("TypeRacer");
             stage.setResizable(true);
             stage.setScene(scene);
+            stage.centerOnScreen();
             stage.show();
         });
     }
@@ -423,6 +425,7 @@ public class MultiPlayerGameController {
             stage.setScene(new Scene(root, 1420, 800));
 
             stage.setTitle("Multiplayer Lobby - " + playerName);
+            stage.centerOnScreen();
             stage.setOnCloseRequest(e -> client.close());
         });
     }
@@ -609,7 +612,7 @@ public class MultiPlayerGameController {
                 pause.play();
             }
 
-            if (e.getCode() == KeyCode.TAB) {
+            if (e.getCode() == KeyCode.CONTROL) {
                 leaderBoardPopUp();
             }
         });

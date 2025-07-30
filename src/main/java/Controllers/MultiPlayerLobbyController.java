@@ -147,6 +147,7 @@ public class MultiPlayerLobbyController {
             stage.setTitle("TypeRacer");
             stage.setResizable(true);
             stage.setScene(scene);
+            stage.centerOnScreen();
             stage.show();
         });
     }
@@ -160,7 +161,9 @@ public class MultiPlayerLobbyController {
             controller.initialize(client, playerName, isHost, time);
 
             Stage stage = (Stage) playerListView.getScene().getWindow();
+
             stage.setScene(new Scene(root, 1420, 800));
+            stage.centerOnScreen();
             stage.setTitle("TypeRacer - " + playerName);
         } catch (IOException e) {
             e.printStackTrace();
