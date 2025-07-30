@@ -188,7 +188,7 @@ public class MultiPlayerChoiceController {
             MultiPlayerLobbyController controller = loader.getController();
             controller.initialize(client, name, isHost);
 
-            stage.setScene(new Scene(root));
+            stage.setScene(new Scene(root, 410, 608));
             stage.setTitle("Multiplayer Lobby - " + name);
             stage.centerOnScreen();
             stage.setOnCloseRequest(e -> client.close());

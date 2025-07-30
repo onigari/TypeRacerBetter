@@ -99,7 +99,7 @@ public class Server {
         }
     }
 
-    public static void broadcastLeaderboard(CopyOnWriteArrayList<String> leaderboard){
+    public static void broadcastLeaderboard(List<String> leaderboard){
         StringBuffer sb = new StringBuffer("LEADERBOARD:");
         int count = 0;
         synchronized (leaderboard) {

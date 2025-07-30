@@ -298,6 +298,8 @@ public class MultiPlayerGameController {
         leaderboardList.setMouseTransparent(false);
         scene.setFill(Color.TRANSPARENT); // For rounded corners
         leaderboardStage.setScene(scene);
+        root.setFocusTraversable(true);
+        Platform.runLater(root::requestFocus);
 
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         leaderboardStage.setX((screenBounds.getWidth() - scene.getWidth()) / 2);
@@ -377,8 +379,8 @@ public class MultiPlayerGameController {
                 if(!typingDone) {
                     warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono'; -fx-font-size: 14; -fx-text-fill: #f20909;");
                     warningText.setText("TYPING UNFINISHED");
+                    typingFinished();
                 }
-                typingFinished();
             }
             if(typingDone && timeLeft[0] > 0) {
                 warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono'; -fx-font-size: 14; -fx-text-fill: #66993C;");
@@ -422,7 +424,7 @@ public class MultiPlayerGameController {
 
         Platform.runLater(() -> {
             Stage stage = (Stage) rootPane.getScene().getWindow();
-            stage.setScene(new Scene(root, 1420, 800));
+            stage.setScene(new Scene(root, 410, 608));
 
             stage.setTitle("Multiplayer Lobby - " + playerName);
             stage.centerOnScreen();
@@ -436,14 +438,16 @@ public class MultiPlayerGameController {
             rootPane.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
                 if (e.getCode() == KeyCode.ESCAPE) {
                     try {
-                        out.println("To Close");
                         if(isHost) client.closeAll();
-                        else loadMainMenu();
+                        else{
+                            typingDone = true;
+                            loadMainMenu();
+                        }
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
                 }
-                if (e.getCode() == KeyCode.TAB) {
+                if (e.getCode() == KeyCode.CONTROL) {
                    if(!isLeaderBoardOn && typingDone) {
                        isLeaderBoardOn = true;
                        leaderBoardPopUp();
@@ -474,15 +478,20 @@ public class MultiPlayerGameController {
                 out.println(message);
                 Platform.runLater(() -> {
                     String[] players = message.substring(8).split(",");
+                    playerProgressBars.clear();
+                    progressBarsContainer.getChildren().clear();
+                    out.println(progressBarsContainer.getChildren().isEmpty());
+                    addPlayerProgress(playerName);
                     for (String player : players) {
                         if (!player.equals(playerName)) {
                             addPlayerProgress(player);
                         }
                     }
                 });
-                client.sendMessage("GET_PARAGRAPH");
+                if(paragraphText == null) client.sendMessage("GET_PARAGRAPH");
             } else if (message.equals("CLOSE_ALL")) {
                 try {
+                    typingDone = true;
                     loadMainMenu();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -835,6 +844,9 @@ public class MultiPlayerGameController {
 
     private void updateLeaderboard(String data) {
         String[] entries = data.split("\\|");
+        for(String entry : entries) {
+            out.println(entry);
+        }
         leaderboard.setAll(entries);
     }
 
@@ -845,6 +857,8 @@ public class MultiPlayerGameController {
             pb.setStyle("-fx-accent: " + getColorForPlayer(playerName) + ";");
 
             HBox playerBox = new HBox(5);
+            playerBox.setUserData(playerName);
+
             Label nameLabel = new Label(playerName);
             nameLabel.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'JetBrains Mono Medium'; -fx-min-width: 75;");
 

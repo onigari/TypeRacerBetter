@@ -18,7 +18,7 @@
    </HBox>
 
    <!-- Main Content Area -->
-   <VBox alignment="TOP_CENTER" spacing="15" style="-fx-background-color: #2c2e31; -fx-padding: 20; -fx-border-radius: 5; -fx-background-radius: 5;">
+   <VBox alignment="TOP_CENTER" spacing="15" style="-fx-background-color: #2c2e31; -fx-padding: 20; -fx-border-radius: 5; -fx-background-radius: 5;" VBox.vgrow="NEVER">
       <!-- Stats Bar -->
       <HBox alignment="CENTER_LEFT" spacing="30">
          <Label fx:id="timeTitle" style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="time:" />
@@ -39,7 +39,7 @@
       </HBox>
 
          <!-- Paragraph Display -->
-      <TextFlow fx:id="paragraphFlow" maxHeight="150.0" prefHeight="119.0" prefWidth="720.0" style="-fx-background-color: #2c2e31; -fx-padding: 15; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 22px; -fx-line-spacing: 10;" />
+      <TextFlow fx:id="paragraphFlow" maxHeight="170.0" minHeight="100.0" prefHeight="119.0" prefWidth="720.0" style="-fx-background-color: #2c2e31; -fx-padding: 15; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 22px; -fx-line-spacing: 10;" />
    </VBox>
    <HBox prefHeight="51.0" prefWidth="760.0">
       <children>

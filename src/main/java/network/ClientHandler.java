@@ -2,9 +2,9 @@ package network;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.lang.System.out;
 
@@ -17,7 +17,7 @@ public class ClientHandler implements Runnable {
     private String playerName;
     private static String playersList;
     private static int gameTime;
-    private static final CopyOnWriteArrayList<String> leaderboard = new CopyOnWriteArrayList<>();
+    private static final List<String> leaderboard = new ArrayList<>();
 
     public ClientHandler(Socket socket, List<ClientHandler> clients) throws IOException {
         this.socket = socket;
@@ -209,6 +209,9 @@ public class ClientHandler implements Runnable {
         synchronized (clients) {
             clients.remove(this);
         }
+
+        leaderboard.removeIf(entry -> entry.startsWith(playerName + ";"));
+
         initiatePlayerList();
         Server.broadcastPlayerList(playersList);
     }
