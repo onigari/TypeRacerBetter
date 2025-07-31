@@ -82,7 +82,7 @@ public class SinglePlayerGameController {
         TIME_15, TIME_30, TIME_60, WORDS_30, WORDS_45, WORDS_60
     }
     private GameMode currentMode = GameMode.TIME_60; // Default mode
-    private HBox modeContainer; // Moved to class level for visibility control
+    private VBox modeContainer; // Moved to class level for visibility control
     private Label modeInstructionLabel;
     private int TIMED_MODE_DURATION;
     private int FIXED_PARAGRAPH_LENGTH;
@@ -96,7 +96,7 @@ public class SinglePlayerGameController {
         modeInstructionLabel.setStyle("-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 16px;");
         updateModeInstructions();
 
-        modeContainer = new HBox(10);
+        modeContainer = new VBox(10);
         modeContainer.setPadding(new Insets(10));
         modeContainer.setStyle("-fx-background-color: #2c2e31; -fx-border-radius: 5; -fx-background-radius: 5;");
 
@@ -107,8 +107,10 @@ public class SinglePlayerGameController {
         Button wordsButton = new Button("Words");
         styleModeButton(wordsButton, currentMode.toString().startsWith("WORDS"));
         wordsButton.setOnAction(e -> showWordsOptions());
-
-        modeContainer.getChildren().addAll(timeButton, wordsButton, modeInstructionLabel);
+        HBox modes = new HBox(10);
+        modes.getChildren().addAll(timeButton, wordsButton);
+        modes.setAlignment(Pos.CENTER);
+        modeContainer.getChildren().addAll(modes, modeInstructionLabel);
         modeContainer.setAlignment(Pos.CENTER);
         rootPane.getChildren().add(1, modeContainer); // Add below title
         showTimeOptions();
@@ -150,7 +152,11 @@ public class SinglePlayerGameController {
         styleOptionButton(time60, currentMode == GameMode.TIME_60);
         time60.setOnAction(e -> setMode(GameMode.TIME_60));
 
-        modeContainer.getChildren().addAll(timeButton, wordsButton, time15, time30, time60, modeInstructionLabel);
+        HBox modes = new HBox(10);
+        modes.getChildren().addAll(timeButton, wordsButton, time15, time30, time60);
+        modes.setAlignment(Pos.CENTER);
+        modeContainer.getChildren().addAll(modes, modeInstructionLabel);
+        modeContainer.setAlignment(Pos.CENTER);
     }
 
     private void showWordsOptions() {
@@ -173,7 +179,11 @@ public class SinglePlayerGameController {
         styleOptionButton(words60, currentMode == GameMode.WORDS_60);
         words60.setOnAction(e -> setMode(GameMode.WORDS_60));
 
-        modeContainer.getChildren().addAll(timeButton, wordsButton, words30, words45, words60, modeInstructionLabel);
+        HBox modes = new HBox(10);
+        modes.getChildren().addAll(timeButton, wordsButton, words30, words45, words60);
+        modes.setAlignment(Pos.CENTER);
+        modeContainer.getChildren().addAll(modes, modeInstructionLabel);
+        modeContainer.setAlignment(Pos.CENTER);
     }
 
     private void styleOptionButton(Button button, boolean selected) {
@@ -201,23 +211,27 @@ public class SinglePlayerGameController {
     private void updateModeButtonStyles() {
         if (modeContainer != null) {
             for (Node node : modeContainer.getChildren()) {
-                if (node instanceof Button button) {
-                    if (button.getText().equals("Time")) {
-                        styleModeButton(button, currentMode.toString().startsWith("TIME"));
-                    } else if (button.getText().equals("Words")) {
-                        styleModeButton(button, currentMode.toString().startsWith("WORDS"));
-                    } else if (button.getText().equals("15s")) {
-                        styleOptionButton(button, currentMode == GameMode.TIME_15);
-                    } else if (button.getText().equals("30s")) {
-                        styleOptionButton(button, currentMode == GameMode.TIME_30);
-                    } else if (button.getText().equals("60s")) {
-                        styleOptionButton(button, currentMode == GameMode.TIME_60);
-                    } else if (button.getText().equals("30")) {
-                        styleOptionButton(button, currentMode == GameMode.WORDS_30);
-                    } else if (button.getText().equals("45")) {
-                        styleOptionButton(button, currentMode == GameMode.WORDS_45);
-                    } else if (button.getText().equals("60")) {
-                        styleOptionButton(button, currentMode == GameMode.WORDS_60);
+                if (node instanceof HBox hbox) {
+                    for (Node nodes : hbox.getChildren()) {
+                        if (nodes instanceof Button button) {
+                            if (button.getText().equals("Time")) {
+                                styleModeButton(button, currentMode.toString().startsWith("TIME"));
+                            } else if (button.getText().equals("Words")) {
+                                styleModeButton(button, currentMode.toString().startsWith("WORDS"));
+                            } else if (button.getText().equals("15s")) {
+                                styleOptionButton(button, currentMode == GameMode.TIME_15);
+                            } else if (button.getText().equals("30s")) {
+                                styleOptionButton(button, currentMode == GameMode.TIME_30);
+                            } else if (button.getText().equals("60s")) {
+                                styleOptionButton(button, currentMode == GameMode.TIME_60);
+                            } else if (button.getText().equals("30")) {
+                                styleOptionButton(button, currentMode == GameMode.WORDS_30);
+                            } else if (button.getText().equals("45")) {
+                                styleOptionButton(button, currentMode == GameMode.WORDS_45);
+                            } else if (button.getText().equals("60")) {
+                                styleOptionButton(button, currentMode == GameMode.WORDS_60);
+                            }
+                        }
                     }
                 }
             }
@@ -648,10 +662,12 @@ public class SinglePlayerGameController {
         });
 
         playerNameField.setOnKeyPressed(e -> {
-            modeContainer.setStyle("-fx-opacity: 0;");
+            modeContainer.setVisible(false);
+            modeContainer.setManaged(false);
+            rootPane.requestLayout();
             if (e.getCode() == KeyCode.ENTER) {
                 onStartButtonClick();
-            }
+            } else startButton.setText("Start");
         });
     }
 
@@ -926,11 +942,11 @@ public class SinglePlayerGameController {
         playerNameField.setEditable(true);
         nameTitle.setVisible(true);
         titleLabel.setText("type racer - finished!");
-        modeContainer.setStyle("-fx-opacity: 1;");
         startButton.setText("restart");
         typingField.setDisable(true);
         displayField.clear();
-        modeContainer.setVisible(true);
+        escText.setText("Press esc to go back to main menu");
+        rootPane.requestLayout();
 
         long finishTime = System.currentTimeMillis() - startTime;
         double timeInSeconds = finishTime / 1000.0;
@@ -990,13 +1006,18 @@ public class SinglePlayerGameController {
 //            });
 //        }
 //        leaderboardList.setItems(leaderboard);
-
+        modeContainer.setVisible(true);
+        modeContainer.setManaged(true);
+        rootPane.requestLayout();
         playerNameField.setEditable(true);
         playerNameField.requestFocus();
     }
 
     @FXML
     private void onStartButtonClick() {
+        modeContainer.setVisible(false);
+        modeContainer.setManaged(false);
+        rootPane.requestLayout();
         typingField.setFocusTraversable(false);
         if (inputStrings.isEmpty()) {
             showAlert("No paragraphs available to type!");
@@ -1008,6 +1029,8 @@ public class SinglePlayerGameController {
             showAlert("Please enter your name before starting!");
             return;
         }
+
+        escText.setText("Press esc to end typing");
 
         if (currentMode.toString().startsWith("TIME")) {
             int duration = switch (currentMode) {
@@ -1033,9 +1056,7 @@ public class SinglePlayerGameController {
         playerNameField.setEditable(false);
         playerNameField.setVisible(false);
         nameTitle.setVisible(false);
-        modeContainer.setVisible(false);
-        modeContainer.setStyle("-fx-opacity: 0;");
-
+        rootPane.requestLayout();
         prepareParagraph();
         if (paragraphText == null || paragraphText.isEmpty()) {
             showAlert("Failed to load paragraph text!");
@@ -1065,7 +1086,6 @@ public class SinglePlayerGameController {
         Arrays.fill(accuracyChecker, 'B');
         Arrays.fill(correctWordChecker, 'B');
         displayParagraph(paragraphText);
-        modeContainer.setVisible(true);
 
         startTimer();
         typingField.requestFocus();
