@@ -75,17 +75,19 @@ public class MultiPlayerLobbyController {
 
     private void styleModeButton(Button button, boolean selected) {
         button.setStyle(selected ?
-                "-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: 30; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;" :
-                "-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: 30; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+                "-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;" :
+                "-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        if(!selected && button == startButton) {button.setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");}
         button.setOnMouseEntered(e -> {
             if(!selected) {
-                button.setStyle("-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: 30; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+                button.setStyle("-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
             }
         });
         button.setOnMouseExited(e -> {
             if(!selected) {
-                button.setStyle("-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: 30; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+                button.setStyle("-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
             }
+            if(button == startButton) {button.setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");}
         });
     }
 
@@ -123,24 +125,22 @@ public class MultiPlayerLobbyController {
                 }
             } else if (message.startsWith("TIME:")) {
                 time = Integer.parseInt(message.substring(5));
-                if(!isHost) {
-                    switch (time) {
-                        case 40:
-                            styleModeButton(fortySecondButton, true);
-                            styleModeButton(sixtySecondButton, false);
-                            styleModeButton(ninetySecondButton, false);
-                            break;
-                        case 60:
-                            styleModeButton(fortySecondButton, false);
-                            styleModeButton(sixtySecondButton, true);
-                            styleModeButton(ninetySecondButton, false);
-                            break;
-                        case 90:
-                            styleModeButton(fortySecondButton, false);
-                            styleModeButton(sixtySecondButton, false);
-                            styleModeButton(ninetySecondButton, true);
-                            break;
-                    }
+                switch (time) {
+                    case 40:
+                        styleModeButton(fortySecondButton, true);
+                        styleModeButton(sixtySecondButton, false);
+                        styleModeButton(ninetySecondButton, false);
+                        break;
+                    case 60:
+                        styleModeButton(fortySecondButton, false);
+                        styleModeButton(sixtySecondButton, true);
+                        styleModeButton(ninetySecondButton, false);
+                        break;
+                    case 90:
+                        styleModeButton(fortySecondButton, false);
+                        styleModeButton(sixtySecondButton, false);
+                        styleModeButton(ninetySecondButton, true);
+                        break;
                 }
             }
         });

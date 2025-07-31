@@ -49,13 +49,13 @@ public class MultiPlayerChoiceController {
 
     private void styleModeButton(Button button, boolean selected) {
         button.setStyle(selected ?
-                "-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: 30; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;" :
-                "-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: 30; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+                "-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;" :
+                "-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
         button.setOnMouseEntered(e -> {
-                button.setStyle("-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: 30; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+                button.setStyle("-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
         });
         button.setOnMouseExited(e -> {
-                button.setStyle("-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: 30; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+                button.setStyle("-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
         });
     }
 

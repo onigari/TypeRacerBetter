@@ -500,6 +500,7 @@ public class MultiPlayerGameController {
                 out.println("GAME FINISHED received");
                 gameRunning = false;
                 restartButton.setDisable(!isHost);
+                restartButton.setVisible(true);
             } else if (message.equals("RESTART")) {
                 try {
                     loadLobby();
@@ -567,6 +568,17 @@ public class MultiPlayerGameController {
                 }
             }
         });
+
+        restartButton.setPrefSize(83, 31);
+        restartButton.setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        restartButton.setOnMouseEntered(e -> {
+            restartButton.setStyle("-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        });
+        restartButton.setOnMouseExited(e -> {
+            restartButton.setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        });
+
+        restartButton.setVisible(false);
 
         escText.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
     }
