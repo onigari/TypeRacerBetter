@@ -18,7 +18,7 @@ import java.net.Socket;
 import static java.lang.System.out;
 
 public class MultiPlayerChoiceController {
-    public Button hostButton;
+    @FXML private Button hostButton;
     @FXML private VBox rootPane;
     @FXML private TextField nameField;
     @FXML private TextField ipField;
@@ -31,6 +31,10 @@ public class MultiPlayerChoiceController {
 
     public void initialize() {
         escText.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+        hostButton.setPrefSize(100, 30);
+        joinButton.setPrefSize(100, 30);
+        styleModeButton(hostButton, false);
+        styleModeButton(joinButton, false);
 
         rootPane.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
@@ -40,6 +44,18 @@ public class MultiPlayerChoiceController {
                     ex.printStackTrace();
                 }
             }
+        });
+    }
+
+    private void styleModeButton(Button button, boolean selected) {
+        button.setStyle(selected ?
+                "-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: 30; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;" :
+                "-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: 30; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        button.setOnMouseEntered(e -> {
+                button.setStyle("-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: 30; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        });
+        button.setOnMouseExited(e -> {
+                button.setStyle("-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: 30; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
         });
     }
 

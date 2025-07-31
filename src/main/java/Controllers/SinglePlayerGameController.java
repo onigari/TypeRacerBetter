@@ -109,6 +109,7 @@ public class SinglePlayerGameController {
         wordsButton.setOnAction(e -> showWordsOptions());
 
         modeContainer.getChildren().addAll(timeButton, wordsButton, modeInstructionLabel);
+        modeContainer.setAlignment(Pos.CENTER);
         rootPane.getChildren().add(1, modeContainer); // Add below title
         showTimeOptions();
     }

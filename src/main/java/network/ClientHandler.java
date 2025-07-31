@@ -38,6 +38,7 @@ public class ClientHandler implements Runnable {
                     if (playerName.isEmpty()) playerName = "Anonymous_" + socket.getPort();
                     initiatePlayerList();
                     Server.broadcastPlayerList(playersList);
+                    Server.broadcastTime(gameTime);
                 } else if (inputLine.startsWith("RESULT:")) {
                     handleResult(inputLine.substring(7));
                 } else if (inputLine.startsWith("PROGRESS:")) {
@@ -63,6 +64,7 @@ public class ClientHandler implements Runnable {
                     out.println(playersList);
                 } else if (inputLine.startsWith("TIME:")) {
                     gameTime = Integer.parseInt(inputLine.substring(5).trim());
+                    Server.broadcastTime(gameTime);
                 } else if (inputLine.equals("IS_AVAILABLE")) {
                     initiatePlayerList();
                     String[] players = playersList.substring(8).split(",");
