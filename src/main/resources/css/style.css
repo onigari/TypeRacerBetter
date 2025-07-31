@@ -1,13 +1,15 @@
 /* style.css */
 
 .root {
-    -fx-background-color: #333436;
-    -fx-font-family: "JetBrains Mono Medium", "monospace";
+    -fx-background-color: linear-gradient(to bottom, #1a1a1a, #232323);
+    -fx-font-family: "JetBrains Mono Medium", monospace;
 }
+
 AnchorPane, VBox {
     -fx-font-family: "JetBrains Mono Medium", monospace;
-    -fx-background-color: #333436;
+    -fx-background-color: transparent; /* Let backgroundPane show through */
 }
+
 .menu-button {
     -fx-font-family: "JetBrains Mono Medium", monospace;
     /* existing styles */
