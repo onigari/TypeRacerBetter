@@ -709,7 +709,7 @@ public class SinglePlayerGameController {
             boolean wordIsCorrectSoFar = true;
             if (typedText.length() > wordStartPosition) {
                 int endIndex = Math.min(typedText.length(), wordStartPosition + currentWord.length());
-                if (wordStartPosition <= typedText.length() && wordStartPosition <= endIndex) {
+                if (wordStartPosition <= endIndex) {
                     String typedPortionOfWord = typedText.substring(wordStartPosition, endIndex);
 
                     for (int i = 0; i < typedPortionOfWord.length(); i++) {

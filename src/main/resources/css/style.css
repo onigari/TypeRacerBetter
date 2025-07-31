@@ -37,7 +37,8 @@ AnchorPane, VBox {
 
 /* Hover effect */
 .menu-button:hover {
-    -fx-background-color: #3a3a3a;
+    -fx-background-color: #e2b714;
+    -fx-text-fill: black;
 }
 
 /* Press effect */

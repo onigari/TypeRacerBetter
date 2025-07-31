@@ -50,7 +50,7 @@ public class MainMenuController {
             Rectangle key = new Rectangle(dim, dim);
             key.setArcWidth(5);
             key.setArcHeight(5);
-            key.setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-stroke-width: 1; -fx-opacity: 0.5;");
+            key.setStyle("-fx-fill: #2E2E2E; -fx-stroke: #3F3E3E; -fx-stroke-width: 1; -fx-opacity: 0.5;");
 
             // Create Label for text
             String text = characters[random.nextInt(characters.length)]; // Random letter
@@ -122,10 +122,10 @@ public class MainMenuController {
     private void highlightKey(Node node, boolean highlight, int fontSize) {
         if (node instanceof Pane pane) {
             if (highlight) {
-                pane.getChildren().getFirst().setStyle("-fx-fill: #e2b714; -fx-stroke: #e2b714; -fx-opacity: 0.5; -fx-stroke-width: 1;");
+                pane.getChildren().getFirst().setStyle("-fx-fill: #e2b714; -fx-stroke: #e2b714; -fx-opacity: 0.3; -fx-stroke-width: 1;");
                 pane.getChildren().getLast().setStyle("-fx-text-fill: black; -fx-font-size: " + fontSize + " px; -fx-opacity: 0.5; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono Medium';");
             } else {
-                pane.getChildren().getFirst().setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-opacity: 0.5; -fx-stroke-width: 1;");
+                pane.getChildren().getFirst().setStyle("-fx-fill: #2E2E2E; -fx-stroke: #3F3E3E; -fx-opacity: 0.5; -fx-stroke-width: 1;");
                 pane.getChildren().getLast().setStyle("-fx-text-fill: white; -fx-font-size: " + fontSize + " px; -fx-opacity: 0.5; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono Medium';");
             }
         } else out.println("null in highlight");

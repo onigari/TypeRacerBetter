@@ -13,7 +13,7 @@
 <VBox fx:id="rootPane" alignment="TOP_CENTER" prefHeight="600.0" prefWidth="800.0" spacing="20" style="-fx-background-color: #323437; -fx-padding: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.SinglePlayerGameController">
    <!-- Header Section -->
    <HBox fx:id="titleBar" alignment="CENTER" prefHeight="25.0" prefWidth="760.0" spacing="20">
-      <Label fx:id="titleLabel" prefHeight="35.0" prefWidth="272.0" style="-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold;" text="TypeRacer SinglePlayer" />
+      <Label fx:id="titleLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="35.0" prefWidth="515.0" style="-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold;" text="TypeRacer SinglePlayer" />
    </HBox>
 
    <!-- Main Content Area -->
