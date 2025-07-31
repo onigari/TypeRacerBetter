@@ -79,7 +79,7 @@ public class SinglePlayerGameController {
     private final Map<String, Text> keyTexts = new HashMap<>();
 
     private enum GameMode {
-        TIME_15, TIME_30, TIME_60, WORDS_10, WORDS_25, WORDS_50, WORDS_100
+        TIME_15, TIME_30, TIME_60, WORDS_30, WORDS_45, WORDS_60
     }
     private GameMode currentMode = GameMode.TIME_60; // Default mode
     private HBox modeContainer; // Moved to class level for visibility control
@@ -89,7 +89,7 @@ public class SinglePlayerGameController {
     private String oldPara = "";
     private final List<Double> wpmDataPoints = new ArrayList<>();
     private long lastWpmUpdateTime = 0;
-    private Set<String> wrongWords = new HashSet<>();
+    private final Set<String> wrongWords = new HashSet<>();
 
     private void setupModeSelection() {
         modeInstructionLabel = new Label();
@@ -97,7 +97,6 @@ public class SinglePlayerGameController {
         updateModeInstructions();
 
         modeContainer = new HBox(10);
-        modeContainer.setAlignment(Pos.CENTER);
         modeContainer.setPadding(new Insets(10));
         modeContainer.setStyle("-fx-background-color: #2c2e31; -fx-border-radius: 5; -fx-background-radius: 5;");
 
@@ -161,23 +160,19 @@ public class SinglePlayerGameController {
         Button wordsButton = new Button("Words");
         styleModeButton(wordsButton, true);
 
-        Button words10 = new Button("10");
-        styleOptionButton(words10, currentMode == GameMode.WORDS_10);
-        words10.setOnAction(e -> setMode(GameMode.WORDS_10));
+        Button words30 = new Button("30");
+        styleOptionButton(words30, currentMode == GameMode.WORDS_30);
+        words30.setOnAction(e -> setMode(GameMode.WORDS_30));
 
-        Button words25 = new Button("25");
-        styleOptionButton(words25, currentMode == GameMode.WORDS_25);
-        words25.setOnAction(e -> setMode(GameMode.WORDS_25));
+        Button words45 = new Button("45");
+        styleOptionButton(words45, currentMode == GameMode.WORDS_45);
+        words45.setOnAction(e -> setMode(GameMode.WORDS_45));
 
-        Button words50 = new Button("50");
-        styleOptionButton(words50, currentMode == GameMode.WORDS_50);
-        words50.setOnAction(e -> setMode(GameMode.WORDS_50));
+        Button words60 = new Button("60");
+        styleOptionButton(words60, currentMode == GameMode.WORDS_60);
+        words60.setOnAction(e -> setMode(GameMode.WORDS_60));
 
-        Button words100 = new Button("100");
-        styleOptionButton(words100, currentMode == GameMode.WORDS_100);
-        words100.setOnAction(e -> setMode(GameMode.WORDS_100));
-
-        modeContainer.getChildren().addAll(timeButton, wordsButton, words10, words25, words50, words100, modeInstructionLabel);
+        modeContainer.getChildren().addAll(timeButton, wordsButton, words30, words45, words60, modeInstructionLabel);
     }
 
     private void styleOptionButton(Button button, boolean selected) {
@@ -216,14 +211,12 @@ public class SinglePlayerGameController {
                         styleOptionButton(button, currentMode == GameMode.TIME_30);
                     } else if (button.getText().equals("60s")) {
                         styleOptionButton(button, currentMode == GameMode.TIME_60);
-                    } else if (button.getText().equals("10")) {
-                        styleOptionButton(button, currentMode == GameMode.WORDS_10);
-                    } else if (button.getText().equals("25")) {
-                        styleOptionButton(button, currentMode == GameMode.WORDS_25);
-                    } else if (button.getText().equals("50")) {
-                        styleOptionButton(button, currentMode == GameMode.WORDS_50);
-                    } else if (button.getText().equals("100")) {
-                        styleOptionButton(button, currentMode == GameMode.WORDS_100);
+                    } else if (button.getText().equals("30")) {
+                        styleOptionButton(button, currentMode == GameMode.WORDS_30);
+                    } else if (button.getText().equals("45")) {
+                        styleOptionButton(button, currentMode == GameMode.WORDS_45);
+                    } else if (button.getText().equals("60")) {
+                        styleOptionButton(button, currentMode == GameMode.WORDS_60);
                     }
                 }
             }
@@ -233,11 +226,10 @@ public class SinglePlayerGameController {
     private void prepareParagraph() {
         if (currentMode.toString().startsWith("WORDS")) {
             int wordCount = switch (currentMode) {
-                case WORDS_10 -> 10;
-                case WORDS_25 -> 25;
-                case WORDS_50 -> 50;
-                case WORDS_100 -> 100;
-                default -> 50;
+                case WORDS_30 -> 30;
+                case WORDS_45 -> 45;
+                case WORDS_60 -> 60;
+                default -> 30;
             };
             paragraphText = getFixedWordCountParagraph(wordCount);
         } else {
@@ -272,11 +264,9 @@ public class SinglePlayerGameController {
             case TIME_15 -> "Type as much as you can in 15 seconds!";
             case TIME_30 -> "Type as much as you can in 30 seconds!";
             case TIME_60 -> "Type as much as you can in 60 seconds!";
-            case WORDS_10 -> "Type 10 words as fast as you can!";
-            case WORDS_25 -> "Type 25 words as fast as you can!";
-            case WORDS_50 -> "Type 50 words as fast as you can!";
-            case WORDS_100 -> "Type 100 words as fast as you can!";
-            default -> "Select a mode to start typing!";
+            case WORDS_30 -> "Type 30 words as fast as you can!";
+            case WORDS_45 -> "Type 45 words as fast as you can!";
+            case WORDS_60 -> "Type 60 words as fast as you can!";
         };
         modeInstructionLabel.setText(instruction);
     }
@@ -806,8 +796,8 @@ public class SinglePlayerGameController {
             updateStats();
 
             if (currentIndex >= paragraphText.length()) {
-                if (currentMode.equals(GameMode.WORDS_10) || currentMode.equals(GameMode.WORDS_25) ||
-                        currentMode.equals(GameMode.WORDS_50) || currentMode.equals(GameMode.WORDS_100)) {
+                if (currentMode.equals(GameMode.WORDS_30) || currentMode.equals(GameMode.WORDS_45) ||
+                        currentMode.equals(GameMode.WORDS_60)) {
                     typingFinished();
                 } else {
                     oldPara = newValue;
@@ -833,8 +823,8 @@ public class SinglePlayerGameController {
     private void updateStats() {
         Platform.runLater(() -> {
             long elapsed = (System.currentTimeMillis() - startTime) / 1000;
-            if (currentMode.equals(GameMode.WORDS_10) || currentMode.equals(GameMode.WORDS_25) ||
-                    currentMode.equals(GameMode.WORDS_50) || currentMode.equals(GameMode.WORDS_100)) {
+            if (currentMode.equals(GameMode.WORDS_30) || currentMode.equals(GameMode.WORDS_45) ||
+                    currentMode.equals(GameMode.WORDS_60)) {
                 timeLabel.setText(String.format("%ds", (int) elapsed));
             }
             double wpm = calculateWPM();
@@ -1029,11 +1019,10 @@ public class SinglePlayerGameController {
             timeLabel.setText(duration + "s");
         } else {
             int wordCount = switch (currentMode) {
-                case WORDS_10 -> 10;
-                case WORDS_25 -> 25;
-                case WORDS_50 -> 50;
-                case WORDS_100 -> 100;
-                default -> 50;
+                case WORDS_30 -> 30;
+                case WORDS_45 -> 45;
+                case WORDS_60 -> 60;
+                default -> 30;
             };
             titleLabel.setText("Words Mode - " + wordCount + " Words Challenge!");
             timeLabel.setText("0s");
