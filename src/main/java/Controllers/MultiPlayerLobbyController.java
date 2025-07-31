@@ -17,6 +17,7 @@ import network.Client;
 import java.io.IOException;
 
 public class MultiPlayerLobbyController {
+    public Button backButton;
     @FXML private Label warningLabel;
     @FXML private VBox rootPane;
     @FXML private ListView<String> playerListView;
@@ -71,6 +72,29 @@ public class MultiPlayerLobbyController {
         }
 
         escText.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+        backButton.setText("\uD83E\uDC20back");
+        backButton.setStyle("""
+        -fx-background-color: transparent;
+        -fx-text-fill: #d1d0c5;
+        -fx-font-size: 16px;
+        -fx-font-weight: bold;
+        -fx-padding: 0 8 0 8;
+        -fx-cursor: hand;
+        -fx-font-family: 'Roboto Mono';
+        """);
+        backButton.setOnAction(e -> {
+            try {
+                if(isHost) client.closeAll();
+                loadChoice((Stage) rootPane.getScene().getWindow() );
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        backButton.hoverProperty().addListener((obs, oldVal, isHovering) -> {
+            backButton.setStyle(isHovering ?
+                    "-fx-background-color: transparent; -fx-text-fill: #ca4754; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';" :
+                    "-fx-background-color: transparent; -fx-text-fill: #d1d0c5; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';");
+        });
     }
 
     private void styleModeButton(Button button, boolean selected) {
@@ -202,7 +226,7 @@ public class MultiPlayerLobbyController {
         Parent root = loader.load();
 
         Platform.runLater(() -> {
-            Scene scene = new Scene(root, 346, 412);
+            Scene scene = new Scene(root, 800, 600);
 
             stage.setTitle("TypeRacer");
             stage.setResizable(true);
@@ -222,7 +246,7 @@ public class MultiPlayerLobbyController {
 
             Stage stage = (Stage) playerListView.getScene().getWindow();
 
-            stage.setScene(new Scene(root, 1511, 850));
+            stage.setScene(new Scene(root, 1600, 900));
             stage.centerOnScreen();
             stage.setTitle("TypeRacer - " + playerName);
         } catch (IOException e) {

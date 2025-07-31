@@ -41,6 +41,8 @@ public class SinglePlayerGameController {
     public Label wpmTitle;
     public Label accuracyTitle;
     public Label nameTitle;
+    public Button backButton;
+    public HBox titleBar;
 
     @FXML private VBox rootPane;
     @FXML private Label titleLabel;
@@ -595,6 +597,41 @@ public class SinglePlayerGameController {
 //                }
 //            }
 //        });
+        startButton.setPrefSize(83, 31);
+        startButton.setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        startButton.setOnMouseEntered(e -> {
+            startButton.setStyle("-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        });
+        startButton.setOnMouseExited(e -> {
+            startButton.setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        });
+//        backButton.setTranslateX(-575);
+//        HBox.setMargin(backButton, new Insets(50, 0, 0, 100));
+        backButton.setText("\uD83E\uDC20back");
+        backButton.setStyle("""
+        -fx-background-color: transparent;
+        -fx-text-fill: #d1d0c5;
+        -fx-font-size: 16px;
+        -fx-font-weight: bold;
+        -fx-padding: 0 8 0 8;
+        -fx-cursor: hand;
+        -fx-font-family: 'Roboto Mono';
+        """);
+        backButton.setOnAction(e -> {
+            try {
+                if (isTimerRunning){
+                    typingFinished();
+                }
+                else loadMainMenu();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        backButton.hoverProperty().addListener((obs, oldVal, isHovering) -> {
+            backButton.setStyle(isHovering ?
+                    "-fx-background-color: transparent; -fx-text-fill: #ca4754; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';" :
+                    "-fx-background-color: transparent; -fx-text-fill: #d1d0c5; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';");
+        });
         escText.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
     }
 
@@ -903,6 +940,7 @@ public class SinglePlayerGameController {
                 long remaining = duration - elapsed;
                 timeTitle.setText("time left:");
                 timeLabel.setText(remaining + "s");
+                if (remaining <= 5) timeLabel.setStyle("-fx-text-fill: #f20909; -fx-font-size: 14;");
                 if (remaining <= 0) {
                     typingFinished();
                 }

@@ -18,6 +18,7 @@ import java.net.Socket;
 import static java.lang.System.out;
 
 public class MultiPlayerChoiceController {
+    public Button backButton;
     @FXML private Button hostButton;
     @FXML private VBox rootPane;
     @FXML private TextField nameField;
@@ -35,6 +36,29 @@ public class MultiPlayerChoiceController {
         joinButton.setPrefSize(100, 30);
         styleModeButton(hostButton, false);
         styleModeButton(joinButton, false);
+
+        backButton.setText("\uD83E\uDC20back");
+        backButton.setStyle("""
+        -fx-background-color: transparent;
+        -fx-text-fill: #d1d0c5;
+        -fx-font-size: 16px;
+        -fx-font-weight: bold;
+        -fx-padding: 0 8 0 8;
+        -fx-cursor: hand;
+        -fx-font-family: 'Roboto Mono';
+        """);
+        backButton.setOnAction(e -> {
+            try {
+                loadMainMenu();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        backButton.hoverProperty().addListener((obs, oldVal, isHovering) -> {
+            backButton.setStyle(isHovering ?
+                    "-fx-background-color: transparent; -fx-text-fill: #ca4754; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';" :
+                    "-fx-background-color: transparent; -fx-text-fill: #d1d0c5; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';");
+        });
 
         rootPane.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
@@ -204,7 +228,7 @@ public class MultiPlayerChoiceController {
             MultiPlayerLobbyController controller = loader.getController();
             controller.initialize(client, name, isHost);
 
-            stage.setScene(new Scene(root, 410, 608));
+            stage.setScene(new Scene(root, 800, 600));
             stage.setTitle("Multiplayer Lobby - " + name);
             stage.centerOnScreen();
             stage.setOnCloseRequest(e -> client.close());
