@@ -165,6 +165,10 @@ public class MultiPlayerLobbyController {
                         styleModeButton(sixtySecondButton, false);
                         styleModeButton(ninetySecondButton, true);
                         break;
+                    default:
+                        styleModeButton(fortySecondButton, false);
+                        styleModeButton(sixtySecondButton, false);
+                        styleModeButton(ninetySecondButton, false);
                 }
             }
         });
@@ -196,29 +200,21 @@ public class MultiPlayerLobbyController {
     @FXML
     private void onFortyClick(){
         client.sendMessage("TIME:" + 40);
-        styleModeButton(fortySecondButton, true);
-        styleModeButton(sixtySecondButton, false);
-        styleModeButton(ninetySecondButton, false);
     }
 
     @FXML
     private void onSixtyClick(){
         client.sendMessage("TIME:" + 60);
-        styleModeButton(fortySecondButton, false);
-        styleModeButton(sixtySecondButton, true);
-        styleModeButton(ninetySecondButton, false);
     }
 
     @FXML
     private void onNinetyClick(){
         client.sendMessage("TIME:" + 90);
-        styleModeButton(fortySecondButton, false);
-        styleModeButton(sixtySecondButton, false);
-        styleModeButton(ninetySecondButton, true);
     }
 
     private void loadChoice(Stage stage) throws IOException {
         new Thread(() -> {
+            client.sendMessage("TIME:" + 0);
             client.close();
         }).start();
 
@@ -228,7 +224,7 @@ public class MultiPlayerLobbyController {
         Platform.runLater(() -> {
             Scene scene = new Scene(root, 800, 600);
 
-            stage.setTitle("TypeRacer");
+            stage.setTitle("TypeRacer - MultiPlayer Choice");
             stage.setResizable(true);
             stage.setScene(scene);
             stage.centerOnScreen();

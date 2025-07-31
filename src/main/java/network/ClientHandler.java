@@ -3,10 +3,8 @@ package network;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static java.lang.System.out;
 
 public class ClientHandler implements Runnable {
     private Socket socket;
@@ -85,7 +83,6 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    // dynamic progress bar
     private void handleProgress(String progressData) {
         try {
             double progress = Double.parseDouble(progressData);
@@ -149,7 +146,6 @@ public class ClientHandler implements Runnable {
         try {
             String entry = String.format("%s;%s;%s;%s", parts[0], parts[1], parts[2], parts[3]);
             synchronized (leaderboard) {
-                //if(checkClient(parts[0])) updateResult(entry); // for dynamic leaderboard implementation
                 leaderboard.add(entry);
                 leaderboard.sort((a, b) -> {
                     try {

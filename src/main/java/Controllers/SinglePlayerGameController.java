@@ -84,7 +84,7 @@ public class SinglePlayerGameController {
         TIME_15, TIME_30, TIME_60, WORDS_30, WORDS_45, WORDS_60
     }
     private GameMode currentMode = GameMode.TIME_60; // Default mode
-    private VBox modeContainer; // Moved to class level for visibility control
+    private VBox modeContainer;
     private Label modeInstructionLabel;
     private int TIMED_MODE_DURATION;
     private int FIXED_PARAGRAPH_LENGTH;
@@ -352,7 +352,6 @@ public class SinglePlayerGameController {
         statsStage.initOwner(rootPane.getScene().getWindow());
         statsStage.initStyle(StageStyle.TRANSPARENT);
 
-        // Create LineChart for WPM vs Time
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Time");
         xAxis.lookup(".axis-label").setStyle("-fx-text-fill: #d1d0c5;");
@@ -363,8 +362,7 @@ public class SinglePlayerGameController {
         yAxis.setStyle("-fx-font-family: 'Roboto Mono'; -fx-text-fill: #d1d0c5; -fx-tick-label-fill: #d1d0c5;");
 
         LineChart<Number, Number> wpmChart = new LineChart<>(xAxis, yAxis);
-//        wpmChart.setTitle("WPM vs Time");
-//        wpmChart.lookup(".chart-title").setStyle("-fx-text-fill: #d1d0c5;");
+
        wpmChart.setStyle("-fx-background-color: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-size: 16px; -fx-background-radius: 5;");
         wpmChart.lookupAll(".chart-plot-background").forEach(node ->
                 node.setStyle("-fx-background-color: #323437;"));
@@ -376,14 +374,12 @@ public class SinglePlayerGameController {
         }
         wpmChart.getData().add(series);
 
-        // Style the chart
-        wpmChart.setCreateSymbols(true); // Show data points
-        wpmChart.setLegendVisible(false); // Hide legend
+        wpmChart.setCreateSymbols(true);
+        wpmChart.setLegendVisible(false);
         wpmChart.lookup(".chart-series-line").setStyle("-fx-stroke: #e2b714;");
         wpmChart.lookupAll(".chart-line-symbol").forEach(node ->
                 node.setStyle("-fx-background-color: #e2b714, #323437;"));
 
-        // WPM and Accuracy labels
         Label wpmLabelDisplay = new Label(String.format("WPM: %.0f", calculateWPM()));
         wpmLabelDisplay.setStyle("-fx-font-family: 'Roboto Mono'; -fx-font-size: 28px; -fx-text-fill: #e2b714; -fx-font-weight: bold;");
         Label accuracyLabelDisplay = new Label(String.format("Accuracy: %.0f%%", calculateAccuracy()));
@@ -393,7 +389,6 @@ public class SinglePlayerGameController {
         statsBox.setAlignment(Pos.CENTER);
         statsBox.setPadding(new Insets(10));
 
-        // Header
         Label header = new Label("PLAYER PERFORMANCE");
         header.setStyle("-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-weight: bold; -fx-font-family: 'Roboto Mono';");
 
@@ -424,10 +419,9 @@ public class SinglePlayerGameController {
         closebtn.setTranslateX(230);
         titleBar.setStyle("-fx-background-color: #2c2e31;");
 
-        // Esc instruction
         Label escText = new Label("Press esc to close");
         escText.setStyle("-fx-font-size: 14px; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
-        // Wrong words section
+
         Label wrongWordsLabel = new Label("Incorrect Words:");
         wrongWordsLabel.setStyle("-fx-font-family: 'Roboto Mono'; -fx-font-size: 16px; -fx-text-fill: #e2b714; -fx-font-weight: bold;");
         ListView<String> wrongWordsList = new ListView<>(FXCollections.observableArrayList(wrongWords));
@@ -440,8 +434,8 @@ public class SinglePlayerGameController {
         -fx-font-size: 14px;
         -fx-text-fill: #d1d0c5;
         """);
-        wrongWordsList.setMaxHeight(400); // Limit height to keep popup compact
-        wrongWordsList.setMaxHeight(300); // Limit height to keep popup compact
+        wrongWordsList.setMaxHeight(400);
+        wrongWordsList.setMaxHeight(300);
         wrongWordsList.setFocusTraversable(false);
         wrongWordsList.setCellFactory(lv -> new ListCell<String>() {
             @Override
@@ -487,11 +481,10 @@ public class SinglePlayerGameController {
             statsStage.setY(event.getScreenY() - yOffset[0]);
         });
 
-        // Configure stage
         Scene scene = new Scene(root, 800, 500);
-        wpmChart.setFocusTraversable(false); // Avoid focus ring glitches
-        wpmChart.setMouseTransparent(false); // Ensure hover works correctly
-        scene.setFill(Color.TRANSPARENT); // For rounded corners
+        wpmChart.setFocusTraversable(false);
+        wpmChart.setMouseTransparent(false);
+        scene.setFill(Color.TRANSPARENT);
         statsStage.setScene(scene);
         root.setFocusTraversable(true);
         Platform.runLater(root::requestFocus);
@@ -563,40 +556,6 @@ public class SinglePlayerGameController {
         displayField.setDisable(true);
         displayField.setEditable(false);
 
-//        leaderboardList.setCellFactory(lv -> new ListCell<String>() {
-//            private final HBox hbox = new HBox(10);
-//            private final Text rank = new Text();
-//            private final Text entry = new Text();
-//
-//            {
-//                hbox.setAlignment(Pos.CENTER_LEFT);
-//                rank.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
-//                hbox.getChildren().addAll(rank, entry);
-//
-//                setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;");
-//            }
-//
-//            @Override
-//            protected void updateItem(String item, boolean empty) {
-//                super.updateItem(item, empty);
-//                if (empty || item == null) {
-//                    setGraphic(null);
-//                } else {
-//                    rank.setText((getIndex() + 1) + ".");
-//                    entry.setText(item);
-//
-//                    if (item.contains(playerNameField.getText())) {
-//                        setStyle("-fx-background-color: #3a3d42; -fx-text-fill: #e2b714;");
-//                        entry.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
-//                    } else {
-//                        setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#2c2e31" : "#323437") + ";");
-//                        entry.setStyle("-fx-fill: #d1d0c5;");
-//                    }
-//
-//                    setGraphic(hbox);
-//                }
-//            }
-//        });
         startButton.setPrefSize(83, 31);
         startButton.setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
         startButton.setOnMouseEntered(e -> {
@@ -605,6 +564,7 @@ public class SinglePlayerGameController {
         startButton.setOnMouseExited(e -> {
             startButton.setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
         });
+
         backButton.setText("\uD83E\uDC20back");
         backButton.setStyle("""
         -fx-background-color: transparent;
@@ -984,64 +944,6 @@ public class SinglePlayerGameController {
         escText.setText("Press esc to go back to main menu");
         rootPane.requestLayout();
 
-        long finishTime = System.currentTimeMillis() - startTime;
-        double timeInSeconds = finishTime / 1000.0;
-        double wpm = calculateWPM();
-        double accuracy = calculateAccuracy();
-//        String entry;
-//        if (currentMode.toString().startsWith("TIME")) {
-//            entry = String.format("%s - Timed: %d WPM - %.0f%%",
-//                    playerName, (int) wpm, accuracy);
-//        } else {
-//            entry = String.format("%s - Words: %.2fs - %d WPM - %.0f%%",
-//                    playerName, timeInSeconds, (int) wpm, accuracy);
-//        }
-//        leaderboard.add(entry);
-//
-//        if(currentMode.toString().startsWith("TIME")) {
-//            leaderboard.sort((a, b) -> {
-//                String[] partsA = a.split(" - ");
-//                String[] partsB = b.split(" - ");
-//                int t1 = Integer.parseInt(partsA[1].replace(" WPM", "").replace("Timed: ", "").trim());
-//                int t2 = Integer.parseInt(partsB[1].replace(" WPM", "").replace("Timed: ", "").trim());
-//                int toReturn = Integer.compare(t1, t2);
-//                if (toReturn == 0) {
-//                    double t3 = Double.parseDouble(partsA[2].replace("%", "").trim());
-//                    double t4 = Double.parseDouble(partsB[2].replace("%", "").trim());
-//                    int toReturn2 = Double.compare(t3, t4);
-//                    if (toReturn2 == 0) {
-//                        return partsA[0].compareTo(partsB[0]);
-//                    }
-//                    return toReturn2;
-//                }
-//                return toReturn;
-//            });
-//        } else{
-//            leaderboard.sort((a, b) -> {
-//                String[] partsA = a.split(" - ");
-//                String[] partsB = b.split(" - ");
-//                double t1 = Double.parseDouble(partsA[1].replace("s", "").replace("Words: ", "").trim());
-//                double t2 = Double.parseDouble(partsB[1].replace("s", "").replace("Words: ", "").trim());
-//                int toReturn = Double.compare(t1, t2);
-//                if (toReturn == 0) {
-//                    int t3 = Integer.parseInt(partsA[1].replace(" WPM", "").trim());
-//                    int t4 = Integer.parseInt(partsB[1].replace(" WPM", "").trim());
-//                    int toReturn2 = Integer.compare(t3, t4);
-//                    if (toReturn2 == 0) {
-//                        double t5 = Double.parseDouble(partsA[2].replace("%", "").trim());
-//                        double t6 = Double.parseDouble(partsB[2].replace("%", "").trim());
-//                        int toReturn3 = Double.compare(t5, t6);
-//                        if(toReturn3 == 0) {
-//                            return partsA[0].compareTo(partsB[0]);
-//                        }
-//                        return toReturn3;
-//                    }
-//                    return toReturn2;
-//                }
-//                return toReturn;
-//            });
-//        }
-//        leaderboardList.setItems(leaderboard);
         modeContainer.setVisible(true);
         modeContainer.setManaged(true);
         rootPane.requestLayout();

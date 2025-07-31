@@ -112,7 +112,7 @@ public class MultiPlayerGameController {
             Rectangle rect = new Rectangle(40, 40);
             if (key.equals(" ")) {
                 rect.setWidth(200); // Make spacebar wider
-            } else if (key.endsWith("Ctrl") || key.endsWith("Alt") || key.equals("Tab")) { // For modifier keys
+            } else if (key.endsWith("Ctrl") || key.endsWith("Alt") || key.equals("Tab")) {
                 rect.setWidth(60);
             } else if (key.equals("Backspace")) {
                 rect.setWidth(120);
@@ -242,7 +242,7 @@ public class MultiPlayerGameController {
         Label escText = new Label();
         escText.setText("Press esc to close");
         escText.setStyle("-fx-font-size: 14px; -fx-text-fill: #d1d0c5;");
-        // Header
+
         Label header = new Label("LEADERBOARD");
         header.setStyle("-fx-text-fill: #e2b714; -fx-font-size: 24px; -fx-font-weight: bold;");
 
@@ -279,7 +279,6 @@ public class MultiPlayerGameController {
         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0, 0, 0);
         """);
 
-        // Make draggable
         final double[] xOffset = new double[1];
         final double[] yOffset = new double[1];
         titleBar.setOnMousePressed(event -> {
@@ -330,7 +329,7 @@ public class MultiPlayerGameController {
         gameRunning = true;
         gameTime = time;
         isLeaderBoardOn = false;
-        // Initialize with empty progress bar for current player
+
         addPlayerProgress(playerName);
         setupUI();
         setupNetworkHandlers();
@@ -358,7 +357,7 @@ public class MultiPlayerGameController {
             }
         }));
 
-        countdown.setCycleCount(waitTime + 1); // Run 4 times: show 3, show 2, show 1, then start game
+        countdown.setCycleCount(waitTime + 1);
         countdown.play();
 
         bigTimerLabel.setText("Starting in 3");

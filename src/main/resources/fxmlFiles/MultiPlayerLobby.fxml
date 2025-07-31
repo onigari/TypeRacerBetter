@@ -37,7 +37,7 @@
             </Button>
          </children>
       </HBox>
-      <HBox prefHeight="13.0" prefWidth="310.0">
+      <HBox alignment="CENTER" prefHeight="13.0" prefWidth="310.0">
          <children>
             <Label fx:id="warningLabel" alignment="CENTER" prefHeight="17.0" prefWidth="317.0" style="-fx-font-family: 'Roboto Mono'; -fx-text-fill: #323437; -fx-font-size: 16px; -fx-min-width: 150;" textFill="#d00515" />
          </children>
