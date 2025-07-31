@@ -222,7 +222,7 @@ public class MultiPlayerLobbyController {
 
             Stage stage = (Stage) playerListView.getScene().getWindow();
 
-            stage.setScene(new Scene(root, 1420, 800));
+            stage.setScene(new Scene(root, 1511, 850));
             stage.centerOnScreen();
             stage.setTitle("TypeRacer - " + playerName);
         } catch (IOException e) {

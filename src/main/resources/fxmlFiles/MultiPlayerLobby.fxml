@@ -18,7 +18,7 @@
       </HBox>
 
       <ListView fx:id="playerListView" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #3a3d42; -fx-text-fill: #d1d0c5; -fx-control-inner-background: #3a3d42; -fx-pref-height: 200; -fx-min-width: 300;" />
-      <HBox prefHeight="41.0" prefWidth="310.0">
+      <HBox alignment="TOP_CENTER" prefHeight="41.0" prefWidth="310.0">
          <children>
             <Button fx:id="fortySecondButton" alignment="CENTER" mnemonicParsing="false" onAction="#onFortyClick" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-weight: bold; -fx-font-size: 16px; -fx-min-width: 80;" text="40s">
                <HBox.margin>
