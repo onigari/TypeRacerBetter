@@ -364,11 +364,11 @@ public class MultiPlayerGameController {
     }
 
     private void countDownTimer() {
-        final int[] timeLeft = {gameTime};
+        final int[] timeLeft = {gameTime*1000};
 
-        Timeline countdown = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+        Timeline countdown = new Timeline(new KeyFrame(Duration.millis(1), e -> {
             if (timeLeft[0] > 0 && gameRunning) {
-                int seconds = (int) timeLeft[0];
+                int seconds = (int) (timeLeft[0]/(double)1000);
                 bigTimerLabel.setText(String.format("Time left: %d seconds", seconds));
                 if(timeLeft[0] < 5) {
                     bigTimerLabel.setStyle("-fx-text-fill: #f20909; -fx-font-size: 14;");
@@ -388,7 +388,7 @@ public class MultiPlayerGameController {
             }
         }));
 
-        countdown.setCycleCount(gameTime + 1);
+        countdown.setCycleCount(gameTime*1000 + 1);
         countdown.play();
 
         bigTimerLabel.setText("Time left: " + timeLeft[0] + " seconds");
@@ -835,8 +835,8 @@ public class MultiPlayerGameController {
         if(typingDone) {
             return;
         }
-        leaderBoardPopUp();
         typingDone = true;
+        leaderBoardPopUp();
         rootPane.requestFocus();
         if (timer != null) timer.stop();
         typingField.setDisable(true);
