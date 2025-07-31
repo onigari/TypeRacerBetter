@@ -2,10 +2,8 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -18,7 +16,7 @@
    </HBox>
 
    <!-- Main Content Area -->
-   <VBox alignment="TOP_CENTER" spacing="15" style="-fx-background-color: #2c2e31; -fx-padding: 20; -fx-border-radius: 5; -fx-background-radius: 5;">
+   <VBox alignment="TOP_CENTER" prefHeight="432.0" prefWidth="760.0" spacing="15" style="-fx-background-color: #2c2e31; -fx-padding: 20; -fx-border-radius: 5; -fx-background-radius: 5;" VBox.vgrow="ALWAYS">
       <!-- Stats Bar -->
       <HBox alignment="CENTER_LEFT" spacing="30">
          <Label fx:id="timeTitle" style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="time:" />
@@ -30,16 +28,18 @@
          <Label fx:id="accuracyTitle" style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="accuracy:" />
          <Label fx:id="accuracyLabel" style="-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="0%" />
       </HBox>
-      <HBox alignment="TOP_CENTER" prefHeight="36.0" prefWidth="720.0">
+      <HBox alignment="TOP_CENTER" maxHeight="36.0" prefHeight="36.0">
          <children>
-      
+
                   <!-- Progress Bar -->
-            <ProgressBar fx:id="progressBar" prefWidth="1000" progress="0.0" style="-fx-accent: #e2b714; -fx-background-color: #3a3d42;" />
+            <ProgressBar fx:id="progressBar" maxHeight="20.0" prefHeight="20.0" prefWidth="1000.0" progress="0.0" style="-fx-accent: #e2b714; -fx-background-color: #3a3d42;" />
          </children>
       </HBox>
 
-      <!-- Paragraph Display -->
-      <TextFlow fx:id="paragraphFlow" prefHeight="97.0" prefWidth="720.0" style="-fx-background-color: #2c2e31; -fx-padding: 15; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 22px; -fx-line-spacing: 10;" />
+               <!-- Paragraph Display -->
+      <VBox alignment="TOP_CENTER" maxHeight="150.0" prefHeight="150.0" prefWidth="720.0" VBox.vgrow="ALWAYS">
+         <TextFlow fx:id="paragraphFlow" maxHeight="179.0" prefHeight="179.0" prefWidth="720.0" style="-fx-background-color: #2c2e31; -fx-padding: 15; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 22px; -fx-line-spacing: 10;" />
+      </VBox>
    </VBox>
    <HBox prefHeight="51.0" prefWidth="760.0">
       <children>
@@ -51,69 +51,18 @@
    <VBox alignment="CENTER" spacing="5" style="-fx-padding: 10;">
       <!-- Row 1: Tab Q W E R T Y U I O P { } -->
       <GridPane fx:id="keyboardRow1" alignment="CENTER" hgap="3" vgap="3">
-         <columnConstraints>
-            <ColumnConstraints hgrow="NEVER" minWidth="60.0" prefWidth="60.0" /> <!-- Tab -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- Q -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- W -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- E -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- R -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- T -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- Y -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- U -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- I -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- O -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- P -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- { -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- } -->
-         </columnConstraints>
       </GridPane>
 
       <!-- Row 2: Caps Lock A S D F G H J K L ; " Enter -->
       <GridPane fx:id="keyboardRow2" alignment="CENTER" hgap="3" vgap="3">
-         <columnConstraints>
-            <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="100.0" /> <!-- Caps Lock -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- A -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- S -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- D -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- F -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- G -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- H -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- J -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- K -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- L -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- ; -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- " -->
-            <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="100.0" /> <!-- Enter -->
-         </columnConstraints>
       </GridPane>
 
       <!-- Row 3: Shift Z X C V B N M < > ? Shift -->
       <GridPane fx:id="keyboardRow3" alignment="CENTER" hgap="3" vgap="3">
-         <columnConstraints>
-            <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="100.0" /> <!-- Shift -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- Z -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- X -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- C -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- V -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- B -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- N -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- M -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- < -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- > -->
-            <ColumnConstraints hgrow="NEVER" minWidth="40.0" prefWidth="40.0" /> <!-- ? -->
-            <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="100.0" /> <!-- Shift -->
-         </columnConstraints>
       </GridPane>
 
       <!-- Row 4: Ctrl Alt (space) Alt Ctrl -->
       <GridPane fx:id="keyboardRow4" alignment="CENTER" hgap="3" vgap="3">
-         <columnConstraints>
-            <ColumnConstraints hgrow="NEVER" minWidth="60.0" prefWidth="60.0" /> <!-- Ctrl -->
-            <ColumnConstraints hgrow="NEVER" minWidth="60.0" prefWidth="60.0" /> <!-- Alt -->
-            <ColumnConstraints hgrow="NEVER" minWidth="200.0" prefWidth="200.0" /> <!-- Space -->
-            <ColumnConstraints hgrow="NEVER" minWidth="60.0" prefWidth="60.0" /> <!-- Alt -->
-            <ColumnConstraints hgrow="NEVER" minWidth="60.0" prefWidth="60.0" /> <!-- Ctrl -->
-         </columnConstraints>
       </GridPane>
    </VBox>
 
@@ -123,19 +72,13 @@
       <HBox alignment="CENTER_LEFT" prefHeight="126.0" prefWidth="352.0" spacing="10">
          <Label fx:id="nameTitle" style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="name:" />
          <TextField fx:id="playerNameField" promptText="your name" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-border-color: #646669; -fx-prompt-text-fill: #646669;" />
-   
+
                   <!-- Start Button -->
          <Button fx:id="startButton" onAction="#onStartButtonClick" style="-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 15;" text="start" />
       </HBox>
       <HBox prefHeight="144.0" prefWidth="94.0">
-         <children>
-            <ListView fx:id="leaderboardList" prefHeight="124.0" prefWidth="133.0" style="-fx-background-color: #2c2e31; -fx-border-color: #e2b714; -fx-border-width: 1; -fx-opacity: 0; -fx-border-radius: 5;">
-            <!-- Custom cell factory will be set in controller -->
-         </ListView>
-         
-               <!-- Typing Input -->
-            <TextField fx:id="typingField" prefHeight="21.0" prefWidth="602.0" promptText="click here or press enter to start" style="-fx-background-color: transparent; -fx-opacity: 0; -fx-border-color: transparent; -fx-font-family: 'Roboto Mono'; -fx-font-size: 22px; -fx-text-fill: #d1d0c5;-fx-opacity: 0;s-fx-background-color: transparent; -fx-border-color: transparent; -fx-border-color: #e2b714; -fx-border-width: 0 0 2 0; -fx-prompt-text-fill: #646669;" />
-         </children>
+         <!-- Typing Input -->
+         <TextField fx:id="typingField" prefHeight="21.0" prefWidth="602.0" promptText="click here or press enter to start" style="-fx-background-color: transparent; -fx-opacity: 0; -fx-border-color: transparent; -fx-font-family: 'Roboto Mono'; -fx-font-size: 22px; -fx-text-fill: #d1d0c5;-fx-opacity: 0;s-fx-background-color: transparent; -fx-border-color: transparent; -fx-border-color: #e2b714; -fx-border-width: 0 0 2 0; -fx-prompt-text-fill: #646669;" />
       </HBox>
    </HBox>
    <Label fx:id="escText" alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="365.0" text="Press esc to go back to main menu" />

@@ -23,9 +23,10 @@ public class Server {
     private static void selectParagraph(int gameTime) {
         inputStrings.clear();
         String resourcePath = "/data/input" + gameTime + ".txt";
-
         try (InputStream input = Server.class.getResourceAsStream(resourcePath)) {
-            assert input != null;
+            if(input == null) {
+                return;
+            }
             try (Scanner takeIn = new Scanner(input)) {
 
                 while (takeIn.hasNextLine()) {
@@ -99,7 +100,7 @@ public class Server {
         }
     }
 
-    public static void broadcastLeaderboard(CopyOnWriteArrayList<String> leaderboard){
+    public static void broadcastLeaderboard(List<String> leaderboard){
         StringBuffer sb = new StringBuffer("LEADERBOARD:");
         int count = 0;
         synchronized (leaderboard) {

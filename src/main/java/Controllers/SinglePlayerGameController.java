@@ -79,7 +79,7 @@ public class SinglePlayerGameController {
     private final Map<String, Text> keyTexts = new HashMap<>();
 
     private enum GameMode {
-        TIME_15, TIME_30, TIME_60, WORDS_10, WORDS_25, WORDS_50, WORDS_100
+        TIME_15, TIME_30, TIME_60, WORDS_30, WORDS_45, WORDS_60
     }
     private GameMode currentMode = GameMode.TIME_60; // Default mode
     private HBox modeContainer; // Moved to class level for visibility control
@@ -89,7 +89,7 @@ public class SinglePlayerGameController {
     private String oldPara = "";
     private final List<Double> wpmDataPoints = new ArrayList<>();
     private long lastWpmUpdateTime = 0;
-    private Set<String> wrongWords = new HashSet<>();
+    private final Set<String> wrongWords = new HashSet<>();
 
     private void setupModeSelection() {
         modeInstructionLabel = new Label();
@@ -97,7 +97,6 @@ public class SinglePlayerGameController {
         updateModeInstructions();
 
         modeContainer = new HBox(10);
-        modeContainer.setAlignment(Pos.CENTER);
         modeContainer.setPadding(new Insets(10));
         modeContainer.setStyle("-fx-background-color: #2c2e31; -fx-border-radius: 5; -fx-background-radius: 5;");
 
@@ -110,6 +109,7 @@ public class SinglePlayerGameController {
         wordsButton.setOnAction(e -> showWordsOptions());
 
         modeContainer.getChildren().addAll(timeButton, wordsButton, modeInstructionLabel);
+        modeContainer.setAlignment(Pos.CENTER);
         rootPane.getChildren().add(1, modeContainer); // Add below title
         showTimeOptions();
     }
@@ -161,23 +161,19 @@ public class SinglePlayerGameController {
         Button wordsButton = new Button("Words");
         styleModeButton(wordsButton, true);
 
-        Button words10 = new Button("10");
-        styleOptionButton(words10, currentMode == GameMode.WORDS_10);
-        words10.setOnAction(e -> setMode(GameMode.WORDS_10));
+        Button words30 = new Button("30");
+        styleOptionButton(words30, currentMode == GameMode.WORDS_30);
+        words30.setOnAction(e -> setMode(GameMode.WORDS_30));
 
-        Button words25 = new Button("25");
-        styleOptionButton(words25, currentMode == GameMode.WORDS_25);
-        words25.setOnAction(e -> setMode(GameMode.WORDS_25));
+        Button words45 = new Button("45");
+        styleOptionButton(words45, currentMode == GameMode.WORDS_45);
+        words45.setOnAction(e -> setMode(GameMode.WORDS_45));
 
-        Button words50 = new Button("50");
-        styleOptionButton(words50, currentMode == GameMode.WORDS_50);
-        words50.setOnAction(e -> setMode(GameMode.WORDS_50));
+        Button words60 = new Button("60");
+        styleOptionButton(words60, currentMode == GameMode.WORDS_60);
+        words60.setOnAction(e -> setMode(GameMode.WORDS_60));
 
-        Button words100 = new Button("100");
-        styleOptionButton(words100, currentMode == GameMode.WORDS_100);
-        words100.setOnAction(e -> setMode(GameMode.WORDS_100));
-
-        modeContainer.getChildren().addAll(timeButton, wordsButton, words10, words25, words50, words100, modeInstructionLabel);
+        modeContainer.getChildren().addAll(timeButton, wordsButton, words30, words45, words60, modeInstructionLabel);
     }
 
     private void styleOptionButton(Button button, boolean selected) {
@@ -216,14 +212,12 @@ public class SinglePlayerGameController {
                         styleOptionButton(button, currentMode == GameMode.TIME_30);
                     } else if (button.getText().equals("60s")) {
                         styleOptionButton(button, currentMode == GameMode.TIME_60);
-                    } else if (button.getText().equals("10")) {
-                        styleOptionButton(button, currentMode == GameMode.WORDS_10);
-                    } else if (button.getText().equals("25")) {
-                        styleOptionButton(button, currentMode == GameMode.WORDS_25);
-                    } else if (button.getText().equals("50")) {
-                        styleOptionButton(button, currentMode == GameMode.WORDS_50);
-                    } else if (button.getText().equals("100")) {
-                        styleOptionButton(button, currentMode == GameMode.WORDS_100);
+                    } else if (button.getText().equals("30")) {
+                        styleOptionButton(button, currentMode == GameMode.WORDS_30);
+                    } else if (button.getText().equals("45")) {
+                        styleOptionButton(button, currentMode == GameMode.WORDS_45);
+                    } else if (button.getText().equals("60")) {
+                        styleOptionButton(button, currentMode == GameMode.WORDS_60);
                     }
                 }
             }
@@ -233,11 +227,10 @@ public class SinglePlayerGameController {
     private void prepareParagraph() {
         if (currentMode.toString().startsWith("WORDS")) {
             int wordCount = switch (currentMode) {
-                case WORDS_10 -> 10;
-                case WORDS_25 -> 25;
-                case WORDS_50 -> 50;
-                case WORDS_100 -> 100;
-                default -> 50;
+                case WORDS_30 -> 30;
+                case WORDS_45 -> 45;
+                case WORDS_60 -> 60;
+                default -> 30;
             };
             paragraphText = getFixedWordCountParagraph(wordCount);
         } else {
@@ -272,11 +265,9 @@ public class SinglePlayerGameController {
             case TIME_15 -> "Type as much as you can in 15 seconds!";
             case TIME_30 -> "Type as much as you can in 30 seconds!";
             case TIME_60 -> "Type as much as you can in 60 seconds!";
-            case WORDS_10 -> "Type 10 words as fast as you can!";
-            case WORDS_25 -> "Type 25 words as fast as you can!";
-            case WORDS_50 -> "Type 50 words as fast as you can!";
-            case WORDS_100 -> "Type 100 words as fast as you can!";
-            default -> "Select a mode to start typing!";
+            case WORDS_30 -> "Type 30 words as fast as you can!";
+            case WORDS_45 -> "Type 45 words as fast as you can!";
+            case WORDS_60 -> "Type 60 words as fast as you can!";
         };
         modeInstructionLabel.setText(instruction);
     }
@@ -339,11 +330,11 @@ public class SinglePlayerGameController {
         }
     }
 
-    private void leaderBoardPopUp() {
-        Stage leaderboardStage = new Stage();
-        leaderboardStage.initModality(Modality.APPLICATION_MODAL);
-        leaderboardStage.initOwner(rootPane.getScene().getWindow());
-        leaderboardStage.initStyle(StageStyle.TRANSPARENT);
+    private void statsPopUp() {
+        Stage statsStage = new Stage();
+        statsStage.initModality(Modality.APPLICATION_MODAL);
+        statsStage.initOwner(rootPane.getScene().getWindow());
+        statsStage.initStyle(StageStyle.TRANSPARENT);
 
         // Create LineChart for WPM vs Time
         NumberAxis xAxis = new NumberAxis();
@@ -400,7 +391,7 @@ public class SinglePlayerGameController {
         -fx-cursor: hand;
         -fx-font-family: 'Roboto Mono';
         """);
-        closeBtn.setOnAction(e -> leaderboardStage.close());
+        closeBtn.setOnAction(e -> statsStage.close());
         closeBtn.hoverProperty().addListener((obs, oldVal, isHovering) -> {
             closeBtn.setStyle(isHovering ?
                     "-fx-background-color: transparent; -fx-text-fill: #ca4754; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';" :
@@ -476,8 +467,8 @@ public class SinglePlayerGameController {
             yOffset[0] = event.getSceneY();
         });
         titleBar.setOnMouseDragged(event -> {
-            leaderboardStage.setX(event.getScreenX() - xOffset[0]);
-            leaderboardStage.setY(event.getScreenY() - yOffset[0]);
+            statsStage.setX(event.getScreenX() - xOffset[0]);
+            statsStage.setY(event.getScreenY() - yOffset[0]);
         });
 
         // Configure stage
@@ -485,23 +476,23 @@ public class SinglePlayerGameController {
         wpmChart.setFocusTraversable(false); // Avoid focus ring glitches
         wpmChart.setMouseTransparent(false); // Ensure hover works correctly
         scene.setFill(Color.TRANSPARENT); // For rounded corners
-        leaderboardStage.setScene(scene);
+        statsStage.setScene(scene);
         root.setFocusTraversable(true);
         Platform.runLater(root::requestFocus);
 
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        leaderboardStage.setX((screenBounds.getWidth() - scene.getWidth()) / 2);
-        leaderboardStage.setY((screenBounds.getHeight() - scene.getHeight()) / 2);
+        statsStage.setX((screenBounds.getWidth() - scene.getWidth()) / 2);
+        statsStage.setY((screenBounds.getHeight() - scene.getHeight()) / 2);
 
         root.setOpacity(0);
-        leaderboardStage.show();
+        statsStage.show();
         FadeTransition fadeIn = new FadeTransition(Duration.millis(300), root);
         fadeIn.setToValue(1);
         fadeIn.play();
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
-                leaderboardStage.close();
+                statsStage.close();
             }
         });
     }
@@ -556,40 +547,40 @@ public class SinglePlayerGameController {
         displayField.setDisable(true);
         displayField.setEditable(false);
 
-        leaderboardList.setCellFactory(lv -> new ListCell<String>() {
-            private final HBox hbox = new HBox(10);
-            private final Text rank = new Text();
-            private final Text entry = new Text();
-
-            {
-                hbox.setAlignment(Pos.CENTER_LEFT);
-                rank.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
-                hbox.getChildren().addAll(rank, entry);
-
-                setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;");
-            }
-
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                } else {
-                    rank.setText((getIndex() + 1) + ".");
-                    entry.setText(item);
-
-                    if (item.contains(playerNameField.getText())) {
-                        setStyle("-fx-background-color: #3a3d42; -fx-text-fill: #e2b714;");
-                        entry.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
-                    } else {
-                        setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#2c2e31" : "#323437") + ";");
-                        entry.setStyle("-fx-fill: #d1d0c5;");
-                    }
-
-                    setGraphic(hbox);
-                }
-            }
-        });
+//        leaderboardList.setCellFactory(lv -> new ListCell<String>() {
+//            private final HBox hbox = new HBox(10);
+//            private final Text rank = new Text();
+//            private final Text entry = new Text();
+//
+//            {
+//                hbox.setAlignment(Pos.CENTER_LEFT);
+//                rank.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
+//                hbox.getChildren().addAll(rank, entry);
+//
+//                setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;");
+//            }
+//
+//            @Override
+//            protected void updateItem(String item, boolean empty) {
+//                super.updateItem(item, empty);
+//                if (empty || item == null) {
+//                    setGraphic(null);
+//                } else {
+//                    rank.setText((getIndex() + 1) + ".");
+//                    entry.setText(item);
+//
+//                    if (item.contains(playerNameField.getText())) {
+//                        setStyle("-fx-background-color: #3a3d42; -fx-text-fill: #e2b714;");
+//                        entry.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
+//                    } else {
+//                        setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#2c2e31" : "#323437") + ";");
+//                        entry.setStyle("-fx-fill: #d1d0c5;");
+//                    }
+//
+//                    setGraphic(hbox);
+//                }
+//            }
+//        });
         escText.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
     }
 
@@ -633,7 +624,7 @@ public class SinglePlayerGameController {
             }
 
             if (e.getCode() == KeyCode.CONTROL) {
-                leaderBoardPopUp();
+                statsPopUp();
             }
         });
 
@@ -806,8 +797,8 @@ public class SinglePlayerGameController {
             updateStats();
 
             if (currentIndex >= paragraphText.length()) {
-                if (currentMode.equals(GameMode.WORDS_10) || currentMode.equals(GameMode.WORDS_25) ||
-                        currentMode.equals(GameMode.WORDS_50) || currentMode.equals(GameMode.WORDS_100)) {
+                if (currentMode.equals(GameMode.WORDS_30) || currentMode.equals(GameMode.WORDS_45) ||
+                        currentMode.equals(GameMode.WORDS_60)) {
                     typingFinished();
                 } else {
                     oldPara = newValue;
@@ -833,8 +824,8 @@ public class SinglePlayerGameController {
     private void updateStats() {
         Platform.runLater(() -> {
             long elapsed = (System.currentTimeMillis() - startTime) / 1000;
-            if (currentMode.equals(GameMode.WORDS_10) || currentMode.equals(GameMode.WORDS_25) ||
-                    currentMode.equals(GameMode.WORDS_50) || currentMode.equals(GameMode.WORDS_100)) {
+            if (currentMode.equals(GameMode.WORDS_30) || currentMode.equals(GameMode.WORDS_45) ||
+                    currentMode.equals(GameMode.WORDS_60)) {
                 timeLabel.setText(String.format("%ds", (int) elapsed));
             }
             double wpm = calculateWPM();
@@ -927,7 +918,7 @@ public class SinglePlayerGameController {
         for(String s : wrongWords) out.println(s);
         if (typingDone) return;
         updateStats();
-        leaderBoardPopUp();
+        statsPopUp();
         typingDone = true;
         if (timer != null) timer.stop();
         isTimerRunning = false;
@@ -945,60 +936,60 @@ public class SinglePlayerGameController {
         double timeInSeconds = finishTime / 1000.0;
         double wpm = calculateWPM();
         double accuracy = calculateAccuracy();
-        String entry;
-        if (currentMode.toString().startsWith("TIME")) {
-            entry = String.format("%s - Timed: %d WPM - %.0f%%",
-                    playerName, (int) wpm, accuracy);
-        } else {
-            entry = String.format("%s - Words: %.2fs - %d WPM - %.0f%%",
-                    playerName, timeInSeconds, (int) wpm, accuracy);
-        }
-        leaderboard.add(entry);
-
-        if(currentMode.toString().startsWith("TIME")) {
-            leaderboard.sort((a, b) -> {
-                String[] partsA = a.split(" - ");
-                String[] partsB = b.split(" - ");
-                int t1 = Integer.parseInt(partsA[1].replace(" WPM", "").replace("Timed: ", "").trim());
-                int t2 = Integer.parseInt(partsB[1].replace(" WPM", "").replace("Timed: ", "").trim());
-                int toReturn = Integer.compare(t1, t2);
-                if (toReturn == 0) {
-                    double t3 = Double.parseDouble(partsA[2].replace("%", "").trim());
-                    double t4 = Double.parseDouble(partsB[2].replace("%", "").trim());
-                    int toReturn2 = Double.compare(t3, t4);
-                    if (toReturn2 == 0) {
-                        return partsA[0].compareTo(partsB[0]);
-                    }
-                    return toReturn2;
-                }
-                return toReturn;
-            });
-        } else{
-            leaderboard.sort((a, b) -> {
-                String[] partsA = a.split(" - ");
-                String[] partsB = b.split(" - ");
-                double t1 = Double.parseDouble(partsA[1].replace("s", "").replace("Words: ", "").trim());
-                double t2 = Double.parseDouble(partsB[1].replace("s", "").replace("Words: ", "").trim());
-                int toReturn = Double.compare(t1, t2);
-                if (toReturn == 0) {
-                    int t3 = Integer.parseInt(partsA[1].replace(" WPM", "").trim());
-                    int t4 = Integer.parseInt(partsB[1].replace(" WPM", "").trim());
-                    int toReturn2 = Integer.compare(t3, t4);
-                    if (toReturn2 == 0) {
-                        double t5 = Double.parseDouble(partsA[2].replace("%", "").trim());
-                        double t6 = Double.parseDouble(partsB[2].replace("%", "").trim());
-                        int toReturn3 = Double.compare(t5, t6);
-                        if(toReturn3 == 0) {
-                            return partsA[0].compareTo(partsB[0]);
-                        }
-                        return toReturn3;
-                    }
-                    return toReturn2;
-                }
-                return toReturn;
-            });
-        }
-        leaderboardList.setItems(leaderboard);
+//        String entry;
+//        if (currentMode.toString().startsWith("TIME")) {
+//            entry = String.format("%s - Timed: %d WPM - %.0f%%",
+//                    playerName, (int) wpm, accuracy);
+//        } else {
+//            entry = String.format("%s - Words: %.2fs - %d WPM - %.0f%%",
+//                    playerName, timeInSeconds, (int) wpm, accuracy);
+//        }
+//        leaderboard.add(entry);
+//
+//        if(currentMode.toString().startsWith("TIME")) {
+//            leaderboard.sort((a, b) -> {
+//                String[] partsA = a.split(" - ");
+//                String[] partsB = b.split(" - ");
+//                int t1 = Integer.parseInt(partsA[1].replace(" WPM", "").replace("Timed: ", "").trim());
+//                int t2 = Integer.parseInt(partsB[1].replace(" WPM", "").replace("Timed: ", "").trim());
+//                int toReturn = Integer.compare(t1, t2);
+//                if (toReturn == 0) {
+//                    double t3 = Double.parseDouble(partsA[2].replace("%", "").trim());
+//                    double t4 = Double.parseDouble(partsB[2].replace("%", "").trim());
+//                    int toReturn2 = Double.compare(t3, t4);
+//                    if (toReturn2 == 0) {
+//                        return partsA[0].compareTo(partsB[0]);
+//                    }
+//                    return toReturn2;
+//                }
+//                return toReturn;
+//            });
+//        } else{
+//            leaderboard.sort((a, b) -> {
+//                String[] partsA = a.split(" - ");
+//                String[] partsB = b.split(" - ");
+//                double t1 = Double.parseDouble(partsA[1].replace("s", "").replace("Words: ", "").trim());
+//                double t2 = Double.parseDouble(partsB[1].replace("s", "").replace("Words: ", "").trim());
+//                int toReturn = Double.compare(t1, t2);
+//                if (toReturn == 0) {
+//                    int t3 = Integer.parseInt(partsA[1].replace(" WPM", "").trim());
+//                    int t4 = Integer.parseInt(partsB[1].replace(" WPM", "").trim());
+//                    int toReturn2 = Integer.compare(t3, t4);
+//                    if (toReturn2 == 0) {
+//                        double t5 = Double.parseDouble(partsA[2].replace("%", "").trim());
+//                        double t6 = Double.parseDouble(partsB[2].replace("%", "").trim());
+//                        int toReturn3 = Double.compare(t5, t6);
+//                        if(toReturn3 == 0) {
+//                            return partsA[0].compareTo(partsB[0]);
+//                        }
+//                        return toReturn3;
+//                    }
+//                    return toReturn2;
+//                }
+//                return toReturn;
+//            });
+//        }
+//        leaderboardList.setItems(leaderboard);
 
         playerNameField.setEditable(true);
         playerNameField.requestFocus();
@@ -1029,11 +1020,10 @@ public class SinglePlayerGameController {
             timeLabel.setText(duration + "s");
         } else {
             int wordCount = switch (currentMode) {
-                case WORDS_10 -> 10;
-                case WORDS_25 -> 25;
-                case WORDS_50 -> 50;
-                case WORDS_100 -> 100;
-                default -> 50;
+                case WORDS_30 -> 30;
+                case WORDS_45 -> 45;
+                case WORDS_60 -> 60;
+                default -> 30;
             };
             titleLabel.setText("Words Mode - " + wordCount + " Words Challenge!");
             timeLabel.setText("0s");
@@ -1099,6 +1089,7 @@ public class SinglePlayerGameController {
         stage.setTitle("TypeRacer");
         stage.setResizable(true);
         stage.setScene(scene);
+        stage.centerOnScreen();
         stage.show();
     }
 }

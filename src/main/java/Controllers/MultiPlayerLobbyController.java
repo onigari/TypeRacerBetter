@@ -56,12 +56,39 @@ public class MultiPlayerLobbyController {
     private void setupUI() {
         playerListView.setItems(players);
         startButton.setDisable(!isHost);
+        fortySecondButton.setPrefSize(80,36);
+        sixtySecondButton.setPrefSize(80,36);
+        ninetySecondButton.setPrefSize(80,36);
+        startButton.setPrefSize(150,36);
+
+        styleModeButton(fortySecondButton, false);
+        styleModeButton(sixtySecondButton, false);
+        styleModeButton(ninetySecondButton, false);
+        styleModeButton(startButton, false);
 
         if (hostIndicator != null) {
             hostIndicator.setText(isHost ? "(Host)" : "(Player)");
         }
 
         escText.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+    }
+
+    private void styleModeButton(Button button, boolean selected) {
+        button.setStyle(selected ?
+                "-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;" :
+                "-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        if(!selected && button == startButton) {button.setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");}
+        button.setOnMouseEntered(e -> {
+            if(!selected) {
+                button.setStyle("-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+            }
+        });
+        button.setOnMouseExited(e -> {
+            if(!selected) {
+                button.setStyle("-fx-background-color: #323437; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+            }
+            if(button == startButton) {button.setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");}
+        });
     }
 
     private void setupNetworkHandlers() {
@@ -73,15 +100,19 @@ public class MultiPlayerLobbyController {
                 });
             } else if (message.equals("START_GAME")) {
                 if(players.size() < 2){
-                    Platform.runLater(() -> {
-                        warningLabel.setText("You need to have at least two players");
-                        warningLabel.setStyle("-fx-text-fill: #D00515; -fx-font-size: 14;");
-                    });
+                    if(isHost) {
+                        Platform.runLater(() -> {
+                            warningLabel.setText("You need to have at least two players");
+                            warningLabel.setStyle("-fx-text-fill: #D00515; -fx-font-size: 14;");
+                        });
+                    }
                 } else if(time == 0) {
-                    Platform.runLater(() -> {
-                        warningLabel.setText("You have to select a time");
-                        warningLabel.setStyle("-fx-text-fill: #D00515; -fx-font-size: 14;");
-                    });
+                    if(isHost) {
+                        Platform.runLater(() -> {
+                            warningLabel.setText("You have to select a time");
+                            warningLabel.setStyle("-fx-text-fill: #D00515; -fx-font-size: 14;");
+                        });
+                    }
                 }
                 else {
                     Platform.runLater(this::startGame);
@@ -94,20 +125,40 @@ public class MultiPlayerLobbyController {
                 }
             } else if (message.startsWith("TIME:")) {
                 time = Integer.parseInt(message.substring(5));
+                switch (time) {
+                    case 40:
+                        styleModeButton(fortySecondButton, true);
+                        styleModeButton(sixtySecondButton, false);
+                        styleModeButton(ninetySecondButton, false);
+                        break;
+                    case 60:
+                        styleModeButton(fortySecondButton, false);
+                        styleModeButton(sixtySecondButton, true);
+                        styleModeButton(ninetySecondButton, false);
+                        break;
+                    case 90:
+                        styleModeButton(fortySecondButton, false);
+                        styleModeButton(sixtySecondButton, false);
+                        styleModeButton(ninetySecondButton, true);
+                        break;
+                }
             }
         });
     }
 
     private void setupEventHandlers() {
-        rootPane.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-            if (e.getCode() == KeyCode.ESCAPE) {
-                try {
-                    if(isHost) client.closeAll();
-                    loadMainMenu((Stage) rootPane.getScene().getWindow() );
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+        Platform.runLater(() -> {
+            rootPane.requestFocus();
+            rootPane.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+                if (e.getCode() == KeyCode.ESCAPE) {
+                    try {
+                        if(isHost) client.closeAll();
+                        loadMainMenu((Stage) rootPane.getScene().getWindow() );
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
-            }
+            });
         });
     }
 
@@ -121,16 +172,25 @@ public class MultiPlayerLobbyController {
     @FXML
     private void onFortyClick(){
         client.sendMessage("TIME:" + 40);
+        styleModeButton(fortySecondButton, true);
+        styleModeButton(sixtySecondButton, false);
+        styleModeButton(ninetySecondButton, false);
     }
 
     @FXML
     private void onSixtyClick(){
         client.sendMessage("TIME:" + 60);
+        styleModeButton(fortySecondButton, false);
+        styleModeButton(sixtySecondButton, true);
+        styleModeButton(ninetySecondButton, false);
     }
 
     @FXML
     private void onNinetyClick(){
         client.sendMessage("TIME:" + 90);
+        styleModeButton(fortySecondButton, false);
+        styleModeButton(sixtySecondButton, false);
+        styleModeButton(ninetySecondButton, true);
     }
 
     private void loadMainMenu(Stage stage) throws IOException {
@@ -147,6 +207,7 @@ public class MultiPlayerLobbyController {
             stage.setTitle("TypeRacer");
             stage.setResizable(true);
             stage.setScene(scene);
+            stage.centerOnScreen();
             stage.show();
         });
     }
@@ -160,7 +221,9 @@ public class MultiPlayerLobbyController {
             controller.initialize(client, playerName, isHost, time);
 
             Stage stage = (Stage) playerListView.getScene().getWindow();
-            stage.setScene(new Scene(root, 1420, 800));
+
+            stage.setScene(new Scene(root, 1511, 850));
+            stage.centerOnScreen();
             stage.setTitle("TypeRacer - " + playerName);
         } catch (IOException e) {
             e.printStackTrace();

@@ -253,12 +253,13 @@ public class MultiPlayerGameController {
         -fx-font-weight: bold;
         -fx-padding: 0 8 0 8;
         -fx-cursor: hand;
+        -fx-font-family: 'Roboto Mono';
         """);
         closeBtn.setOnAction(e -> leaderboardStage.close());
         closeBtn.hoverProperty().addListener((obs, oldVal, isHovering) -> {
             closeBtn.setStyle(isHovering ?
-                    "-fx-text-fill: #ca4754;" :
-                    "-fx-text-fill: #d1d0c5;");
+                    "-fx-background-color: transparent; -fx-text-fill: #ca4754; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';" :
+                    "-fx-background-color: transparent; -fx-text-fill: #d1d0c5; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';");
         });
 
         HBox titleBar = new HBox(header, new Region(), closeBtn);
@@ -297,6 +298,8 @@ public class MultiPlayerGameController {
         leaderboardList.setMouseTransparent(false);
         scene.setFill(Color.TRANSPARENT); // For rounded corners
         leaderboardStage.setScene(scene);
+        root.setFocusTraversable(true);
+        Platform.runLater(root::requestFocus);
 
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         leaderboardStage.setX((screenBounds.getWidth() - scene.getWidth()) / 2);
@@ -361,11 +364,11 @@ public class MultiPlayerGameController {
     }
 
     private void countDownTimer() {
-        final int[] timeLeft = {gameTime};
+        final int[] timeLeft = {gameTime*1000};
 
-        Timeline countdown = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+        Timeline countdown = new Timeline(new KeyFrame(Duration.millis(1), e -> {
             if (timeLeft[0] > 0 && gameRunning) {
-                int seconds = (int) timeLeft[0];
+                int seconds = (int) (timeLeft[0]/(double)1000);
                 bigTimerLabel.setText(String.format("Time left: %d seconds", seconds));
                 if(timeLeft[0] < 5) {
                     bigTimerLabel.setStyle("-fx-text-fill: #f20909; -fx-font-size: 14;");
@@ -376,8 +379,8 @@ public class MultiPlayerGameController {
                 if(!typingDone) {
                     warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono'; -fx-font-size: 14; -fx-text-fill: #f20909;");
                     warningText.setText("TYPING UNFINISHED");
+                    typingFinished();
                 }
-                typingFinished();
             }
             if(typingDone && timeLeft[0] > 0) {
                 warningText.setStyle("-fx-opacity: 1;-fx-font-family: 'Roboto Mono'; -fx-font-size: 14; -fx-text-fill: #66993C;");
@@ -385,7 +388,7 @@ public class MultiPlayerGameController {
             }
         }));
 
-        countdown.setCycleCount(gameTime + 1);
+        countdown.setCycleCount(gameTime*1000 + 1);
         countdown.play();
 
         bigTimerLabel.setText("Time left: " + timeLeft[0] + " seconds");
@@ -407,6 +410,7 @@ public class MultiPlayerGameController {
             stage.setTitle("TypeRacer");
             stage.setResizable(true);
             stage.setScene(scene);
+            stage.centerOnScreen();
             stage.show();
         });
     }
@@ -420,9 +424,10 @@ public class MultiPlayerGameController {
 
         Platform.runLater(() -> {
             Stage stage = (Stage) rootPane.getScene().getWindow();
-            stage.setScene(new Scene(root, 1420, 800));
+            stage.setScene(new Scene(root, 410, 608));
 
             stage.setTitle("Multiplayer Lobby - " + playerName);
+            stage.centerOnScreen();
             stage.setOnCloseRequest(e -> client.close());
         });
     }
@@ -433,14 +438,16 @@ public class MultiPlayerGameController {
             rootPane.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
                 if (e.getCode() == KeyCode.ESCAPE) {
                     try {
-                        out.println("To Close");
                         if(isHost) client.closeAll();
-                        else loadMainMenu();
+                        else{
+                            typingDone = true;
+                            loadMainMenu();
+                        }
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
                 }
-                if (e.getCode() == KeyCode.TAB) {
+                if (e.getCode() == KeyCode.CONTROL) {
                    if(!isLeaderBoardOn && typingDone) {
                        isLeaderBoardOn = true;
                        leaderBoardPopUp();
@@ -471,15 +478,20 @@ public class MultiPlayerGameController {
                 out.println(message);
                 Platform.runLater(() -> {
                     String[] players = message.substring(8).split(",");
+                    playerProgressBars.clear();
+                    progressBarsContainer.getChildren().clear();
+                    out.println(progressBarsContainer.getChildren().isEmpty());
+                    addPlayerProgress(playerName);
                     for (String player : players) {
                         if (!player.equals(playerName)) {
                             addPlayerProgress(player);
                         }
                     }
                 });
-                client.sendMessage("GET_PARAGRAPH");
+                if(paragraphText == null) client.sendMessage("GET_PARAGRAPH");
             } else if (message.equals("CLOSE_ALL")) {
                 try {
+                    typingDone = true;
                     loadMainMenu();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -488,6 +500,7 @@ public class MultiPlayerGameController {
                 out.println("GAME FINISHED received");
                 gameRunning = false;
                 restartButton.setDisable(!isHost);
+                restartButton.setVisible(true);
             } else if (message.equals("RESTART")) {
                 try {
                     loadLobby();
@@ -556,6 +569,17 @@ public class MultiPlayerGameController {
             }
         });
 
+        restartButton.setPrefSize(83, 31);
+        restartButton.setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        restartButton.setOnMouseEntered(e -> {
+            restartButton.setStyle("-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        });
+        restartButton.setOnMouseExited(e -> {
+            restartButton.setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
+        });
+
+        restartButton.setVisible(false);
+
         escText.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
     }
 
@@ -609,7 +633,7 @@ public class MultiPlayerGameController {
                 pause.play();
             }
 
-            if (e.getCode() == KeyCode.TAB) {
+            if (e.getCode() == KeyCode.CONTROL) {
                 leaderBoardPopUp();
             }
         });
@@ -811,8 +835,8 @@ public class MultiPlayerGameController {
         if(typingDone) {
             return;
         }
-        leaderBoardPopUp();
         typingDone = true;
+        leaderBoardPopUp();
         rootPane.requestFocus();
         if (timer != null) timer.stop();
         typingField.setDisable(true);
@@ -832,6 +856,9 @@ public class MultiPlayerGameController {
 
     private void updateLeaderboard(String data) {
         String[] entries = data.split("\\|");
+        for(String entry : entries) {
+            out.println(entry);
+        }
         leaderboard.setAll(entries);
     }
 
@@ -842,6 +869,8 @@ public class MultiPlayerGameController {
             pb.setStyle("-fx-accent: " + getColorForPlayer(playerName) + ";");
 
             HBox playerBox = new HBox(5);
+            playerBox.setUserData(playerName);
+
             Label nameLabel = new Label(playerName);
             nameLabel.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'JetBrains Mono Medium'; -fx-min-width: 75;");
 
