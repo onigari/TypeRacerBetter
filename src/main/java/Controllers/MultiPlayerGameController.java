@@ -395,19 +395,19 @@ public class MultiPlayerGameController {
         timeLeft[0]--;
     }
 
-    private void loadMainMenu() throws IOException {
+    private void loadMultiPlayerChoice() throws IOException {
         new Thread(() -> {
             client.close();
         }).start();
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MainMenu.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MultiPlayerChoice.fxml"));
         Parent root = loader.load();
 
         Platform.runLater(() -> {
             Stage stage = (Stage) rootPane.getScene().getWindow();
-            Scene scene = new Scene(root, 800, 600);
+            Scene scene = new Scene(root, 346, 412);
 
-            stage.setTitle("TypeRacer");
+            stage.setTitle("TypeRacer - MultiPlayer Choice");
             stage.setResizable(true);
             stage.setScene(scene);
             stage.centerOnScreen();
@@ -441,7 +441,7 @@ public class MultiPlayerGameController {
                         if(isHost) client.closeAll();
                         else{
                             typingDone = true;
-                            loadMainMenu();
+                            loadMultiPlayerChoice();
                         }
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -492,7 +492,7 @@ public class MultiPlayerGameController {
             } else if (message.equals("CLOSE_ALL")) {
                 try {
                     typingDone = true;
-                    loadMainMenu();
+                    loadMultiPlayerChoice();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

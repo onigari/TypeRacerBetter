@@ -212,8 +212,9 @@ public class ClientHandler implements Runnable {
             clients.remove(this);
         }
 
-        leaderboard.removeIf(entry -> entry.startsWith(playerName + ";"));
-
+        synchronized (leaderboard) {
+            leaderboard.removeIf(entry -> entry.startsWith(playerName));
+        }
         initiatePlayerList();
         Server.broadcastPlayerList(playersList);
     }
