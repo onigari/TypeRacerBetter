@@ -119,7 +119,7 @@ public class MultiPlayerLobbyController {
                 }
             } else if (message.equals("CLOSE_ALL")){
                 try{
-                    loadMainMenu((Stage) rootPane.getScene().getWindow());
+                    loadChoice((Stage) rootPane.getScene().getWindow());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -153,7 +153,7 @@ public class MultiPlayerLobbyController {
                 if (e.getCode() == KeyCode.ESCAPE) {
                     try {
                         if(isHost) client.closeAll();
-                        loadMainMenu((Stage) rootPane.getScene().getWindow() );
+                        loadChoice((Stage) rootPane.getScene().getWindow() );
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -193,16 +193,16 @@ public class MultiPlayerLobbyController {
         styleModeButton(ninetySecondButton, true);
     }
 
-    private void loadMainMenu(Stage stage) throws IOException {
+    private void loadChoice(Stage stage) throws IOException {
         new Thread(() -> {
             client.close();
         }).start();
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MainMenu.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MultiPlayerChoice.fxml"));
         Parent root = loader.load();
 
         Platform.runLater(() -> {
-            Scene scene = new Scene(root, 800, 600);
+            Scene scene = new Scene(root, 346, 412);
 
             stage.setTitle("TypeRacer");
             stage.setResizable(true);

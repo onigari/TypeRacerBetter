@@ -370,7 +370,7 @@ public class MultiPlayerGameController {
             if (timeLeft[0] > 0 && gameRunning) {
                 int seconds = (int) (timeLeft[0]/(double)1000);
                 bigTimerLabel.setText(String.format("Time left: %d seconds", seconds));
-                if(timeLeft[0] < 5) {
+                if(seconds <= 5) {
                     bigTimerLabel.setStyle("-fx-text-fill: #f20909; -fx-font-size: 14;");
                 }
                 timeLeft[0]--;
