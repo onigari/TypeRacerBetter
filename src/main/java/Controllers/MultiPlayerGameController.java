@@ -43,6 +43,7 @@ public class MultiPlayerGameController {
     public GridPane keyboardRow4;
 
     @FXML public Label warningText;
+    public Button backButton;
     @FXML private Label bigTimerLabel;
     @FXML private VBox rootPane;
     @FXML private TextFlow paragraphFlow;
@@ -579,6 +580,33 @@ public class MultiPlayerGameController {
         });
 
         restartButton.setVisible(false);
+
+        backButton.setText("\uD83E\uDC20back");
+        backButton.setStyle("""
+        -fx-background-color: transparent;
+        -fx-text-fill: #d1d0c5;
+        -fx-font-size: 16px;
+        -fx-font-weight: bold;
+        -fx-padding: 0 8 0 8;
+        -fx-cursor: hand;
+        -fx-font-family: 'Roboto Mono';
+        """);
+        backButton.setOnAction(e -> {
+            try {
+                if(isHost) client.closeAll();
+                else{
+                    typingDone = true;
+                    loadMultiPlayerChoice();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        backButton.hoverProperty().addListener((obs, oldVal, isHovering) -> {
+            backButton.setStyle(isHovering ?
+                    "-fx-background-color: transparent; -fx-text-fill: #ca4754; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';" :
+                    "-fx-background-color: transparent; -fx-text-fill: #d1d0c5; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';");
+        });
 
         escText.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
     }

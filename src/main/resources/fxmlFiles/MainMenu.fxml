@@ -18,7 +18,7 @@
    <!-- Foreground UI -->
    <VBox alignment="CENTER" spacing="20"
          AnchorPane.leftAnchor="50" AnchorPane.rightAnchor="50" AnchorPane.topAnchor="50">
-      <Text styleClass="title-text" text="Type Racer" textAlignment="CENTER">
+      <Text fx:id="titleText" styleClass="title-text" text="Type Racer" textAlignment="CENTER">
          <font>
             <Font size="40.0" />
          </font>

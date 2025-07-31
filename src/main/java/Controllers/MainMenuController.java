@@ -3,67 +3,132 @@ package Controllers;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.w3c.dom.css.Rect;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static java.lang.System.out;
 
 public class MainMenuController {
+    public Text titleText;
     @FXML private Pane backgroundPane;
 
-    private final List<Circle> stars = new ArrayList<>();
+    private final List<Pane> keys = new ArrayList<>();
     private final Random random = new Random();
+    private final String[] characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""); // Array of letters for keys
 
     public void initialize() {
-        createStars(100);
-        animateStars();
+        createKeys(15);
+        animateKeys();
+        titleText.setStyle("-fx-text-fill: white; -fx-font-size: 40.0px; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono Medium';");
+
     }
 
-    private void createStars(int count) {
+    private void createKeys(int count) {
         for (int i = 0; i < count; i++) {
-            Circle star = new Circle(1 + random.nextDouble() * 1.5, Color.rgb(226,183,20, 0.4));
-            star.setLayoutX(random.nextDouble() * backgroundPane.getWidth());
-            star.setLayoutY(random.nextDouble() * backgroundPane.getHeight());
-            backgroundPane.getChildren().add(star);
-            stars.add(star);
+            // Create a Pane to group Rectangle and Label
+            Pane keyPane = new Pane();
+            int dim = random.nextInt(25, 50);
+
+            // Create Rectangle (key)
+            Rectangle key = new Rectangle(dim, dim);
+            key.setArcWidth(5);
+            key.setArcHeight(5);
+            key.setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-stroke-width: 1; -fx-opacity: 0.5;");
+
+            // Create Label for text
+            String text = characters[random.nextInt(characters.length)]; // Random letter
+            Label textLabel = new Label(text);
+            int fontSize = (int) ((key.getHeight() / 60) * 8 + 8);
+            textLabel.setStyle("-fx-text-fill: white; -fx-font-size: " + fontSize + " px; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono Medium';-fx-opacity: 0.5;");
+            textLabel.getEffect();
+            // Center the text in the rectangle
+            textLabel.setLayoutX((dim - textLabel.getWidth()) / 2 - 6);
+            textLabel.setLayoutY((dim - textLabel.getHeight()) / 2 - 8); // Adjust for vertical centering
+
+            // Add Rectangle and Label to the Pane
+            keyPane.getChildren().addAll(key, textLabel);
+
+            // Position the Pane
+            keyPane.setLayoutX(random.nextDouble() * backgroundPane.getWidth());
+            keyPane.setLayoutY(random.nextDouble() * backgroundPane.getHeight());
+
+            // Add to background and list
+            backgroundPane.getChildren().add(keyPane);
+            keys.add(keyPane);
         }
 
-        backgroundPane.widthProperty().addListener((obs, oldVal, newVal) -> repositionStars());
-        backgroundPane.heightProperty().addListener((obs, oldVal, newVal) -> repositionStars());
+        backgroundPane.widthProperty().addListener((obs, oldVal, newVal) -> repositionKeys());
+        backgroundPane.heightProperty().addListener((obs, oldVal, newVal) -> repositionKeys());
     }
 
-    private void repositionStars() {
-        for (Circle star : stars) {
-            star.setLayoutX(random.nextDouble() * backgroundPane.getWidth());
-            star.setLayoutY(random.nextDouble() * backgroundPane.getHeight());
+    private void repositionKeys() {
+        for (Pane keyPane : keys) {
+            keyPane.setLayoutX(random.nextDouble() * backgroundPane.getWidth());
+            keyPane.setLayoutY(random.nextDouble() * backgroundPane.getHeight());
         }
     }
 
-    private void animateStars() {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(50), e -> {
-            for (Circle star : stars) {
-                star.setLayoutY(star.getLayoutY() + 0.3);
-                if (star.getLayoutY() > backgroundPane.getHeight()) {
-                    star.setLayoutY(0);
-                    star.setLayoutX(random.nextDouble() * backgroundPane.getWidth());
+    private void animateKeys() {
+        Timeline timeline1 = new Timeline(new KeyFrame(Duration.millis(50), e -> {
+            for (Pane keyPane : keys) {
+                keyPane.setLayoutY(keyPane.getLayoutY() + 0.7);
+                if (keyPane.getLayoutY() > backgroundPane.getHeight()) {
+                    keyPane.setLayoutY(0);
+                    keyPane.setLayoutX(random.nextDouble() * backgroundPane.getWidth());
                 }
             }
         }));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
+        Timeline timeline2 = new Timeline(new KeyFrame(Duration.seconds(0.7), e -> {
+            for (Pane keyPane : keys) {
+                if (keyPane.getChildren().getFirst() instanceof Rectangle rectangle) {
+                    int fontSize = (int) ((rectangle.getHeight() / 60) * 8 + 8);
+                    highlightKey(keyPane, random.nextInt() % 4 == 0, fontSize);
+                }
+            }
+        }));
+        Timeline timeline3 = new Timeline(new KeyFrame(Duration.seconds(0.3), e -> {
+            for (Pane keyPane : keys) {
+                if (keyPane.getChildren().getFirst() instanceof Rectangle rectangle) {
+                    int fontSize = (int) ((rectangle.getHeight() / 60) * 8 + 8);
+                    highlightKey(keyPane, random.nextInt() % 7 == 0, fontSize);
+                }
+            }
+        }));
+        timeline1.setCycleCount(Animation.INDEFINITE);
+        timeline2.setCycleCount(Animation.INDEFINITE);
+        timeline3.setCycleCount(Animation.INDEFINITE);
+        timeline1.play();
+        timeline2.play();
+        timeline3.play();
+    }
+
+    private void highlightKey(Node node, boolean highlight, int fontSize) {
+        if (node instanceof Pane pane) {
+            if (highlight) {
+                pane.getChildren().getFirst().setStyle("-fx-fill: #e2b714; -fx-stroke: #e2b714; -fx-opacity: 0.5; -fx-stroke-width: 1;");
+                pane.getChildren().getLast().setStyle("-fx-text-fill: black; -fx-font-size: " + fontSize + " px; -fx-opacity: 0.5; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono Medium';");
+            } else {
+                pane.getChildren().getFirst().setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-opacity: 0.5; -fx-stroke-width: 1;");
+                pane.getChildren().getLast().setStyle("-fx-text-fill: white; -fx-font-size: " + fontSize + " px; -fx-opacity: 0.5; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono Medium';");
+            }
+        } else out.println("null in highlight");
     }
 
     @FXML
@@ -83,7 +148,6 @@ public class MainMenuController {
 
     @FXML
     private void onMultiPlayerClick(ActionEvent event) throws IOException {
-
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MultiPlayerChoice.fxml"));
         Parent root = loader.load();
 

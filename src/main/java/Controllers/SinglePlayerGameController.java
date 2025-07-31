@@ -605,8 +605,6 @@ public class SinglePlayerGameController {
         startButton.setOnMouseExited(e -> {
             startButton.setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 10; -fx-background-radius: 5;");
         });
-//        backButton.setTranslateX(-575);
-//        HBox.setMargin(backButton, new Insets(50, 0, 0, 100));
         backButton.setText("\uD83E\uDC20back");
         backButton.setStyle("""
         -fx-background-color: transparent;
