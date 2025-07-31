@@ -18,7 +18,7 @@ public class Main extends Application {
             Scene scene = new Scene(root, 800, 600);
             primaryStage.setTitle("TypeRacer");
             primaryStage.getIcons().add(
-                    new Image(Objects.requireNonNull(getClass().getResource("/img/icon.jpg")).toExternalForm())
+                    new Image(Objects.requireNonNull(getClass().getResource("/img/typeracerIcon.png")).toExternalForm())
             );
             Font.loadFont(getClass().getResourceAsStream("/fonts/ttf/JetBrainsMono-Medium.ttf"), 12);
             primaryStage.setResizable(true);

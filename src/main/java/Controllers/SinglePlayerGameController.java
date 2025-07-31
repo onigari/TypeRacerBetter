@@ -339,11 +339,11 @@ public class SinglePlayerGameController {
         }
     }
 
-    private void leaderBoardPopUp() {
-        Stage leaderboardStage = new Stage();
-        leaderboardStage.initModality(Modality.APPLICATION_MODAL);
-        leaderboardStage.initOwner(rootPane.getScene().getWindow());
-        leaderboardStage.initStyle(StageStyle.TRANSPARENT);
+    private void statsPopUp() {
+        Stage statsStage = new Stage();
+        statsStage.initModality(Modality.APPLICATION_MODAL);
+        statsStage.initOwner(rootPane.getScene().getWindow());
+        statsStage.initStyle(StageStyle.TRANSPARENT);
 
         // Create LineChart for WPM vs Time
         NumberAxis xAxis = new NumberAxis();
@@ -400,7 +400,7 @@ public class SinglePlayerGameController {
         -fx-cursor: hand;
         -fx-font-family: 'Roboto Mono';
         """);
-        closeBtn.setOnAction(e -> leaderboardStage.close());
+        closeBtn.setOnAction(e -> statsStage.close());
         closeBtn.hoverProperty().addListener((obs, oldVal, isHovering) -> {
             closeBtn.setStyle(isHovering ?
                     "-fx-background-color: transparent; -fx-text-fill: #ca4754; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';" :
@@ -476,8 +476,8 @@ public class SinglePlayerGameController {
             yOffset[0] = event.getSceneY();
         });
         titleBar.setOnMouseDragged(event -> {
-            leaderboardStage.setX(event.getScreenX() - xOffset[0]);
-            leaderboardStage.setY(event.getScreenY() - yOffset[0]);
+            statsStage.setX(event.getScreenX() - xOffset[0]);
+            statsStage.setY(event.getScreenY() - yOffset[0]);
         });
 
         // Configure stage
@@ -485,23 +485,23 @@ public class SinglePlayerGameController {
         wpmChart.setFocusTraversable(false); // Avoid focus ring glitches
         wpmChart.setMouseTransparent(false); // Ensure hover works correctly
         scene.setFill(Color.TRANSPARENT); // For rounded corners
-        leaderboardStage.setScene(scene);
+        statsStage.setScene(scene);
         root.setFocusTraversable(true);
         Platform.runLater(root::requestFocus);
 
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        leaderboardStage.setX((screenBounds.getWidth() - scene.getWidth()) / 2);
-        leaderboardStage.setY((screenBounds.getHeight() - scene.getHeight()) / 2);
+        statsStage.setX((screenBounds.getWidth() - scene.getWidth()) / 2);
+        statsStage.setY((screenBounds.getHeight() - scene.getHeight()) / 2);
 
         root.setOpacity(0);
-        leaderboardStage.show();
+        statsStage.show();
         FadeTransition fadeIn = new FadeTransition(Duration.millis(300), root);
         fadeIn.setToValue(1);
         fadeIn.play();
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
-                leaderboardStage.close();
+                statsStage.close();
             }
         });
     }
@@ -633,7 +633,7 @@ public class SinglePlayerGameController {
             }
 
             if (e.getCode() == KeyCode.CONTROL) {
-                leaderBoardPopUp();
+                statsPopUp();
             }
         });
 
@@ -927,7 +927,7 @@ public class SinglePlayerGameController {
         for(String s : wrongWords) out.println(s);
         if (typingDone) return;
         updateStats();
-        leaderBoardPopUp();
+        statsPopUp();
         typingDone = true;
         if (timer != null) timer.stop();
         isTimerRunning = false;
@@ -945,60 +945,60 @@ public class SinglePlayerGameController {
         double timeInSeconds = finishTime / 1000.0;
         double wpm = calculateWPM();
         double accuracy = calculateAccuracy();
-        String entry;
-        if (currentMode.toString().startsWith("TIME")) {
-            entry = String.format("%s - Timed: %d WPM - %.0f%%",
-                    playerName, (int) wpm, accuracy);
-        } else {
-            entry = String.format("%s - Words: %.2fs - %d WPM - %.0f%%",
-                    playerName, timeInSeconds, (int) wpm, accuracy);
-        }
-        leaderboard.add(entry);
-
-        if(currentMode.toString().startsWith("TIME")) {
-            leaderboard.sort((a, b) -> {
-                String[] partsA = a.split(" - ");
-                String[] partsB = b.split(" - ");
-                int t1 = Integer.parseInt(partsA[1].replace(" WPM", "").replace("Timed: ", "").trim());
-                int t2 = Integer.parseInt(partsB[1].replace(" WPM", "").replace("Timed: ", "").trim());
-                int toReturn = Integer.compare(t1, t2);
-                if (toReturn == 0) {
-                    double t3 = Double.parseDouble(partsA[2].replace("%", "").trim());
-                    double t4 = Double.parseDouble(partsB[2].replace("%", "").trim());
-                    int toReturn2 = Double.compare(t3, t4);
-                    if (toReturn2 == 0) {
-                        return partsA[0].compareTo(partsB[0]);
-                    }
-                    return toReturn2;
-                }
-                return toReturn;
-            });
-        } else{
-            leaderboard.sort((a, b) -> {
-                String[] partsA = a.split(" - ");
-                String[] partsB = b.split(" - ");
-                double t1 = Double.parseDouble(partsA[1].replace("s", "").replace("Words: ", "").trim());
-                double t2 = Double.parseDouble(partsB[1].replace("s", "").replace("Words: ", "").trim());
-                int toReturn = Double.compare(t1, t2);
-                if (toReturn == 0) {
-                    int t3 = Integer.parseInt(partsA[1].replace(" WPM", "").trim());
-                    int t4 = Integer.parseInt(partsB[1].replace(" WPM", "").trim());
-                    int toReturn2 = Integer.compare(t3, t4);
-                    if (toReturn2 == 0) {
-                        double t5 = Double.parseDouble(partsA[2].replace("%", "").trim());
-                        double t6 = Double.parseDouble(partsB[2].replace("%", "").trim());
-                        int toReturn3 = Double.compare(t5, t6);
-                        if(toReturn3 == 0) {
-                            return partsA[0].compareTo(partsB[0]);
-                        }
-                        return toReturn3;
-                    }
-                    return toReturn2;
-                }
-                return toReturn;
-            });
-        }
-        leaderboardList.setItems(leaderboard);
+//        String entry;
+//        if (currentMode.toString().startsWith("TIME")) {
+//            entry = String.format("%s - Timed: %d WPM - %.0f%%",
+//                    playerName, (int) wpm, accuracy);
+//        } else {
+//            entry = String.format("%s - Words: %.2fs - %d WPM - %.0f%%",
+//                    playerName, timeInSeconds, (int) wpm, accuracy);
+//        }
+//        leaderboard.add(entry);
+//
+//        if(currentMode.toString().startsWith("TIME")) {
+//            leaderboard.sort((a, b) -> {
+//                String[] partsA = a.split(" - ");
+//                String[] partsB = b.split(" - ");
+//                int t1 = Integer.parseInt(partsA[1].replace(" WPM", "").replace("Timed: ", "").trim());
+//                int t2 = Integer.parseInt(partsB[1].replace(" WPM", "").replace("Timed: ", "").trim());
+//                int toReturn = Integer.compare(t1, t2);
+//                if (toReturn == 0) {
+//                    double t3 = Double.parseDouble(partsA[2].replace("%", "").trim());
+//                    double t4 = Double.parseDouble(partsB[2].replace("%", "").trim());
+//                    int toReturn2 = Double.compare(t3, t4);
+//                    if (toReturn2 == 0) {
+//                        return partsA[0].compareTo(partsB[0]);
+//                    }
+//                    return toReturn2;
+//                }
+//                return toReturn;
+//            });
+//        } else{
+//            leaderboard.sort((a, b) -> {
+//                String[] partsA = a.split(" - ");
+//                String[] partsB = b.split(" - ");
+//                double t1 = Double.parseDouble(partsA[1].replace("s", "").replace("Words: ", "").trim());
+//                double t2 = Double.parseDouble(partsB[1].replace("s", "").replace("Words: ", "").trim());
+//                int toReturn = Double.compare(t1, t2);
+//                if (toReturn == 0) {
+//                    int t3 = Integer.parseInt(partsA[1].replace(" WPM", "").trim());
+//                    int t4 = Integer.parseInt(partsB[1].replace(" WPM", "").trim());
+//                    int toReturn2 = Integer.compare(t3, t4);
+//                    if (toReturn2 == 0) {
+//                        double t5 = Double.parseDouble(partsA[2].replace("%", "").trim());
+//                        double t6 = Double.parseDouble(partsB[2].replace("%", "").trim());
+//                        int toReturn3 = Double.compare(t5, t6);
+//                        if(toReturn3 == 0) {
+//                            return partsA[0].compareTo(partsB[0]);
+//                        }
+//                        return toReturn3;
+//                    }
+//                    return toReturn2;
+//                }
+//                return toReturn;
+//            });
+//        }
+//        leaderboardList.setItems(leaderboard);
 
         playerNameField.setEditable(true);
         playerNameField.requestFocus();
