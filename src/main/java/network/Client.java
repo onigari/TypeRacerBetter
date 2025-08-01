@@ -72,6 +72,11 @@ public class Client {
         }
     }
 
+    public void setGameRunning(boolean gameRunning){
+        if(gameRunning){out.println("GAME_RUNNING");}
+        else {out.println("GAME_NOT_RUNNING");}
+    }
+
     public void closeAll() {
         out.println("CLOSE_ALL");
     }

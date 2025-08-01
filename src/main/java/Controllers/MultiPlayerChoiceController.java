@@ -105,12 +105,7 @@ public class MultiPlayerChoiceController {
                     });
                     return;
                 }
-                try {
-                    Stage stage = (Stage) joinButton.getScene().getWindow();
-                    loadLobby(stage, client, name, false);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                client.sendMessage("IS_GAME_RUNNING");
             }
             else if (message.startsWith("NUMBER:")){
                 int number = Integer.parseInt(message.substring(7));
@@ -125,6 +120,19 @@ public class MultiPlayerChoiceController {
                 try {
                     Stage stage = (Stage) joinButton.getScene().getWindow();
                     loadLobby(stage, client, name, true);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else if (message.startsWith("GAME_RUNNING")) {
+                Platform.runLater(() -> {
+                    statusLabel.setText("A game is running!");
+                    statusLabel.setStyle("-fx-text-fill: #da0112;");
+                    client.close();
+                });
+            } else if (message.startsWith("GAME_NOT_RUNNING")) {
+                try {
+                    Stage stage = (Stage) joinButton.getScene().getWindow();
+                    loadLobby(stage, client, name, false);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

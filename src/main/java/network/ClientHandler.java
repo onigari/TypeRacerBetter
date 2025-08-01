@@ -16,6 +16,7 @@ public class ClientHandler implements Runnable {
     private static String playersList;
     private static int gameTime;
     private static final List<String> leaderboard = new ArrayList<>();
+    private static boolean gameRunning;
 
     public ClientHandler(Socket socket, List<ClientHandler> clients) throws IOException {
         this.socket = socket;
@@ -74,6 +75,13 @@ public class ClientHandler implements Runnable {
                         count = players.length;
                     }
                     out.println("NUMBER:" + count);
+                } else if (inputLine.equals("GAME_RUNNING")) {
+                    gameRunning = true;
+                } else if (inputLine.equals("GAME_NOT_RUNNING")) {
+                    gameRunning = false;
+                } else if (inputLine.equals("IS_GAME_RUNNING")) {
+                    if(gameRunning) {out.println("GAME_RUNNING");}
+                    else {out.println("GAME_NOT_RUNNING");}
                 }
             }
         } catch (IOException e) {

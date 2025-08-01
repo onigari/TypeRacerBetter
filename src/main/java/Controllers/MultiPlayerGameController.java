@@ -327,6 +327,7 @@ public class MultiPlayerGameController {
         this.isHost = isHost;
         restartButton.setDisable(true);
         gameRunning = true;
+        client.setGameRunning(true);
         gameTime = time;
         isLeaderBoardOn = false;
 
@@ -364,11 +365,11 @@ public class MultiPlayerGameController {
     }
 
     private void countDownTimer() {
-        final int[] timeLeft = {gameTime*1000};
+        final int[] timeLeft = {gameTime*100};
 
-        Timeline countdown = new Timeline(new KeyFrame(Duration.millis(1), e -> {
+        Timeline countdown = new Timeline(new KeyFrame(Duration.millis(10), e -> {
             if (timeLeft[0] > 0 && gameRunning) {
-                int seconds = (int) (timeLeft[0]/(double)1000);
+                int seconds = (int) (timeLeft[0]/(double)100);
                 bigTimerLabel.setText(String.format("Time left: %d seconds", seconds));
                 if(seconds <= 5) {
                     bigTimerLabel.setStyle("-fx-text-fill: #f20909; -fx-font-size: 14;");
@@ -388,7 +389,7 @@ public class MultiPlayerGameController {
             }
         }));
 
-        countdown.setCycleCount(gameTime*1000 + 1);
+        countdown.setCycleCount(gameTime*100 + 1);
         countdown.play();
 
         bigTimerLabel.setText("Time left: " + timeLeft[0] + " seconds");
@@ -405,7 +406,7 @@ public class MultiPlayerGameController {
 
         Platform.runLater(() -> {
             Stage stage = (Stage) rootPane.getScene().getWindow();
-            Scene scene = new Scene(root, 346, 412);
+            Scene scene = new Scene(root, 800, 600);
 
             stage.setTitle("TypeRacer - MultiPlayer Choice");
             stage.setResizable(true);
@@ -424,7 +425,7 @@ public class MultiPlayerGameController {
 
         Platform.runLater(() -> {
             Stage stage = (Stage) rootPane.getScene().getWindow();
-            stage.setScene(new Scene(root, 410, 608));
+            stage.setScene(new Scene(root, 800, 600));
 
             stage.setTitle("Multiplayer Lobby - " + playerName);
             stage.centerOnScreen();
@@ -499,6 +500,7 @@ public class MultiPlayerGameController {
             } else if (message.equals("GAME_FINISHED")) {
                 out.println("GAME FINISHED received");
                 gameRunning = false;
+                client.setGameRunning(false);
                 restartButton.setDisable(!isHost);
                 restartButton.setVisible(true);
             } else if (message.equals("RESTART")) {
@@ -929,7 +931,7 @@ public class MultiPlayerGameController {
                         ProgressBar pb = playerProgressBars.get(player);
                         if (pb != null) {
                             pb.setProgress(progress);
-                            // Highlight current player's bar
+
                             if (player.equals(playerName)) {
                                 pb.setStyle("-fx-accent: " + getColorForPlayer(player) + "; -fx-border-color: " + getColorForPlayer(player) + ";");
                             } else {
