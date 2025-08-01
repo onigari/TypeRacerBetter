@@ -18,6 +18,7 @@ import java.net.Socket;
 import static java.lang.System.out;
 
 public class MultiPlayerChoiceController {
+    public static final int MAX_PLAYERS = 4;
     public Button backButton;
     @FXML private Button hostButton;
     @FXML private VBox rootPane;
@@ -100,6 +101,13 @@ public class MultiPlayerChoiceController {
                 if(players.length == 1 && players[0].isEmpty()){
                     Platform.runLater(() -> {
                         statusLabel.setText("Server is offline!");
+                        statusLabel.setStyle("-fx-text-fill: #da0112;");
+                        client.close();
+                    });
+                    return;
+                } if(players.length >= MAX_PLAYERS){
+                    Platform.runLater(() -> {
+                        statusLabel.setText("Too many players!");
                         statusLabel.setStyle("-fx-text-fill: #da0112;");
                         client.close();
                     });

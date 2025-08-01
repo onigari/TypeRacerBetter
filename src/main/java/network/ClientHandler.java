@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.System.out;
+
 
 public class ClientHandler implements Runnable {
     private Socket socket;

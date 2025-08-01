@@ -12,7 +12,7 @@ import java.util.Scanner;
 import static java.lang.System.out;
 
 public class Server {
-    public static final int MAX_PLAYERS = 4;
+
     public static final int COUNTDOWN_SEC = 15;
     private static final int PORT = 5000;
     private static final List<ClientHandler> clients = new ArrayList<>();
@@ -47,11 +47,6 @@ public class Server {
 
             while (true) {
                 Socket socket = serverSocket.accept();
-                if (clients.size() >= MAX_PLAYERS) {
-                    out.println("Max players reached, rejecting connection: " + socket);
-                    socket.close();
-                    continue;
-                }
                 out.println("New client connected: " + socket.getRemoteSocketAddress());
                 ClientHandler handler = new ClientHandler(socket, clients);
                 synchronized (clients) {
