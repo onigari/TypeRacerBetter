@@ -154,9 +154,4 @@ public class MainMenuController {
     private void onExitClick(ActionEvent event) {
         System.exit(0);
     }
-
-    @FXML
-    private void onCreditsClick(ActionEvent event) {
-
-    }
 }
