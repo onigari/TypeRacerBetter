@@ -209,33 +209,33 @@ public class MultiPlayerGameController {
                     rank.setText((getIndex() + 1) + ".");
                     entry.setText(item);
 
-                    if (item.contains(playerName)) {
-                        hbox.setStyle("-fx-background-color: #3a3d42;");
-                        rank.setStyle("""
-                    -fx-fill: #e2b714;
-                    -fx-font-weight: bold;
-                    -fx-font-family: 'Roboto Mono';
+                if (item.contains(playerName)) {
+                    hbox.setStyle("-fx-background-color: #3a3d42;");
+                    rank.setStyle("""
+                -fx-fill: #e2b714;
+                -fx-font-weight: bold;
+                -fx-font-family: 'Roboto Mono';
                 """);
-                        entry.setStyle("""
-                    -fx-fill: #e2b714;
-                    -fx-font-weight: bold;
-                    -fx-font-family: 'Roboto Mono';
+                    entry.setStyle("""
+                -fx-fill: #e2b714;
+                -fx-font-weight: bold;
+                -fx-font-family: 'Roboto Mono';
                 """);
-                    } else {
-                        hbox.setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#2c2e31;" : "#323437;"));
-                        rank.setStyle("""
-                    -fx-fill: #d1d0c5;
-                    -fx-font-weight: bold;
-                    -fx-font-family: 'Roboto Mono';
+                } else {
+                    hbox.setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#2c2e31;" : "#323437;"));
+                    rank.setStyle("""
+                -fx-fill: #d1d0c5;
+                -fx-font-weight: bold;
+                -fx-font-family: 'Roboto Mono';
                 """);
-                        entry.setStyle("""
-                    -fx-fill: #d1d0c5;
-                    -fx-font-family: 'Roboto Mono';
+                    entry.setStyle("""
+                -fx-fill: #d1d0c5;
+                -fx-font-family: 'Roboto Mono';
                 """);
-                    }
+                }
 
-                    setStyle("-fx-background-insets: 0; -fx-padding: 0;");
-                    setGraphic(hbox);
+                setStyle("-fx-background-insets: 0; -fx-padding: 0;");
+                setGraphic(hbox);
                 }
             }
         });

@@ -25,14 +25,14 @@
 
       <!-- Stats Bar -->
       <HBox alignment="CENTER_LEFT" spacing="30">
-         <Label style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="time:" />
+         <Label style="-fx-text-fill: #d1d0c5; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 14px;" text="time:" />
          <Label fx:id="timeLabel" style="-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="0.00s" />
 
-         <Label style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="wpm:" />
-         <Label fx:id="wpmLabel" style="-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="0" />
+         <Label style="-fx-text-fill: #d1d0c5; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 14px;" text="wpm:" />
+         <Label fx:id="wpmLabel" style="-fx-text-fill: #e2b714; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 14px;" text="0" />
 
-         <Label style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="accuracy:" />
-         <Label fx:id="accuracyLabel" style="-fx-text-fill: #e2b714; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="0%" />
+         <Label style="-fx-text-fill: #d1d0c5; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 14px;" text="accuracy:" />
+         <Label fx:id="accuracyLabel" style="-fx-text-fill: #e2b714; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 14px;" text="0%" />
       </HBox>
       <VBox fx:id="progressBarsContainer" spacing="5" />
 

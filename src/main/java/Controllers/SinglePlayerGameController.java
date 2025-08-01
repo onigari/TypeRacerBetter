@@ -208,6 +208,7 @@ public class SinglePlayerGameController {
         currentMode = mode;
         updateModeInstructions();
         updateModeButtonStyles();
+        prepareParagraph();
     }
 
     private void updateModeButtonStyles() {
@@ -250,18 +251,34 @@ public class SinglePlayerGameController {
             };
             paragraphText = getFixedWordCountParagraph(wordCount);
         } else {
-            paragraphText = inputStrings.get(new Random().nextInt(inputStrings.size()));
+            paragraphText = getFixedWordCountParagraph(55);
         }
         displayParagraph(paragraphText);
     }
 
     private String getFixedWordCountParagraph(int wordCount) {
+//        StringBuilder sb = new StringBuilder();
+//        Random rand = new Random();
+//        int wordsAdded = 0;
+//
+//        while (wordsAdded < wordCount) {
+//            String randomLine = inputStrings.get(rand.nextInt(inputStrings.size()));
+//            String[] words = randomLine.split(" ");
+//            for (String word : words) {
+//                if (wordsAdded < wordCount) {
+//                    sb.append(word).append(" ");
+//                    wordsAdded++;
+//                } else {
+//                    break;
+//                }
+//            }
+//        }
+        TextGenerator textGenerator = new TextGenerator();
         StringBuilder sb = new StringBuilder();
         Random rand = new Random();
         int wordsAdded = 0;
-
         while (wordsAdded < wordCount) {
-            String randomLine = inputStrings.get(rand.nextInt(inputStrings.size()));
+            String randomLine = textGenerator.generateText();
             String[] words = randomLine.split(" ");
             for (String word : words) {
                 if (wordsAdded < wordCount) {
@@ -530,6 +547,8 @@ public class SinglePlayerGameController {
         setupEventHandlers();
         initializeKeyboard();
         setupModeSelection();
+        prepareParagraph();
+        progressBar.setVisible(false);
     }
 
     private void loadWords() {
@@ -900,6 +919,7 @@ public class SinglePlayerGameController {
                 timeLabel.setText(remaining + "s");
                 if (remaining <= 5) timeLabel.setStyle("-fx-text-fill: #f20909; -fx-font-size: 14;");
                 if (remaining <= 0) {
+                    timeLabel.setStyle("-fx-text-fill: #e2b714; -fx-font-size: 14;");
                     typingFinished();
                 }
             }));
@@ -942,6 +962,7 @@ public class SinglePlayerGameController {
         typingField.setDisable(true);
         displayField.clear();
         escText.setText("Press esc to go back to main menu");
+        progressBar.setVisible(false);
         rootPane.requestLayout();
 
         modeContainer.setVisible(true);
@@ -994,6 +1015,7 @@ public class SinglePlayerGameController {
         playerNameField.setEditable(false);
         playerNameField.setVisible(false);
         nameTitle.setVisible(false);
+        progressBar.setVisible(true);
         rootPane.requestLayout();
         prepareParagraph();
         if (paragraphText == null || paragraphText.isEmpty()) {

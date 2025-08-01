@@ -17,7 +17,7 @@
    </HBox>
 
    <!-- Main Content Area -->
-   <VBox alignment="TOP_CENTER" prefHeight="254.0" prefWidth="760.0" spacing="15" style="-fx-background-color: #2c2e31; -fx-padding: 20; -fx-border-radius: 5; -fx-background-radius: 5;" VBox.vgrow="NEVER">
+   <VBox alignment="TOP_CENTER" prefHeight="294.0" prefWidth="760.0" spacing="15" style="-fx-background-color: #2c2e31; -fx-padding: 20; -fx-border-radius: 5; -fx-background-radius: 5;" VBox.vgrow="NEVER">
       <!-- Stats Bar -->
       <HBox alignment="CENTER_LEFT" spacing="30">
          <Label fx:id="timeTitle" style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="time:" />
@@ -38,7 +38,7 @@
       </HBox>
 
                <!-- Paragraph Display -->
-      <VBox alignment="TOP_CENTER" maxHeight="187.0" prefHeight="119.0" prefWidth="720.0" VBox.vgrow="ALWAYS">
+      <VBox alignment="TOP_CENTER" maxHeight="187.0" prefHeight="97.0" prefWidth="720.0" VBox.vgrow="ALWAYS">
          <TextFlow fx:id="paragraphFlow" maxHeight="179.0" prefHeight="123.0" prefWidth="720.0" style="-fx-background-color: #2c2e31; -fx-padding: 15; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 22px; -fx-line-spacing: 10;" />
       </VBox>
    </VBox>
@@ -71,8 +71,8 @@
    <HBox alignment="CENTER" prefHeight="144.0" prefWidth="722.0" spacing="30">
       <!-- Player Name Input -->
       <HBox alignment="CENTER_LEFT" prefHeight="126.0" prefWidth="352.0" spacing="10">
-         <Label fx:id="nameTitle" style="-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;" text="name:" />
-         <TextField fx:id="playerNameField" promptText="your name" style="-fx-font-family: 'Roboto Mono'; -fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-border-color: #646669; -fx-prompt-text-fill: #646669;" />
+         <Label fx:id="nameTitle" style="-fx-text-fill: #d1d0c5; -fx-font-family: 'JetBrains Mono Medium'; -fx-font-size: 14px;" text="name:" />
+         <TextField fx:id="playerNameField" promptText="your name" style="-fx-font-family: 'JetBrains Mono Medium'; -fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5; -fx-border-color: #646669; -fx-prompt-text-fill: #646669;" />
 
                   <!-- Start Button -->
          <Button fx:id="startButton" onAction="#onStartButtonClick" style="-fx-background-color: #e2b714; -fx-text-fill: #323437; -fx-font-family: 'Roboto Mono'; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 5 15;" text="start" />
