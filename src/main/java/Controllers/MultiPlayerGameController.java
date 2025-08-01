@@ -80,7 +80,6 @@ public class MultiPlayerGameController {
     private int currentWordIndex = 0;
     private int currentWordCharIndex = 0;
 
-    // Add these fields
     private final Map<String, ProgressBar> playerProgressBars = new HashMap<>();
     @FXML private VBox progressBarsContainer;
 
@@ -111,7 +110,7 @@ public class MultiPlayerGameController {
 
             Rectangle rect = new Rectangle(40, 40);
             if (key.equals(" ")) {
-                rect.setWidth(200); // Make spacebar wider
+                rect.setWidth(200);
             } else if (key.endsWith("Ctrl") || key.endsWith("Alt") || key.equals("Tab")) {
                 rect.setWidth(60);
             } else if (key.equals("Backspace")) {
@@ -296,7 +295,7 @@ public class MultiPlayerGameController {
         Scene scene = new Scene(root, 400, 500);
         leaderboardList.setFocusTraversable(false);
         leaderboardList.setMouseTransparent(false);
-        scene.setFill(Color.TRANSPARENT); // For rounded corners
+        scene.setFill(Color.TRANSPARENT);
         leaderboardStage.setScene(scene);
         root.setFocusTraversable(true);
         Platform.runLater(root::requestFocus);
@@ -342,7 +341,7 @@ public class MultiPlayerGameController {
     }
 
     private void waitingQueue() {
-        final int[] timeLeft = {waitTime}; // 3, 2, 1
+        final int[] timeLeft = {waitTime};
         bigTimerLabel.setStyle("-fx-font-size: 14;");
 
         Timeline countdown = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
@@ -559,7 +558,7 @@ public class MultiPlayerGameController {
                     entry.setText(item);
 
                     if (item.contains(playerNameLabel.getText())) {
-                        setStyle("-fx-background-color: #3a3d42; -fx-text-fill: #e2b714;"); // Highlight current client's entry
+                        setStyle("-fx-background-color: #3a3d42; -fx-text-fill: #e2b714;");
                         entry.setStyle("-fx-fill: #e2b714; -fx-font-weight: bold;");
                     } else {
                         setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#2c2e31" : "#323437") + ";");

@@ -3,7 +3,6 @@ package Controllers;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,7 +15,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.w3c.dom.css.Rect;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,7 +29,7 @@ public class MainMenuController {
 
     private final List<Pane> keys = new ArrayList<>();
     private final Random random = new Random();
-    private final String[] characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""); // Array of letters for keys
+    private final String[] characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
     public void initialize() {
         createKeys(15);
@@ -42,34 +40,27 @@ public class MainMenuController {
 
     private void createKeys(int count) {
         for (int i = 0; i < count; i++) {
-            // Create a Pane to group Rectangle and Label
             Pane keyPane = new Pane();
             int dim = random.nextInt(25, 50);
 
-            // Create Rectangle (key)
             Rectangle key = new Rectangle(dim, dim);
             key.setArcWidth(5);
             key.setArcHeight(5);
             key.setStyle("-fx-fill: #2E2E2E; -fx-stroke: #3F3E3E; -fx-stroke-width: 1; -fx-opacity: 0.5;");
 
-            // Create Label for text
-            String text = characters[random.nextInt(characters.length)]; // Random letter
+            String text = characters[random.nextInt(characters.length)];
             Label textLabel = new Label(text);
             int fontSize = (int) ((key.getHeight() / 60) * 8 + 8);
             textLabel.setStyle("-fx-text-fill: white; -fx-font-size: " + fontSize + " px; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono Medium';-fx-opacity: 0.5;");
             textLabel.getEffect();
-            // Center the text in the rectangle
             textLabel.setLayoutX((dim - textLabel.getWidth()) / 2 - 6);
-            textLabel.setLayoutY((dim - textLabel.getHeight()) / 2 - 8); // Adjust for vertical centering
+            textLabel.setLayoutY((dim - textLabel.getHeight()) / 2 - 8);
 
-            // Add Rectangle and Label to the Pane
             keyPane.getChildren().addAll(key, textLabel);
 
-            // Position the Pane
             keyPane.setLayoutX(random.nextDouble() * backgroundPane.getWidth());
             keyPane.setLayoutY(random.nextDouble() * backgroundPane.getHeight());
 
-            // Add to background and list
             backgroundPane.getChildren().add(keyPane);
             keys.add(keyPane);
         }
@@ -99,7 +90,7 @@ public class MainMenuController {
             for (Pane keyPane : keys) {
                 if (keyPane.getChildren().getFirst() instanceof Rectangle rectangle) {
                     int fontSize = (int) ((rectangle.getHeight() / 60) * 8 + 8);
-                    highlightKey(keyPane, random.nextInt() % 4 == 0, fontSize);
+                    highlightKey(keyPane, random.nextInt() % 47 == 0, fontSize);
                 }
             }
         }));
@@ -107,7 +98,7 @@ public class MainMenuController {
             for (Pane keyPane : keys) {
                 if (keyPane.getChildren().getFirst() instanceof Rectangle rectangle) {
                     int fontSize = (int) ((rectangle.getHeight() / 60) * 8 + 8);
-                    highlightKey(keyPane, random.nextInt() % 7 == 0, fontSize);
+                    highlightKey(keyPane, random.nextInt() % 77 == 0, fontSize);
                 }
             }
         }));

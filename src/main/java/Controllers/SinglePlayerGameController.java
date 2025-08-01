@@ -64,7 +64,7 @@ public class SinglePlayerGameController {
     private long startTime;
     private Timeline timer;
     private boolean typingDone = false;
-    private String paragraphText; //User's input
+    private String paragraphText;
     private final List<Text> textNodes = new ArrayList<>();
     private int currentIndex;
     private int correctCharCount;
@@ -114,7 +114,7 @@ public class SinglePlayerGameController {
         modes.setAlignment(Pos.CENTER);
         modeContainer.getChildren().addAll(modes, modeInstructionLabel);
         modeContainer.setAlignment(Pos.CENTER);
-        rootPane.getChildren().add(1, modeContainer); // Add below title
+        rootPane.getChildren().add(1, modeContainer);
         showTimeOptions();
     }
 
@@ -257,22 +257,6 @@ public class SinglePlayerGameController {
     }
 
     private String getFixedWordCountParagraph(int wordCount) {
-//        StringBuilder sb = new StringBuilder();
-//        Random rand = new Random();
-//        int wordsAdded = 0;
-//
-//        while (wordsAdded < wordCount) {
-//            String randomLine = inputStrings.get(rand.nextInt(inputStrings.size()));
-//            String[] words = randomLine.split(" ");
-//            for (String word : words) {
-//                if (wordsAdded < wordCount) {
-//                    sb.append(word).append(" ");
-//                    wordsAdded++;
-//                } else {
-//                    break;
-//                }
-//            }
-//        }
         TextGenerator textGenerator = new TextGenerator();
         StringBuilder sb = new StringBuilder();
         Random rand = new Random();
@@ -327,12 +311,12 @@ public class SinglePlayerGameController {
             Rectangle rect = new Rectangle(40, 40);
             if (key.equals(" ")) {
                 rect.setWidth(200);
-            } else if (key.endsWith("Ctrl") || key.endsWith("Alt") || key.equals("Tab")) { // modifier keys
+            } else if (key.endsWith("Ctrl") || key.endsWith("Alt") || key.equals("Tab")) {
                 rect.setWidth(60);
             } else if (key.equals("Backspace")) {
                 rect.setWidth(120);
             }
-            else if (key.length() > 1) rect.setWidth(100); // modifier keys
+            else if (key.length() > 1) rect.setWidth(100);
             rect.setArcWidth(5);
             rect.setArcHeight(5);
             rect.setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-stroke-width: 1;");
@@ -463,7 +447,7 @@ public class SinglePlayerGameController {
                     setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #d1d0c5;");
                 } else {
                     setText(item);
-                    setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #ca4754;"); // Red for incorrect words
+                    setStyle("-fx-background-color: #2c2e31; -fx-text-fill: #ca4754;");
                 }
             }
         });
@@ -613,7 +597,6 @@ public class SinglePlayerGameController {
     }
 
     private void setupEventHandlers() {
-        // Typing field listener for character-by-character comparison
         typingField.textProperty().addListener((obs, oldValue, newValue) -> {
             if (paragraphText == null || paragraphText.isEmpty() || typingDone) return;
 

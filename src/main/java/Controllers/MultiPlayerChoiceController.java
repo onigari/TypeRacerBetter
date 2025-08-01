@@ -165,9 +165,6 @@ public class MultiPlayerChoiceController {
         }
 
         try {
-//            new Thread(() -> network.Server.main(new String[]{})).start();
-//            Thread fineThread = new Thread();
-//            fineThread.sleep(1000);
             client = new Client("localhost", 5000);
             setupNetworkHandlers();
             client.sendMessage("IS_AVAILABLE");
