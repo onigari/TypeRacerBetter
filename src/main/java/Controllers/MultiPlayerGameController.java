@@ -160,7 +160,7 @@ public class MultiPlayerGameController {
                     rect.setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-stroke-width: 1;");
                     text.setStyle("-fx-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;");
                 }
-            } else out.println("null in highlight");
+            } //else out.println("null in highlight");
         });
     }
     private void leaderBoardPopUp() {
@@ -475,12 +475,12 @@ public class MultiPlayerGameController {
             } else if (message.startsWith("PROGRESS:")) {
                 Platform.runLater(() -> updateAllProgress(message.substring(9)));
             } else if (message.startsWith("PLAYERS:")) {
-                out.println(message);
+                //out.println(message);
                 Platform.runLater(() -> {
                     String[] players = message.substring(8).split(",");
                     playerProgressBars.clear();
                     progressBarsContainer.getChildren().clear();
-                    out.println(progressBarsContainer.getChildren().isEmpty());
+                    //out.println(progressBarsContainer.getChildren().isEmpty());
                     addPlayerProgress(playerName);
                     for (String player : players) {
                         if (!player.equals(playerName)) {
@@ -497,7 +497,7 @@ public class MultiPlayerGameController {
                     throw new RuntimeException(e);
                 }
             } else if (message.equals("GAME_FINISHED")) {
-                out.println("GAME FINISHED received");
+                //out.println("GAME FINISHED received");
                 gameRunning = false;
                 client.setGameRunning(false);
                 restartButton.setDisable(!isHost);
@@ -644,7 +644,7 @@ public class MultiPlayerGameController {
 
         typingField.setOnKeyPressed(e -> {
             String typedText = e.getCode().getName();
-            out.println("typed: " + typedText);
+            //out.println("typed: " + typedText);
             if(typedText.equals("Alt") || typedText.equals("Ctrl") || typedText.equals("Shift")) {
                 highlightKey("L" + typedText, true);
                 PauseTransition pause = new PauseTransition(Duration.millis(200));
@@ -884,9 +884,9 @@ public class MultiPlayerGameController {
 
     private void updateLeaderboard(String data) {
         String[] entries = data.split("\\|");
-        for(String entry : entries) {
-            out.println(entry);
-        }
+//        for(String entry : entries) {
+//            out.println(entry);
+//        }
         leaderboard.setAll(entries);
     }
 

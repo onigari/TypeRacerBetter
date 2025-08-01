@@ -87,7 +87,6 @@ public class SinglePlayerGameController {
     private VBox modeContainer;
     private Label modeInstructionLabel;
     private int TIMED_MODE_DURATION;
-    private int FIXED_PARAGRAPH_LENGTH;
     private String oldPara = "";
     private final List<Double> wpmDataPoints = new ArrayList<>();
     private long lastWpmUpdateTime = 0;
@@ -520,7 +519,7 @@ public class SinglePlayerGameController {
                     rect.setStyle("-fx-fill: #2c2e31; -fx-stroke: #646669; -fx-stroke-width: 1;");
                     text.setStyle("-fx-fill: #d1d0c5; -fx-font-family: 'Roboto Mono'; -fx-font-size: 14px;");
                 }
-            } else out.println("null in highlight");
+            } //else out.println("null in highlight");
         });
     }
 
@@ -606,7 +605,7 @@ public class SinglePlayerGameController {
             }
             handleNewCharacters(oldValue, newValue);
 
-            out.println(newValue);
+            //out.println(newValue);
             if (oldPara.isEmpty()) {
                 updateDisplayField(newValue);
             } else {
@@ -617,7 +616,7 @@ public class SinglePlayerGameController {
 
         typingField.setOnKeyPressed(e -> {
             String typedText = e.getCode().getName();
-            out.println("typed: " + typedText);
+            //out.println("typed: " + typedText);
             if (typedText.equals("Alt") || typedText.equals("Ctrl") || typedText.equals("Shift")) {
                 highlightKey("L" + typedText, true);
                 PauseTransition pause = new PauseTransition(Duration.millis(200));
@@ -669,7 +668,7 @@ public class SinglePlayerGameController {
     }
 
     private void updateDisplayField(String typedText) {
-        out.println("in updateDisplayField with argument : " + typedText);
+        //out.println("in updateDisplayField with argument : " + typedText);
         if (paragraphWords == null || paragraphWords.length == 0 || typedText == null) {
             displayField.setText("");
             return;
@@ -699,8 +698,8 @@ public class SinglePlayerGameController {
             currentWordCharIndex = Math.max(0, Math.min(wordCharIndex, paragraphWords[wordIndex].length()));
 
             String currentWord = paragraphWords[currentWordIndex];
-            out.println("Current word index is " + currentWordIndex);
-            out.println("Current word is " + currentWord);
+            //out.println("Current word index is " + currentWordIndex);
+            //out.println("Current word is " + currentWord);
             displayField.setText(currentWord);
 
             int wordStartPosition = 0;
@@ -773,7 +772,7 @@ public class SinglePlayerGameController {
         }
         updateStats();
 
-        out.println(newValue);
+        //out.println(newValue);
         if (oldPara.isEmpty()) {
             updateDisplayField(newValue);
         } else {
@@ -815,7 +814,7 @@ public class SinglePlayerGameController {
                     typingFinished();
                 } else {
                     oldPara = newValue;
-                    out.println(oldPara);
+                    //out.println(oldPara);
                     prepareParagraph();
                     currentIndex = 0;
                     currentWordIndex = 0;
@@ -930,7 +929,7 @@ public class SinglePlayerGameController {
     }
 
     private void typingFinished() {
-        for(String s : wrongWords) out.println(s);
+        //for(String s : wrongWords) out.println(s);
         if (typingDone) return;
         updateStats();
         statsPopUp();

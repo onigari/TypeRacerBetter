@@ -15,10 +15,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import static java.lang.System.out;
-
 public class MultiPlayerChoiceController {
-    public static final int MAX_PLAYERS = 4;
     public Button backButton;
     @FXML private Button hostButton;
     @FXML private VBox rootPane;
@@ -105,13 +102,6 @@ public class MultiPlayerChoiceController {
                         client.close();
                     });
                     return;
-                } if(players.length >= MAX_PLAYERS){
-                    Platform.runLater(() -> {
-                        statusLabel.setText("Too many players!");
-                        statusLabel.setStyle("-fx-text-fill: #da0112;");
-                        client.close();
-                    });
-                    return;
                 }
                 client.sendMessage("IS_GAME_RUNNING");
             }
@@ -138,6 +128,14 @@ public class MultiPlayerChoiceController {
                     client.close();
                 });
             } else if (message.startsWith("GAME_NOT_RUNNING")) {
+                client.sendMessage("IS_MAX");
+            } else if (message.startsWith("MAX_REACHED")) {
+                Platform.runLater(() -> {
+                    statusLabel.setText("Too many players!");
+                    statusLabel.setStyle("-fx-text-fill: #da0112;");
+                    client.close();
+                });
+            } else if (message.startsWith("MAX_NOT_REACHED")) {
                 try {
                     Stage stage = (Stage) joinButton.getScene().getWindow();
                     loadLobby(stage, client, name, false);
@@ -226,7 +224,7 @@ public class MultiPlayerChoiceController {
     private static boolean isValidIPAddress(String ip) {
         try {
             InetAddress address = InetAddress.getByName(ip);
-            out.println(address.toString());
+            //out.println(address.toString());
             return true;
         } catch (Exception e) {
             return false;

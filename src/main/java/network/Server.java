@@ -27,24 +27,18 @@ public class Server {
                 return;
             }
             try (Scanner takeIn = new Scanner(input)) {
-
                 while (takeIn.hasNextLine()) {
                     inputStrings.add(takeIn.nextLine());
                 }
-
                 selectedParagraph = inputStrings.get(new Random().nextInt(inputStrings.size()));
-
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            out.println("Server started on port " + PORT);
-
             while (true) {
                 Socket socket = serverSocket.accept();
                 out.println("New client connected: " + socket.getRemoteSocketAddress());
@@ -112,9 +106,6 @@ public class Server {
                 client.sendMessage(sb.toString());
             }
         }
-
-        out.println(count);
-        out.println(clients.size());
 
         if(count == clients.size()){
             synchronized (clients) {

@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static java.lang.System.out;
-
 public class MainMenuController {
     public Text titleText;
     @FXML private Pane backgroundPane;
@@ -119,7 +117,7 @@ public class MainMenuController {
                 pane.getChildren().getFirst().setStyle("-fx-fill: #2E2E2E; -fx-stroke: #3F3E3E; -fx-opacity: 0.5; -fx-stroke-width: 1;");
                 pane.getChildren().getLast().setStyle("-fx-text-fill: white; -fx-font-size: " + fontSize + " px; -fx-opacity: 0.5; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono Medium';");
             }
-        } else out.println("null in highlight");
+        } //else out.println("null in highlight");
     }
 
     @FXML
@@ -155,5 +153,10 @@ public class MainMenuController {
     @FXML
     private void onExitClick(ActionEvent event) {
         System.exit(0);
+    }
+
+    @FXML
+    private void onCreditsClick(ActionEvent event) {
+
     }
 }

@@ -9,6 +9,7 @@ import static java.lang.System.out;
 
 
 public class ClientHandler implements Runnable {
+    public static final int MAX_PLAYERS = 4;
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
@@ -84,6 +85,11 @@ public class ClientHandler implements Runnable {
                 } else if (inputLine.equals("IS_GAME_RUNNING")) {
                     if(gameRunning) {out.println("GAME_RUNNING");}
                     else {out.println("GAME_NOT_RUNNING");}
+                } else if (inputLine.equals("IS_MAX")) {
+                    if(clients.size() > MAX_PLAYERS) {
+                        out.println("MAX_REACHED");
+                    }
+                    else {out.println("MAX_NOT_REACHED");}
                 }
             }
         } catch (IOException e) {
@@ -124,12 +130,10 @@ public class ClientHandler implements Runnable {
         StringBuilder sb = new StringBuilder("PROGRESS:");
         synchronized (leaderboard) {
             for (String entry : leaderboard) {
-                // Check if this is a result entry (has 3 parts) or progress entry (2 parts)
                 String[] parts = entry.split(";");
                 if (parts.length == 2) {
                     sb.append(entry).append("|");
                 } else if (parts.length == 3) {
-                    // For finished players, progress is 1.0
                     sb.append(parts[0]).append(";1.0|");
                 }
             }
@@ -150,7 +154,6 @@ public class ClientHandler implements Runnable {
     private void handleResult(String result) {
         String[] parts = result.split(";");
         if (parts.length != 4) {
-            System.out.println("Invalid result format: " + result);
             return;
         }
         try {
