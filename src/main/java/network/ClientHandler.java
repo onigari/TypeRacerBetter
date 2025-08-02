@@ -3,12 +3,13 @@ package network;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.System.out;
 
+
 public class ClientHandler implements Runnable {
+    public static final int MAX_PLAYERS = 4;
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
@@ -18,6 +19,7 @@ public class ClientHandler implements Runnable {
     private static String playersList;
     private static int gameTime;
     private static final List<String> leaderboard = new ArrayList<>();
+    private static boolean gameRunning;
 
     public ClientHandler(Socket socket, List<ClientHandler> clients) throws IOException {
         this.socket = socket;
@@ -76,6 +78,18 @@ public class ClientHandler implements Runnable {
                         count = players.length;
                     }
                     out.println("NUMBER:" + count);
+                } else if (inputLine.equals("GAME_RUNNING")) {
+                    gameRunning = true;
+                } else if (inputLine.equals("GAME_NOT_RUNNING")) {
+                    gameRunning = false;
+                } else if (inputLine.equals("IS_GAME_RUNNING")) {
+                    if(gameRunning) {out.println("GAME_RUNNING");}
+                    else {out.println("GAME_NOT_RUNNING");}
+                } else if (inputLine.equals("IS_MAX")) {
+                    if(clients.size() > MAX_PLAYERS) {
+                        out.println("MAX_REACHED");
+                    }
+                    else {out.println("MAX_NOT_REACHED");}
                 }
             }
         } catch (IOException e) {
@@ -85,7 +99,6 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    // dynamic progress bar
     private void handleProgress(String progressData) {
         try {
             double progress = Double.parseDouble(progressData);
@@ -117,12 +130,10 @@ public class ClientHandler implements Runnable {
         StringBuilder sb = new StringBuilder("PROGRESS:");
         synchronized (leaderboard) {
             for (String entry : leaderboard) {
-                // Check if this is a result entry (has 3 parts) or progress entry (2 parts)
                 String[] parts = entry.split(";");
                 if (parts.length == 2) {
                     sb.append(entry).append("|");
                 } else if (parts.length == 3) {
-                    // For finished players, progress is 1.0
                     sb.append(parts[0]).append(";1.0|");
                 }
             }
@@ -143,13 +154,11 @@ public class ClientHandler implements Runnable {
     private void handleResult(String result) {
         String[] parts = result.split(";");
         if (parts.length != 4) {
-            System.out.println("Invalid result format: " + result);
             return;
         }
         try {
             String entry = String.format("%s;%s;%s;%s", parts[0], parts[1], parts[2], parts[3]);
             synchronized (leaderboard) {
-                //if(checkClient(parts[0])) updateResult(entry); // for dynamic leaderboard implementation
                 leaderboard.add(entry);
                 leaderboard.sort((a, b) -> {
                     try {
@@ -212,8 +221,9 @@ public class ClientHandler implements Runnable {
             clients.remove(this);
         }
 
-        leaderboard.removeIf(entry -> entry.startsWith(playerName + ";"));
-
+        synchronized (leaderboard) {
+            leaderboard.removeIf(entry -> entry.startsWith(playerName));
+        }
         initiatePlayerList();
         Server.broadcastPlayerList(playersList);
     }

@@ -1,13 +1,15 @@
 /* style.css */
 
 .root {
-    -fx-background-color: #333436;
-    -fx-font-family: "JetBrains Mono Medium", "monospace";
+    -fx-background-color: linear-gradient(to bottom, #1a1a1a, #232323);
+    -fx-font-family: "JetBrains Mono Medium", monospace;
 }
+
 AnchorPane, VBox {
     -fx-font-family: "JetBrains Mono Medium", monospace;
-    -fx-background-color: #333436;
+    -fx-background-color: transparent; /* Let backgroundPane show through */
 }
+
 .menu-button {
     -fx-font-family: "JetBrains Mono Medium", monospace;
     /* existing styles */
@@ -35,7 +37,8 @@ AnchorPane, VBox {
 
 /* Hover effect */
 .menu-button:hover {
-    -fx-background-color: #3a3a3a;
+    -fx-background-color: #e2b714;
+    -fx-text-fill: black;
 }
 
 /* Press effect */

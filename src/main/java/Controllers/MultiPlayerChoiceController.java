@@ -15,9 +15,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import static java.lang.System.out;
-
 public class MultiPlayerChoiceController {
+    public Button backButton;
     @FXML private Button hostButton;
     @FXML private VBox rootPane;
     @FXML private TextField nameField;
@@ -35,6 +34,29 @@ public class MultiPlayerChoiceController {
         joinButton.setPrefSize(100, 30);
         styleModeButton(hostButton, false);
         styleModeButton(joinButton, false);
+
+        backButton.setText("\uD83E\uDC20back");
+        backButton.setStyle("""
+        -fx-background-color: transparent;
+        -fx-text-fill: #d1d0c5;
+        -fx-font-size: 16px;
+        -fx-font-weight: bold;
+        -fx-padding: 0 8 0 8;
+        -fx-cursor: hand;
+        -fx-font-family: 'Roboto Mono';
+        """);
+        backButton.setOnAction(e -> {
+            try {
+                loadMainMenu();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        backButton.hoverProperty().addListener((obs, oldVal, isHovering) -> {
+            backButton.setStyle(isHovering ?
+                    "-fx-background-color: transparent; -fx-text-fill: #ca4754; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';" :
+                    "-fx-background-color: transparent; -fx-text-fill: #d1d0c5; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';");
+        });
 
         rootPane.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
@@ -81,12 +103,7 @@ public class MultiPlayerChoiceController {
                     });
                     return;
                 }
-                try {
-                    Stage stage = (Stage) joinButton.getScene().getWindow();
-                    loadLobby(stage, client, name, false);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                client.sendMessage("IS_GAME_RUNNING");
             }
             else if (message.startsWith("NUMBER:")){
                 int number = Integer.parseInt(message.substring(7));
@@ -101,6 +118,27 @@ public class MultiPlayerChoiceController {
                 try {
                     Stage stage = (Stage) joinButton.getScene().getWindow();
                     loadLobby(stage, client, name, true);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else if (message.startsWith("GAME_RUNNING")) {
+                Platform.runLater(() -> {
+                    statusLabel.setText("A game is running!");
+                    statusLabel.setStyle("-fx-text-fill: #da0112;");
+                    client.close();
+                });
+            } else if (message.startsWith("GAME_NOT_RUNNING")) {
+                client.sendMessage("IS_MAX");
+            } else if (message.startsWith("MAX_REACHED")) {
+                Platform.runLater(() -> {
+                    statusLabel.setText("Too many players!");
+                    statusLabel.setStyle("-fx-text-fill: #da0112;");
+                    client.close();
+                });
+            } else if (message.startsWith("MAX_NOT_REACHED")) {
+                try {
+                    Stage stage = (Stage) joinButton.getScene().getWindow();
+                    loadLobby(stage, client, name, false);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -133,9 +171,6 @@ public class MultiPlayerChoiceController {
         }
 
         try {
-//            new Thread(() -> network.Server.main(new String[]{})).start();
-//            Thread fineThread = new Thread();
-//            fineThread.sleep(1000);
             client = new Client("localhost", 5000);
             setupNetworkHandlers();
             client.sendMessage("IS_AVAILABLE");
@@ -189,7 +224,7 @@ public class MultiPlayerChoiceController {
     private static boolean isValidIPAddress(String ip) {
         try {
             InetAddress address = InetAddress.getByName(ip);
-            out.println(address.toString());
+            //out.println(address.toString());
             return true;
         } catch (Exception e) {
             return false;
@@ -204,7 +239,7 @@ public class MultiPlayerChoiceController {
             MultiPlayerLobbyController controller = loader.getController();
             controller.initialize(client, name, isHost);
 
-            stage.setScene(new Scene(root, 410, 608));
+            stage.setScene(new Scene(root, 800, 600));
             stage.setTitle("Multiplayer Lobby - " + name);
             stage.centerOnScreen();
             stage.setOnCloseRequest(e -> client.close());

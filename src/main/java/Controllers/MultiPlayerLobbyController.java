@@ -17,6 +17,7 @@ import network.Client;
 import java.io.IOException;
 
 public class MultiPlayerLobbyController {
+    public Button backButton;
     @FXML private Label warningLabel;
     @FXML private VBox rootPane;
     @FXML private ListView<String> playerListView;
@@ -71,6 +72,29 @@ public class MultiPlayerLobbyController {
         }
 
         escText.setStyle("-fx-text-fill: #d1d0c5; -fx-font-family: 'Roboto Mono';");
+        backButton.setText("\uD83E\uDC20back");
+        backButton.setStyle("""
+        -fx-background-color: transparent;
+        -fx-text-fill: #d1d0c5;
+        -fx-font-size: 16px;
+        -fx-font-weight: bold;
+        -fx-padding: 0 8 0 8;
+        -fx-cursor: hand;
+        -fx-font-family: 'Roboto Mono';
+        """);
+        backButton.setOnAction(e -> {
+            try {
+                if(isHost) client.closeAll();
+                loadChoice((Stage) rootPane.getScene().getWindow() );
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        backButton.hoverProperty().addListener((obs, oldVal, isHovering) -> {
+            backButton.setStyle(isHovering ?
+                    "-fx-background-color: transparent; -fx-text-fill: #ca4754; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';" :
+                    "-fx-background-color: transparent; -fx-text-fill: #d1d0c5; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 8 0 8; -fx-cursor: hand; -fx-font-family: 'Roboto Mono';");
+        });
     }
 
     private void styleModeButton(Button button, boolean selected) {
@@ -119,7 +143,7 @@ public class MultiPlayerLobbyController {
                 }
             } else if (message.equals("CLOSE_ALL")){
                 try{
-                    loadMainMenu((Stage) rootPane.getScene().getWindow());
+                    loadChoice((Stage) rootPane.getScene().getWindow());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -141,6 +165,10 @@ public class MultiPlayerLobbyController {
                         styleModeButton(sixtySecondButton, false);
                         styleModeButton(ninetySecondButton, true);
                         break;
+                    default:
+                        styleModeButton(fortySecondButton, false);
+                        styleModeButton(sixtySecondButton, false);
+                        styleModeButton(ninetySecondButton, false);
                 }
             }
         });
@@ -153,7 +181,7 @@ public class MultiPlayerLobbyController {
                 if (e.getCode() == KeyCode.ESCAPE) {
                     try {
                         if(isHost) client.closeAll();
-                        loadMainMenu((Stage) rootPane.getScene().getWindow() );
+                        loadChoice((Stage) rootPane.getScene().getWindow() );
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -172,39 +200,31 @@ public class MultiPlayerLobbyController {
     @FXML
     private void onFortyClick(){
         client.sendMessage("TIME:" + 40);
-        styleModeButton(fortySecondButton, true);
-        styleModeButton(sixtySecondButton, false);
-        styleModeButton(ninetySecondButton, false);
     }
 
     @FXML
     private void onSixtyClick(){
         client.sendMessage("TIME:" + 60);
-        styleModeButton(fortySecondButton, false);
-        styleModeButton(sixtySecondButton, true);
-        styleModeButton(ninetySecondButton, false);
     }
 
     @FXML
     private void onNinetyClick(){
         client.sendMessage("TIME:" + 90);
-        styleModeButton(fortySecondButton, false);
-        styleModeButton(sixtySecondButton, false);
-        styleModeButton(ninetySecondButton, true);
     }
 
-    private void loadMainMenu(Stage stage) throws IOException {
+    private void loadChoice(Stage stage) throws IOException {
         new Thread(() -> {
+            client.sendMessage("TIME:" + 0);
             client.close();
         }).start();
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MainMenu.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmlFiles/MultiPlayerChoice.fxml"));
         Parent root = loader.load();
 
         Platform.runLater(() -> {
             Scene scene = new Scene(root, 800, 600);
 
-            stage.setTitle("TypeRacer");
+            stage.setTitle("TypeRacer - MultiPlayer Choice");
             stage.setResizable(true);
             stage.setScene(scene);
             stage.centerOnScreen();
@@ -222,7 +242,7 @@ public class MultiPlayerLobbyController {
 
             Stage stage = (Stage) playerListView.getScene().getWindow();
 
-            stage.setScene(new Scene(root, 1511, 850));
+            stage.setScene(new Scene(root, 1600, 900));
             stage.centerOnScreen();
             stage.setTitle("TypeRacer - " + playerName);
         } catch (IOException e) {

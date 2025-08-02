@@ -8,12 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.lang.System.out;
 
 public class Server {
-    public static final int MAX_PLAYERS = 4;
+
     public static final int COUNTDOWN_SEC = 15;
     private static final int PORT = 5000;
     private static final List<ClientHandler> clients = new ArrayList<>();
@@ -28,31 +27,20 @@ public class Server {
                 return;
             }
             try (Scanner takeIn = new Scanner(input)) {
-
                 while (takeIn.hasNextLine()) {
                     inputStrings.add(takeIn.nextLine());
                 }
-
                 selectedParagraph = inputStrings.get(new Random().nextInt(inputStrings.size()));
-
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            out.println("Server started on port " + PORT);
-
             while (true) {
                 Socket socket = serverSocket.accept();
-                if (clients.size() >= MAX_PLAYERS) {
-                    out.println("Max players reached, rejecting connection: " + socket);
-                    socket.close();
-                    continue;
-                }
                 out.println("New client connected: " + socket.getRemoteSocketAddress());
                 ClientHandler handler = new ClientHandler(socket, clients);
                 synchronized (clients) {
@@ -118,9 +106,6 @@ public class Server {
                 client.sendMessage(sb.toString());
             }
         }
-
-        out.println(count);
-        out.println(clients.size());
 
         if(count == clients.size()){
             synchronized (clients) {

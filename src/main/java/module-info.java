@@ -10,6 +10,7 @@ module Controllers {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires jdk.xml.dom;
 
     exports Controllers;
     opens Controllers to javafx.fxml;
